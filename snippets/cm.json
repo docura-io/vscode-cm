@@ -1,0 +1,20 @@
+{
+     "Region Block Comment": {
+        "prefix": "rblock",
+        "body": [
+            "/***********************************************************************",
+            " * $0",
+            " ***********************************************************************/"
+        ],
+        "description": "Region Block Comment (Above Method / Class)"
+    },
+    "Block Comment": {
+        "prefix": "cblock",
+        "body": [
+            "/**",
+            " * $0",
+            " */"
+        ],
+        "description": "Region Block Comment (Above Method / Class)"
+    }
+}
