@@ -49,8 +49,8 @@ export class cmCompilerAdapter {
     }
     
     public runAutoComplete() {
+        if ( !cmConfig.cmAutoCompleteEnabled() || !this.isStarted ) return; // for now if it's not started don't do it.
         this.diagnostics.clear();
-        if ( !this.isStarted ) return; // for now if it's not started don't do it.
         this.indexer.start( 
             (file) => { this.runCurrentFile( file ); } 
         );
