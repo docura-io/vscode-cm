@@ -10,6 +10,14 @@ export class cmConfig {
         return this.getConfig()["debugMode"];
     }
     
+    static cmAutoCompleteEnabled(): boolean {
+        let isEnabled = this.getConfig()["enableIntellisense"]; 
+        if ( typeof isEnabled !== "boolean" ) {
+            isEnabled = true;
+        }
+        return isEnabled;
+    }
+    
     static cmRoot(): string {
         return this.getConfig()["root"];
     }
