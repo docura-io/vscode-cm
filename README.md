@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/docura-io/vscode-cm.svg?branch=master)](https://travis-ci.org/docura-io/vscode-cm)
 # VSCode CM Extension
 
 ## Installation
