@@ -48,8 +48,8 @@ export class cmCompilerAdapter {
         });        
     }
     
-    public runAutoComplete() {
-        if ( !cmConfig.cmAutoCompleteEnabled() || !this.isStarted ) return; // for now if it's not started don't do it.
+    public runAutoComplete(force?: boolean) {
+        if ( !force && !cmConfig.cmAutoCompleteEnabled() || !this.isStarted ) return; // for now if it's not started don't do it.
         this.diagnostics.clear();
         this.indexer.start( 
             (file) => { this.runCurrentFile( file ); } 

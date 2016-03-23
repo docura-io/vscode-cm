@@ -60,8 +60,12 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
     let d12 = commands.registerCommand( "cm.compileallbelow", () => {
         compiler.compileWorkspace();
     } );
+    
+    let d13 = commands.registerCommand( "cm.runautocomplete", () => {
+        compiler.runAutoComplete(true);
+    } );
    
-    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12 );
+    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13 );
 }
 
 export function foldCopyright( editor: TextEditor ) {

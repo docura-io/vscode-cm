@@ -1,175 +1,190 @@
 {
-  "name": "cm",
-  "displayName": "CM",
-  "description": "CM Language Support",
-  "version": "0.1.7",
-  "publisher": "twlamb",
-  "engines": {
-    "vscode": "^0.10.6"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onLanguage:cm"
-  ],
-  "main": "./out/src/extension",
-  "contributes": {
-    "languages": [
-      {
-        "id": "cm",
-        "extensions": [
-          ".cm"
-        ],
-        "aliases": [
-          "CM"
-        ]
-      }
-    ],
-    "grammars": [
-      {
-        "language": "cm",
-        "path": "./syntaxes/cm.plist",
-        "scopeName": "source.cm"
-      }
-    ],
-    "commands": [
-      {
-        "command": "cm.start",
-        "title": "CM: Start CM",
-        "description": "Starts the CM Compiler."
-      },
-      {
-        "command": "cm.cleancm",
-        "title": "CM: Clean CM",
-        "description": "Cleans the CM Compiler."
-      },
-      {
-        "command": "cm.stopcm",
-        "title": "CM: Stops CM",
-        "description": "Stops CM Environment."
-      },
-      {
-        "command": "cm.runcurrentfile",
-        "title": "CM: Run Current File",
-        "description": "Runs the current file."
-      },
-      {
-        "command": "cm.compilefile",
-        "title": "CM: Compile File",
-        "description": "Compiles the current file."
-      },
-      {
-        "command": "cm.quitdebug",
-        "title": "CM: Quit Debug",
-        "description": "Ends the debug session."
-      },
-      {
-        "command": "cm.startcet",
-        "title": "CM: Start CET Designer",
-        "description": "Starts CET Designer."
-      },
-      {
-          "command": "cm.runline",
-          "title": "CM: Run Current Line",
-          "description": "Runs the current line of code"
-      },
-      {
-          "command": "cm.profileboot",
-          "title": "CM: Profile Boot",
-          "description": "Opens your boot.cm file in your profile"
-      },
-      {
-          "command": "cm.loadall",
-          "title": "CM: Load All Known",
-          "description" : "Reloads all known packages",
-          "category": "cm"
-      },
-      {
-          "command": "cm.compileallbelow",
-          "title": "CM: Compile Entire Workspace",
-          "description" : "Compiles all packages in the workspace",
-          "category": "cm"
-      }
-    ],
-    "configuration": {
-      "type": "object",
-      "title": "CM Configuration",
-      "properties": {
-        "cm.root": {
-          "type": "string",
-          "default": "C:\\CetDev\\version6.5",
-          "description": "The path to the CM home"
-        },
-        "cm.apiUrl": {
-          "type": "string",
-          "default": "http://docura.io/api/",
-          "description": "The base url for the cm documentation api"
-        },
-        "cm.debugMode": {
-          "type": "boolean",
-          "default": false,
-          "description": "If you want to run the VSCode extension in debug mode"
-        }
-      }
+    "name": "cm",
+    "displayName": "CM",
+    "description": "CM Language Support",
+    "version": "0.1.7",
+    "publisher": "twlamb",
+    "engines": {
+        "vscode": "^0.10.6"
     },
-    "keybindings": [
-      {
-        "command": "cm.cleancm",
-        "key": "shift+f5",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "cm.runcurrentfile",
-        "key": "ctrl+alt+p",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "cm.compilefile",
-        "key": "ctrl+alt+u",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "cm.quitdebug",
-        "key": "ctrl+alt+q",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "cm.quitdebug",
-        "key": "ctrl+alt+q",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "cm.runline",
-        "key": "ctrl+alt+space",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "cm.loadall",
-        "key": "ctrl+alt+y",
-        "when": "editorTextFocus"
-      }
+    "categories": [
+        "Other"
     ],
-    "snippets": [
-      {
-        "language": "cm",
-        "path": "./snippets/cm.json"
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install"
-  },
-  "devDependencies": {
-    "typescript": "^1.7.5",
-    "vscode": "^0.11.0"
-  },
-  "dependencies": {
-    "clang-format": "^1.0.34",
-    "cm-modules": "https://github.com/docura-io/cm-modules.git",
-    "node-cm": "https://github.com/docura-io/node-cm.git",
-    "request": "^2.67.0"
-  }
+    "activationEvents": [
+        "onLanguage:cm"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "cm",
+                "extensions": [
+                    ".cm"
+                ],
+                "aliases": [
+                    "CM"
+                ]
+            }
+        ],
+        "grammars": [
+            {
+                "language": "cm",
+                "path": "./syntaxes/cm.plist",
+                "scopeName": "source.cm"
+            }
+        ],
+        "commands": [
+            {
+                "command": "cm.start",
+                "title": "Start CM",
+                "description": "Starts the CM Compiler.",
+                "category": "CM"
+            },
+            {
+                "command": "cm.cleancm",
+                "title": "Clean CM",
+                "description": "Cleans the CM Compiler.",
+                "category": "CM"
+            },
+            {
+                "command": "cm.stopcm",
+                "title": "Stops CM",
+                "description": "Stops CM Environment.",
+                "category": "CM"
+            },
+            {
+                "command": "cm.runcurrentfile",
+                "title": "Run Current File",
+                "description": "Runs the current file.",
+                "category": "CM"
+            },
+            {
+                "command": "cm.compilefile",
+                "title": "Compile File",
+                "description": "Compiles the current file.",
+                "category": "CM"
+            },
+            {
+                "command": "cm.quitdebug",
+                "title": "Quit Debug",
+                "description": "Ends the debug session.",
+                "category": "CM"
+            },
+            {
+                "command": "cm.startcet",
+                "title": "Start CET Designer",
+                "description": "Starts CET Designer.",
+                "category": "CM"
+            },
+            {
+                "command": "cm.runline",
+                "title": "Run Current Line",
+                "description": "Runs the current line of code",
+                "category": "CM"
+            },
+            {
+                "command": "cm.profileboot",
+                "title": "Profile Boot",
+                "description": "Opens your boot.cm file in your profile",
+                "category": "CM"
+            },
+            {
+                "command": "cm.loadall",
+                "title": "Load All Known",
+                "description": "Reloads all known packages",
+                "category": "cm"
+            },
+            {
+                "command": "cm.compileallbelow",
+                "title": "Compile Entire Workspace",
+                "description": "Compiles all packages in the workspace",
+                "category": "CM"
+            },
+            {
+                "command": "cm.runautocomplete",
+                "title": "Indexes Code for Autocomplete Suggestions",
+                "description": "Indexes current workspace to update autocomplete dictionary",
+                "category": "CM"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "CM Configuration",
+            "properties": {
+                "cm.root": {
+                    "type": "string",
+                    "default": "C:\\CetDev\\version6.5",
+                    "description": "The path to the CM home"
+                },
+                "cm.apiUrl": {
+                    "type": "string",
+                    "default": "http://docura.io/api/",
+                    "description": "The base url for the cm documentation api"
+                },
+                "cm.debugMode": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If you want to run the VSCode extension in debug mode"
+                }
+            }
+        },
+        "keybindings": [
+            {
+                "command": "cm.cleancm",
+                "key": "shift+f5",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "cm.runcurrentfile",
+                "key": "ctrl+alt+p",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "cm.compilefile",
+                "key": "ctrl+alt+u",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "cm.quitdebug",
+                "key": "ctrl+alt+q",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "cm.quitdebug",
+                "key": "ctrl+alt+q",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "cm.runline",
+                "key": "ctrl+alt+space",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "cm.loadall",
+                "key": "ctrl+alt+y",
+                "when": "editorTextFocus"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "cm",
+                "path": "./snippets/cm.json"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "devDependencies": {
+        "typescript": "^1.7.5",
+        "vscode": "^0.11.0"
+    },
+    "dependencies": {
+        "clang-format": "^1.0.34",
+        "cm-modules": "https://github.com/docura-io/cm-modules.git",
+        "node-cm": "https://github.com/docura-io/node-cm.git",
+        "request": "^2.67.0"
+    }
 }
