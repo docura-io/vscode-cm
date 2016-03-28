@@ -18,13 +18,13 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
         } );
     } );
     
-    let d7 = commands.registerCommand( "cm.runcurrentfile", () => {
+    let d7 = commands.registerCommand( "cm.runcurrentfile", (args) => {
         validateCMFileAndRun( true, (editor) => {
             compiler.runCurrentFile( editor.document.fileName );
-        } )
+        } );
     } );
     
-    let d8 = commands.registerCommand( "cm.compilefile", () => {
+    let d8 = commands.registerCommand( "cm.compilefile", (args) => {
         validateCMFileAndRun( true, (editor) => {
             compiler.compileFile( editor.document.fileName );
         });
@@ -65,7 +65,14 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
         compiler.runAutoComplete(true);
     } );
    
-    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13 );
+    let d14 = commands.registerCommand( "cm.runexternal", (args) => {
+        // this is a hook for anything to run CM Commands via "commands.executeCommand(...)"
+        if ( typeof args == "string" ) {
+            compiler.run( args );
+        }
+    } )
+   
+    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14 );
 }
 
 export function foldCopyright( editor: TextEditor ) {
