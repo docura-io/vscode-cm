@@ -39,7 +39,7 @@ export class cmOutputChannel {
     public write( data: string ) {
         if ( this.waitingForClean ) return;
         this.msgPerSec++;
-        if ( this.msgPerSec > 200 ) {
+        if ( this.msgPerSec > 400 ) {
             this.waitingForClean = true;
             vscode.window.showWarningMessage( "Too many output messages have been queued, force cleaning CM");
             vscode.commands.executeCommand( 'cm.cleancm' );
