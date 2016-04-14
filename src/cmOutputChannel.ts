@@ -15,7 +15,7 @@ export class cmOutputChannel {
     
     private msgPerSec = 0;
     private msgCounterId = 0;
-    private waitingForClean = false;
+    private treshholdBroken = false;
     
     constructor( diags: vscode.DiagnosticCollection ) { 
         this.output = vscode.window.createOutputChannel( 'CM' );
@@ -29,24 +29,24 @@ export class cmOutputChannel {
     }
     
     public clear() {
-        if ( !this.waitingForClean ) {
-            this.output.clear();
-        }
+        // this.output.clear();
         this.msgPerSec = 0;
-        this.waitingForClean = false;
     }
     
     public write( data: string ) {
-        if ( this.waitingForClean ) return;
         this.msgPerSec++;
         if ( this.msgPerSec > 400 ) {
-            this.waitingForClean = true;
-            vscode.window.showWarningMessage( "Too many output messages have been queued, force cleaning CM");
-            vscode.commands.executeCommand( 'cm.cleancm' );
-            return;
+            // only show the error once per threshhold break
+            if ( !this.treshholdBroken ) vscode.window.showWarningMessage( "Too many output messages have been queued, VSCode will stop processing output, until it returns to normal levels");
+            this.treshholdBroken = true;
+            // vscode.window.showWarningMessage( "Too many output messages have been queued, force cleaning CM");
+            // vscode.commands.executeCommand( 'cm.cleancm' );
+            this.output.append(data);
+        } else {
+            this.treshholdBroken = false;
+            this.output.append( this.lineParser( data ) );
         }
         
-        this.output.append( this.lineParser( data ) );
     }
     
     public goToDefinitionPromise() {

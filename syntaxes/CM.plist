@@ -18,23 +18,23 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.other.package.cm</string>
+					<string>keyword.other.package.java</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>storage.modifier.package.cm</string>
+					<string>storage.modifier.package.java</string>
 				</dict>
 				<key>3</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.terminator.cm</string>
+					<string>punctuation.terminator.java</string>
 				</dict>
 			</dict>
 			<key>match</key>
 			<string>^\s*(package)\b(?:\s*([^ ;$]+)\s*(;)?)?</string>
 			<key>name</key>
-			<string>meta.package.cm</string>
+			<string>meta.package.java</string>
 		</dict>
 		<dict>
 			<key>begin</key>
@@ -44,7 +44,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.other.import.cm</string>
+					<string>keyword.other.import.java</string>
 				</dict>
 			</dict>
 			<key>captures</key>
@@ -52,21 +52,21 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.other.import.cm</string>
+					<string>keyword.other.import.java</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>storage.modifier.import.cm</string>
+					<string>storage.modifier.import.java</string>
 				</dict>
 				<key>3</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.terminator.cm</string>
+					<string>punctuation.terminator.java</string>
 				</dict>
 			</dict>
 			<key>contentName</key>
-			<string>storage.modifier.import.cm</string>
+			<string>storage.modifier.import.java</string>
 			<key>end</key>
 			<string>\s*(?:$|(;))</string>
 			<key>endCaptures</key>
@@ -74,24 +74,24 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.terminator.cm</string>
+					<string>punctuation.terminator.java</string>
 				</dict>
 			</dict>
 			<key>name</key>
-			<string>meta.import.cm</string>
+			<string>meta.import.java</string>
 			<key>patterns</key>
 			<array>
 				<dict>
 					<key>match</key>
 					<string>\.</string>
 					<key>name</key>
-					<string>punctuation.separator.cm</string>
+					<string>punctuation.separator.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\s</string>
 					<key>name</key>
-					<string>invalid.illegal.character_not_allowed_here.cm</string>
+					<string>invalid.illegal.character_not_allowed_here.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -132,12 +132,12 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>storage.type.annotation.cm</string>
+							<string>storage.type.annotation.java</string>
 						</dict>
 						<key>2</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.definition.annotation-arguments.begin.cm</string>
+							<string>punctuation.definition.annotation-arguments.begin.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
@@ -147,11 +147,11 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.definition.annotation-arguments.end.cm</string>
+							<string>punctuation.definition.annotation-arguments.end.java</string>
 						</dict>
 					</dict>
 					<key>name</key>
-					<string>meta.declaration.annotation.cm</string>
+					<string>meta.declaration.annotation.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -160,12 +160,12 @@
 								<key>1</key>
 								<dict>
 									<key>name</key>
-									<string>constant.other.key.cm</string>
+									<string>constant.other.key.java</string>
 								</dict>
 								<key>2</key>
 								<dict>
 									<key>name</key>
-									<string>keyword.operator.assignment.cm</string>
+									<string>keyword.operator.assignment.java</string>
 								</dict>
 							</dict>
 							<key>match</key>
@@ -179,7 +179,7 @@
 							<key>match</key>
 							<string>,</string>
 							<key>name</key>
-							<string>punctuation.separator.property.cm</string>
+							<string>punctuation.separator.property.java</string>
 						</dict>
 					</array>
 				</dict>
@@ -187,7 +187,7 @@
 					<key>match</key>
 					<string>@\w*</string>
 					<key>name</key>
-					<string>storage.type.annotation.cm</string>
+					<string>storage.type.annotation.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -200,7 +200,7 @@
 				<key>0</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control.new.cm</string>
+					<string>keyword.control.new.java</string>
 				</dict>
 			</dict>
 			<key>end</key>
@@ -215,7 +215,7 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>storage.type.cm</string>
+							<string>storage.type.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
@@ -225,7 +225,7 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.section.block.end.cm</string>
+							<string>punctuation.section.block.end.java</string>
 						</dict>
 					</dict>
 					<key>patterns</key>
@@ -251,7 +251,7 @@
 								<key>0</key>
 								<dict>
 									<key>name</key>
-									<string>punctuation.section.block.begin.cm</string>
+									<string>punctuation.section.block.begin.java</string>
 								</dict>
 							</dict>
 							<key>end</key>
@@ -285,7 +285,7 @@
 								<key>1</key>
 								<dict>
 									<key>name</key>
-									<string>storage.type.cm</string>
+									<string>storage.type.java</string>
 								</dict>
 							</dict>
 							<key>end</key>
@@ -308,7 +308,7 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.section.inner-class.begin.cm</string>
+							<string>punctuation.section.inner-class.begin.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
@@ -318,11 +318,11 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.section.inner-class.end.cm</string>
+							<string>punctuation.section.inner-class.end.java</string>
 						</dict>
 					</dict>
 					<key>name</key>
-					<string>meta.inner-class.cm</string>
+					<string>meta.inner-class.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -345,20 +345,20 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.control.assert.cm</string>
+							<string>keyword.control.assert.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
 					<string>$</string>
 					<key>name</key>
-					<string>meta.declaration.assertion.cm</string>
+					<string>meta.declaration.assertion.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
 							<key>match</key>
 							<string>:</string>
 							<key>name</key>
-							<string>keyword.operator.assert.expression-seperator.cm</string>
+							<string>keyword.operator.assert.expression-seperator.java</string>
 						</dict>
 						<dict>
 							<key>include</key>
@@ -421,11 +421,11 @@
 				<key>0</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.section.class.end.cm</string>
+					<string>punctuation.section.class.end.java</string>
 				</dict>
 			</dict>
 			<key>name</key>
-			<string>meta.class.cm</string>
+			<string>meta.class.java</string>
 			<key>patterns</key>
 			<array>
 				<dict>
@@ -442,18 +442,18 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>storage.modifier.cm</string>
+							<string>storage.modifier.java</string>
 						</dict>
 						<key>2</key>
 						<dict>
 							<key>name</key>
-							<string>entity.name.type.class.cm</string>
+							<string>entity.name.type.class.java</string>
 						</dict>
 					</dict>
 					<key>match</key>
 					<string>(class|(?:@)?interface|enum)\s+(\w+)</string>
 					<key>name</key>
-					<string>meta.class.identifier.cm</string>
+					<string>meta.class.identifier.java</string>
 				</dict>
 				<dict>
 					<key>begin</key>
@@ -463,13 +463,13 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>storage.modifier.extends.cm</string>
+							<string>storage.modifier.extends.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
 					<string>(?={|implements)</string>
 					<key>name</key>
-					<string>meta.definition.class.inherited.classes.cm</string>
+					<string>meta.definition.class.inherited.classes.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -490,13 +490,13 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>storage.modifier.implements.cm</string>
+							<string>storage.modifier.implements.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
 					<string>(?=\s*extends|\{)</string>
 					<key>name</key>
-					<string>meta.definition.class.implemented.interfaces.cm</string>
+					<string>meta.definition.class.implemented.interfaces.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -517,13 +517,13 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.section.class.begin.cm</string>
+							<string>punctuation.section.class.begin.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
 					<string>(?=})</string>
 					<key>name</key>
-					<string>meta.class.body.cm</string>
+					<string>meta.class.body.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -592,7 +592,7 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.section.block.begin.cm</string>
+							<string>punctuation.section.block.begin.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
@@ -602,7 +602,7 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.section.block.end.cm</string>
+							<string>punctuation.section.block.end.java</string>
 						</dict>
 					</dict>
 					<key>patterns</key>
@@ -661,13 +661,13 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.definition.comment.cm</string>
+							<string>punctuation.definition.comment.java</string>
 						</dict>
 					</dict>
 					<key>match</key>
 					<string>/\*\*/</string>
 					<key>name</key>
-					<string>comment.block.empty.cm</string>
+					<string>comment.block.empty.java</string>
 				</dict>
 				<dict>
 					<key>include</key>
@@ -691,13 +691,13 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.definition.comment.cm</string>
+							<string>punctuation.definition.comment.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
 					<string>\*/</string>
 					<key>name</key>
-					<string>comment.block.cm</string>
+					<string>comment.block.java</string>
 				</dict>
 				<dict>
 					<key>begin</key>
@@ -707,7 +707,7 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.whitespace.comment.leading.cm</string>
+							<string>punctuation.whitespace.comment.leading.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
@@ -722,13 +722,13 @@
 								<key>0</key>
 								<dict>
 									<key>name</key>
-									<string>punctuation.definition.comment.cm</string>
+									<string>punctuation.definition.comment.java</string>
 								</dict>
 							</dict>
 							<key>end</key>
 							<string>\n</string>
 							<key>name</key>
-							<string>comment.line.double-slash.cm</string>
+							<string>comment.line.double-slash.java</string>
 						</dict>
 					</array>
 				</dict>
@@ -742,43 +742,43 @@
 					<key>match</key>
 					<string>\b(true|false|null)\b</string>
 					<key>name</key>
-					<string>constant.language.cm</string>
+					<string>constant.language.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\b(this|super)\b</string>
 					<key>name</key>
-					<string>variable.language.cm</string>
+					<string>variable.language.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\b0[xX]\h([\h_]*\h)?[lL]?(?!\w|\.)</string>
 					<key>name</key>
-					<string>constant.numeric.hex.cm</string>
+					<string>constant.numeric.hex.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\b0[0-7_]*[0-7][lL]?\b</string>
 					<key>name</key>
-					<string>constant.numeric.octal.cm</string>
+					<string>constant.numeric.octal.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\b0[bB][01]([01_]*[01])?[lL]?\b</string>
 					<key>name</key>
-					<string>constant.numeric.binary.cm</string>
+					<string>constant.numeric.binary.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\b(0|[1-9]([0-9_]*[0-9])?)[lL]?(?!\w|\.)</string>
 					<key>name</key>
-					<string>constant.numeric.integer.cm</string>
+					<string>constant.numeric.integer.java</string>
 				</dict>
                 <dict>
 					<key>match</key>
 					<string>\b\b([0-9]+|[0-9]*\.[0-9]+)\s*(dm|cm|[m]?m|um|feet|inch|rad|deg|radF|degF|us|ms|s|minutes|minute|hours|hour|days|day|weeks|week|KB|MB|GB|TB|ug|mg|g|gram|grams|hg|kg|ton|lb|lbs|short ton|long ton)</string>
 					<key>name</key>
-					<string>constant.numeric.integer.cm</string>
+					<string>constant.numeric.integer.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -800,7 +800,7 @@
 						(?!\w)										# Ensure word boundry
 					</string>
 					<key>name</key>
-					<string>constant.numeric.hex-float.cm</string>
+					<string>constant.numeric.hex-float.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -826,7 +826,7 @@
 						(?!\w)											# Ensure word boundry
 					</string>
 					<key>name</key>
-					<string>constant.numeric.float.cm</string>
+					<string>constant.numeric.float.java</string>
 				</dict>
 				<dict>
 					<key>captures</key>
@@ -834,13 +834,13 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.operator.dereference.cm</string>
+							<string>keyword.operator.dereference.java</string>
 						</dict>
 					</dict>
 					<key>match</key>
 					<string>(\.)?\b([A-Z][A-Z0-9_]+)(?!&lt;|\.class|\s*\w+\s*=)\b</string>
 					<key>name</key>
-					<string>constant.other.cm</string>
+					<string>constant.other.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -860,13 +860,13 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>constant.other.enum.cm</string>
+							<string>constant.other.enum.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
 					<string>(?=,|;|})</string>
 					<key>name</key>
-					<string>meta.enum.cm</string>
+					<string>meta.enum.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -881,7 +881,7 @@
 								<key>0</key>
 								<dict>
 									<key>name</key>
-									<string>punctuation.section.enum.begin.cm</string>
+									<string>punctuation.section.enum.begin.java</string>
 								</dict>
 							</dict>
 							<key>end</key>
@@ -891,7 +891,7 @@
 								<key>0</key>
 								<dict>
 									<key>name</key>
-									<string>punctuation.section.enum.end.cm</string>
+									<string>punctuation.section.enum.end.java</string>
 								</dict>
 							</dict>
 							<key>patterns</key>
@@ -922,97 +922,97 @@
 					<key>match</key>
 					<string>\b(alias|field access|unsafe|pln|macro|limb)\b</string>
 					<key>name</key>
-					<string>keyword.control.cm</string>
+					<string>keyword.control.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\b(try|catch|finally|throw)\b</string>
 					<key>name</key>
-					<string>keyword.control.catch-exception.cm</string>
+					<string>keyword.control.catch-exception.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\?|:</string>
 					<key>name</key>
-					<string>keyword.control.ternary.cm</string>
+					<string>keyword.control.ternary.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\b(return|break|case|continue|default|do|while|for|switch|if|else)\b</string>
 					<key>name</key>
-					<string>keyword.control.cm</string>
+					<string>keyword.control.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\b(instanceof)\b</string>
 					<key>name</key>
-					<string>keyword.operator.cm</string>
+					<string>keyword.operator.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>(&lt;&lt;|&gt;&gt;&gt;?|~|\^)</string>
 					<key>name</key>
-					<string>keyword.operator.bitwise.cm</string>
+					<string>keyword.operator.bitwise.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>((&amp;|\^|\||&lt;&lt;|&gt;&gt;&gt;?)=)</string>
 					<key>name</key>
-					<string>keyword.operator.assignment.bitwise.cm</string>
+					<string>keyword.operator.assignment.bitwise.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>(===?|!=|&lt;=|&gt;=|&lt;&gt;|&lt;|&gt;)</string>
 					<key>name</key>
-					<string>keyword.operator.comparison.cm</string>
+					<string>keyword.operator.comparison.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>([+*/%-]=)</string>
 					<key>name</key>
-					<string>keyword.operator.assignment.arithmetic.cm</string>
+					<string>keyword.operator.assignment.arithmetic.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>(=|&lt;&lt;)</string>
 					<key>name</key>
-					<string>keyword.operator.assignment.cm</string>
+					<string>keyword.operator.assignment.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>(\-\-|\+\+)</string>
 					<key>name</key>
-					<string>keyword.operator.increment-decrement.cm</string>
+					<string>keyword.operator.increment-decrement.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>(\-|\+|\*|\/|%)</string>
 					<key>name</key>
-					<string>keyword.operator.arithmetic.cm</string>
+					<string>keyword.operator.arithmetic.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>(!|and|or)</string>
 					<key>name</key>
-					<string>keyword.operator.logical.cm</string>
+					<string>keyword.operator.logical.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>(\||&amp;)</string>
 					<key>name</key>
-					<string>keyword.operator.bitwise.cm</string>
+					<string>keyword.operator.bitwise.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>(?&lt;=\S)\.(?=\S)</string>
 					<key>name</key>
-					<string>keyword.operator.dereference.cm</string>
+					<string>keyword.operator.dereference.java</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>;</string>
 					<key>name</key>
-					<string>punctuation.terminator.cm</string>
+					<string>punctuation.terminator.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -1025,12 +1025,12 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>meta.method.cm</string>
+					<string>meta.method.java</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.definition.method-parameters.begin.cm</string>
+					<string>punctuation.definition.method-parameters.begin.java</string>
 				</dict>
 			</dict>
 			<key>end</key>
@@ -1040,18 +1040,18 @@
 				<key>0</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.definition.method-parameters.end.cm</string>
+					<string>punctuation.definition.method-parameters.end.java</string>
 				</dict>
 			</dict>
 			<key>name</key>
-			<string>meta.method-call.cm</string>
+			<string>meta.method-call.java</string>
 			<key>patterns</key>
 			<array>
 				<dict>
 					<key>match</key>
 					<string>,</string>
 					<key>name</key>
-					<string>punctuation.definition.seperator.parameter.cm</string>
+					<string>punctuation.definition.seperator.parameter.java</string>
 				</dict>
 				<dict>
 					<key>include</key>
@@ -1070,11 +1070,11 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.section.method.end.cm</string>
+					<string>punctuation.section.method.end.java</string>
 				</dict>
 			</dict>
 			<key>name</key>
-			<string>meta.method.cm</string>
+			<string>meta.method.java</string>
 			<key>patterns</key>
 			<array>
 				<dict>
@@ -1089,18 +1089,18 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>entity.name.function.cm</string>
+							<string>entity.name.function.java</string>
 						</dict>
                         <key>2</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.control.cm</string>
+							<string>keyword.control.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
 					<string>\)</string>
 					<key>name</key>
-					<string>meta.method.identifier.cm</string>
+					<string>meta.method.identifier.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1119,7 +1119,7 @@
 					<key>end</key>
 					<string>&gt;</string>
 					<key>name</key>
-					<string>storage.type.token.cm</string>
+					<string>storage.type.token.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1134,7 +1134,7 @@
 							<key>end</key>
 							<string>&gt;|[^\w\s,\[\]&lt;]</string>
 							<key>name</key>
-							<string>storage.type.generic.cm</string>
+							<string>storage.type.generic.java</string>
 						</dict>
 					</array>
 				</dict>
@@ -1144,7 +1144,7 @@
 					<key>end</key>
 					<string>(?=\w+(?:\s*&lt;&lt;)?\s*\()</string>
 					<key>name</key>
-					<string>meta.method.return-type.cm</string>
+					<string>meta.method.return-type.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1169,13 +1169,13 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.section.method.begin.cm</string>
+							<string>punctuation.section.method.begin.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
 					<string>(?=})</string>
 					<key>name</key>
-					<string>meta.method.body.cm</string>
+					<string>meta.method.body.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1200,7 +1200,7 @@
 					<key>end</key>
 					<string>&gt;|[^\w\s,\?&lt;\[\]]</string>
 					<key>name</key>
-					<string>storage.type.generic.cm</string>
+					<string>storage.type.generic.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1215,17 +1215,17 @@
 							<key>end</key>
 							<string>&gt;|[^\w\s,\[\]&lt;]</string>
 							<key>name</key>
-							<string>storage.type.generic.cm</string>
+							<string>storage.type.generic.java</string>
 						</dict>
 					</array>
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>\b((?:[a-z]\w*\.)*[A-Z]+\w*)(?=\[)</string>
+					<string>\b((?:[a-z]\w*\.)*[A-Za-z]+\w*)(?=\[)</string>
 					<key>end</key>
 					<string>(?=[^\]\s])</string>
 					<key>name</key>
-					<string>storage.type.object.array.cm</string>
+					<string>storage.type.object.array.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1249,13 +1249,13 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.operator.dereference.cm</string>
+							<string>keyword.operator.dereference.java</string>
 						</dict>
 					</dict>
 					<key>match</key>
 					<string>\b(?:[a-z]\w*(\.))*[A-Z]+\w*\b</string>
 					<key>name</key>
-					<string>storage.type.cm</string>
+					<string>storage.type.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -1269,7 +1269,7 @@
 					<key>end</key>
 					<string>&gt;|[^\w\s,&lt;]</string>
 					<key>name</key>
-					<string>entity.other.inherited-class.cm</string>
+					<string>entity.other.inherited-class.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1284,7 +1284,7 @@
 							<key>end</key>
 							<string>&gt;|[^\w\s,&lt;]</string>
 							<key>name</key>
-							<string>storage.type.generic.cm</string>
+							<string>storage.type.generic.java</string>
 						</dict>
 					</array>
 				</dict>
@@ -1294,13 +1294,13 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.operator.dereference.cm</string>
+							<string>keyword.operator.dereference.java</string>
 						</dict>
 					</dict>
 					<key>match</key>
 					<string>\b(?:[a-z]\w*(\.))*[A-Z]+\w*</string>
 					<key>name</key>
-					<string>entity.other.inherited-class.cm</string>
+					<string>entity.other.inherited-class.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -1312,7 +1312,7 @@
 					<key>match</key>
 					<string>final</string>
 					<key>name</key>
-					<string>storage.modifier.cm</string>
+					<string>storage.modifier.java</string>
 				</dict>
 				<dict>
 					<key>include</key>
@@ -1334,7 +1334,7 @@
 					<key>match</key>
 					<string>\w+</string>
 					<key>name</key>
-					<string>variable.parameter.cm</string>
+					<string>variable.parameter.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -1358,9 +1358,9 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\b(?:void|bool|byte|char|short|int|float|long|double|str)(\[\]|{})*\b</string>
+					<string>\b(?:void|bool|byte|char|short|int|float|long|double|str|point|point2D)(\[\]|{})*\b</string>
 					<key>name</key>
-					<string>storage.type.primitive.array.cm</string>
+					<string>storage.type.primitive.array.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -1370,9 +1370,9 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\b(?:void|bool|byte|int|int8|int16|int64|bigint|arch_int|nat|arch_nat|word|float|double|symbol|str|str8|cstr|wstr|char|wchar|cchar|ptr)\b</string>
+					<string>\b(?:void|bool|byte|int|int8|int16|int64|bigint|arch_int|nat|arch_nat|word|float|double|symbol|str|str8|cstr|wstr|char|wchar|cchar|ptr|point|point2D)\b</string>
 					<key>name</key>
-					<string>storage.type.primitive.cm</string>
+					<string>storage.type.primitive.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -1383,7 +1383,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>storage.modifier.cm</string>
+					<string>storage.modifier.java</string>
 				</dict>
 			</dict>
 			<key>match</key>
@@ -1401,7 +1401,7 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.definition.string.begin.cm</string>
+							<string>punctuation.definition.string.begin.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
@@ -1411,18 +1411,18 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.definition.string.end.cm</string>
+							<string>punctuation.definition.string.end.java</string>
 						</dict>
 					</dict>
 					<key>name</key>
-					<string>string.quoted.double.cm</string>
+					<string>string.quoted.double.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
 							<key>match</key>
 							<string>\\.</string>
 							<key>name</key>
-							<string>constant.character.escape.cm</string>
+							<string>constant.character.escape.java</string>
 						</dict>
 					</array>
 				</dict>
@@ -1434,7 +1434,7 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.definition.string.begin.cm</string>
+							<string>punctuation.definition.string.begin.java</string>
 						</dict>
 					</dict>
 					<key>end</key>
@@ -1444,18 +1444,18 @@
 						<key>0</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.definition.string.end.cm</string>
+							<string>punctuation.definition.string.end.java</string>
 						</dict>
 					</dict>
 					<key>name</key>
-					<string>string.quoted.single.cm</string>
+					<string>string.quoted.single.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
 							<key>match</key>
 							<string>\\.</string>
 							<key>name</key>
-							<string>constant.character.escape.cm</string>
+							<string>constant.character.escape.java</string>
 						</dict>
 					</array>
 				</dict>
@@ -1470,13 +1470,13 @@
 				<key>0</key>
 				<dict>
 					<key>name</key>
-					<string>storage.modifier.cm</string>
+					<string>storage.modifier.java</string>
 				</dict>
 			</dict>
 			<key>end</key>
 			<string>(?={|;)</string>
 			<key>name</key>
-			<string>meta.throwables.cm</string>
+			<string>meta.throwables.java</string>
 			<key>patterns</key>
 			<array>
 				<dict>
@@ -1530,7 +1530,7 @@
 					<key>end</key>
 					<string>(?=;)</string>
 					<key>name</key>
-					<string>meta.definition.variable.cm</string>
+					<string>meta.definition.variable.java</string>
 					<key>patterns</key>
 					<array>
 						<dict>
@@ -1543,7 +1543,7 @@
 								<key>1</key>
 								<dict>
 									<key>name</key>
-									<string>constant.other.variable.cm</string>
+									<string>constant.other.variable.java</string>
 								</dict>
 							</dict>
 							<key>match</key>
@@ -1555,7 +1555,7 @@
 								<key>1</key>
 								<dict>
 									<key>name</key>
-									<string>meta.definition.variable.name.cm</string>
+									<string>meta.definition.variable.name.java</string>
 								</dict>
 							</dict>
 							<key>match</key>
@@ -1569,7 +1569,7 @@
 								<key>0</key>
 								<dict>
 									<key>name</key>
-									<string>keyword.operator.assignment.cm</string>
+									<string>keyword.operator.assignment.java</string>
 								</dict>
 							</dict>
 							<key>end</key>
@@ -1588,7 +1588,7 @@
 								<key>1</key>
 								<dict>
 									<key>name</key>
-									<string>meta.definition.variable.name.cm</string>
+									<string>meta.definition.variable.name.java</string>
 								</dict>
 							</dict>
 							<key>match</key>
