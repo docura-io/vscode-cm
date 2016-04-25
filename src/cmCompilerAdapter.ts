@@ -125,7 +125,7 @@ export class cmCompilerAdapter {
         .then( (success) => {
             var promise = this.channel.goToDefinitionPromise();
             file = file.replace( /\\/g, '/' ); // make sure we have the right slashses        
-            this.compiler.write( `refers("${file}", ${offset});` );
+            this.compiler.write( `cm.runtime.refers("${file}", ${offset});` );
             return promise;    
         } );
 
