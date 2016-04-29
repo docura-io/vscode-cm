@@ -3,7 +3,7 @@
     "displayName": "CM",
     "description": "CM Language Support",
     "version": "0.2.0",
-    "publisher": "docura-io",
+    "publisher": "docuraio",
     "engines": {
         "vscode": "^0.10.6"
     },
