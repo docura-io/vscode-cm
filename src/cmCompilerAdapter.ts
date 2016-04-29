@@ -85,11 +85,9 @@ export class cmCompilerAdapter {
     }
 
     public compileWorkspace() {
-        //{ use cm.runtime.util; compileAllBelow(CompileAllEnv("$CM_HOME/cm/io/")); }
         this.startIfNotStarted().then( (succuess) => {
-            const path = vscode.workspace.rootPath.replace( /\\/g, "/" );
-            // this needs to be fixed...
-            this.run( `{ use cm.runtime.util; compileAllBelow(CompileAllEnv("$CM_HOME/custom/conference/")); }` );
+            const path = vscode.workspace.rootPath.replace( /\\/g, "/" ) + "/";
+            this.run( `{ use cm.runtime.util; compileAllBelow(CompileAllEnv("${path}")); }` );
         } );
     }
     
