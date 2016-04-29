@@ -16,5 +16,14 @@
             " */"
         ],
         "description": "Region Block Comment (Above Method / Class)"
+    },
+    "Constructor": {
+        "prefix": "ctor",
+        "body": [
+            "public constructor() {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Class Constructor"
     }
 }
