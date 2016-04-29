@@ -33,6 +33,24 @@
             "\t$0",
             "}"
         ],
-        "description": "Class Constructor"
+        "description": "If statement"
+    },
+    "Using": {
+        "prefix": "using",
+        "body": [
+            "using ( $1 ) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Using statement"
+    },
+    "For loop": {
+        "prefix": "for",
+        "body": [
+            "for ( $1 in $2 ) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "for loop statement"
     }
 }
