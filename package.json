@@ -108,13 +108,13 @@
             },
             {
                 "command": "cm.startwriteoutputfile",
-                "title": "Start writing output to file",
+                "title": "Enable File Logging",
                 "description": "Writes output channel contents into a text file located by default in C:\\temp\\cm_output.txt",
                 "category": "CM"
             },
             {
                 "command": "cm.stopwriteoutputfile",
-                "title": "Stops writing output contents to file",
+                "title": "Disable File Logging",
                 "description": "Stops output channel wirting",
                 "category": "CM"
             }            
