@@ -25,6 +25,10 @@ export class cmCompilerAdapter {
             cmRoot: cmConfig.cmRoot(),
             onRead: (data) => {
                 this.channel.write( data );
+            },
+            onError: (data) => {
+                vscode.window.showInformationMessage( "Error from CM Process" );
+                this.channel.write( `[INFO: CM_Process_Error -> ${data}]` );
             }//,
             //debug: true
         });
