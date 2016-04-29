@@ -32,7 +32,7 @@ export function activate(context: ExtensionContext) {
     
     diagnosticCollection = languages.createDiagnosticCollection( "cm" );
     // setup compiler Adapter
-    compilerAdapter = new cmCompilerAdapter( diagnosticCollection );
+    compilerAdapter = new cmCompilerAdapter( diagnosticCollection, cmConfig.cmOutputFilePath() );
     
     // setup watcher
     var watcher = createWatcher();

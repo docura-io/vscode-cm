@@ -71,8 +71,16 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
             compiler.run( args );
         }
     } )
+    
+    let d15 = commands.registerCommand( "cm.startwriteoutputfile", () => {
+        compiler.startWritingOutputFile();
+    });
+    
+    let d16 = commands.registerCommand( "cm.stopwriteoutputfile", () => {
+        compiler.stopWritingOutputFile();
+    });
    
-    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14 );
+    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16 );
 }
 
 export function foldCopyright( editor: TextEditor ) {
