@@ -2,8 +2,8 @@
     "name": "cm",
     "displayName": "CM",
     "description": "CM Language Support",
-    "version": "0.1.11",
-    "publisher": "twlamb",
+    "version": "0.2.0",
+    "publisher": "docura-io",
     "engines": {
         "vscode": "^0.10.6"
     },
