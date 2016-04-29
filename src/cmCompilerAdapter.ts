@@ -12,12 +12,14 @@ export class cmCompilerAdapter {
     
     private indexer: LiveAutoCompleteIndexer;
     private channel: cmOutputChannel;
+    private filePath: string;
     private compiler;
     private isStarted: boolean = false;
     private diagnostics: vscode.DiagnosticCollection;
     
-    constructor( diagnostics: vscode.DiagnosticCollection ) {
-        this.channel = new cmOutputChannel( diagnostics );
+    constructor( diagnostics: vscode.DiagnosticCollection, filePath: string ) {
+        this.filePath = filePath;
+        this.channel = new cmOutputChannel( diagnostics, filePath );
         this.indexer = new LiveAutoCompleteIndexer();
         this.diagnostics = diagnostics;
         
@@ -37,6 +39,16 @@ export class cmCompilerAdapter {
         // .then( (started) => {
         //     this.runAutoComplete();
         // });
+    }
+    
+    public startWritingOutputFile() : void {
+        this.channel.write( `[Contents of output channel will now be written to: ${this.filePath}]\n` );
+        this.channel.writeOutputToFile = true;
+    }
+    
+    public stopWritingOutputFile() : void {
+        this.channel.writeOutputToFile = false;
+        this.channel.write( "[Stopped writing output to file]\n" );
     }
     
     public start() : Thenable<boolean> {
@@ -89,11 +101,9 @@ export class cmCompilerAdapter {
     }
 
     public compileWorkspace() {
-        //{ use cm.runtime.util; compileAllBelow(CompileAllEnv("$CM_HOME/cm/io/")); }
         this.startIfNotStarted().then( (succuess) => {
-            const path = vscode.workspace.rootPath.replace( /\\/g, "/" );
-            // this needs to be fixed...
-            this.run( `{ use cm.runtime.util; compileAllBelow(CompileAllEnv("$CM_HOME/custom/conference/")); }` );
+            const path = vscode.workspace.rootPath.replace( /\\/g, "/" ) + "/";
+            this.run( `{ use cm.runtime.util; compileAllBelow(CompileAllEnv("${path}")); }` );
         } );
     }
     

@@ -3,6 +3,7 @@
 import { LiveAutoCompleteIndexer } from './cmLiveIndexer';
 
 import vscode = require('vscode');
+import fs = require('fs');
 
 export class cmOutputChannel {
     
@@ -16,8 +17,11 @@ export class cmOutputChannel {
     private msgPerSec = 0;
     private msgCounterId = 0;
     private treshholdBroken = false;
+    public writeOutputToFile: boolean;
+    private filePath: string;
     
-    constructor( diags: vscode.DiagnosticCollection ) { 
+    constructor( diags: vscode.DiagnosticCollection, filePath: string ) { 
+        this.filePath = filePath;
         this.output = vscode.window.createOutputChannel( 'CM' );
         this.diagnostics = diags;
         this.msgCounterId = setInterval( () => {
@@ -34,6 +38,13 @@ export class cmOutputChannel {
     }
     
     public write( data: string ) {
+        //This doesn't wait for the callback response because we really don't need to wait for it
+        //Its just used when CM is crashing really hard and you need to see the output in a file because VS Code crashed
+        //This will write the output into a file so you can review it
+        if(this.writeOutputToFile) {
+            fs.appendFile(this.filePath, data, null);
+        }
+        
         this.msgPerSec++;
         if ( this.msgPerSec > 400 ) {
             // only show the error once per threshhold break

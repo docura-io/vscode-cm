@@ -18,6 +18,10 @@ export class cmConfig {
         return isEnabled;
     }
     
+    static cmOutputFilePath(): string {
+        return this.getConfig()["outputFilePath"];
+    }
+    
     static cmRoot(): string {
         return this.getConfig()["root"];
     }

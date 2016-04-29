@@ -61,6 +61,8 @@ The following commands are available:
 - CM: Start CET Designer - `N/A`
 - CM: Profile Boot - `N/A`
 - CM: Load All Known - `CTRL + ALT + Y`
+- CM: Start writing output to file - `N/A`
+- CM: Stops writing output contents to file - `N/A`
 
 ## Building
 After cloning the repository, from command prompt run:

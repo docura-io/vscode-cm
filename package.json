@@ -105,7 +105,19 @@
                 "title": "Indexes Code for Autocomplete Suggestions",
                 "description": "Indexes current workspace to update autocomplete dictionary",
                 "category": "CM"
-            }
+            },
+            {
+                "command": "cm.startwriteoutputfile",
+                "title": "Enable File Logging",
+                "description": "Writes output channel contents into a text file located by default in C:\\temp\\cm_output.txt",
+                "category": "CM"
+            },
+            {
+                "command": "cm.stopwriteoutputfile",
+                "title": "Disable File Logging",
+                "description": "Stops output channel wirting",
+                "category": "CM"
+            }            
         ],
         "configuration": {
             "type": "object",
@@ -113,7 +125,7 @@
             "properties": {
                 "cm.root": {
                     "type": "string",
-                    "default": "C:\\CetDev\\version6.5",
+                    "default": "C:\\CetDev\\version7.0",
                     "description": "The path to the CM home"
                 },
                 "cm.apiUrl": {
@@ -125,6 +137,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "If you want to run the VSCode extension in debug mode"
+                },
+                "cm.outputFilePath": {
+                    "type": "string",
+                    "default": "C:\\temp\\cm_output.txt",
+                    "description": "File that mirrors the content of the output windows for debugging purposes"
                 }
             }
         },
