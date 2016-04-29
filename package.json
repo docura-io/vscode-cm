@@ -113,7 +113,7 @@
             "properties": {
                 "cm.root": {
                     "type": "string",
-                    "default": "C:\\CetDev\\version6.5",
+                    "default": "C:\\CetDev\\version7.0",
                     "description": "The path to the CM home"
                 },
                 "cm.apiUrl": {
