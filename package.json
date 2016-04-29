@@ -105,7 +105,19 @@
                 "title": "Indexes Code for Autocomplete Suggestions",
                 "description": "Indexes current workspace to update autocomplete dictionary",
                 "category": "CM"
-            }
+            },
+            {
+                "command": "cm.startwriteoutputfile",
+                "title": "Start writing output to file",
+                "description": "Writes output channel contents into a text file located by default in C:\\temp\\cm_output.txt",
+                "category": "CM"
+            },
+            {
+                "command": "cm.stopwriteoutputfile",
+                "title": "Stops writing output contents to file",
+                "description": "Stops output channel wirting",
+                "category": "CM"
+            }            
         ],
         "configuration": {
             "type": "object",
@@ -125,6 +137,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "If you want to run the VSCode extension in debug mode"
+                },
+                "cm.outputFilePath": {
+                    "type": "string",
+                    "default": "C:\\temp\\cm_output.txt",
+                    "description": "File that mirrors the content of the output windows for debugging purposes"
                 }
             }
         },
