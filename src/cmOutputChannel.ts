@@ -126,7 +126,7 @@ export class cmOutputChannel {
                 var indexer = LiveAutoCompleteIndexer.getInstance();
                 //indexer.receivedItem( JSON.parse( autoCompleteMatch[1] ) );
                 indexer.readACFile( autoCompleteMatch[1] );
-                //return;
+                return;
             }
             
             newLines.push( element );
