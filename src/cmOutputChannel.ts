@@ -79,7 +79,7 @@ export class cmOutputChannel {
         var lines = data.split(/\r\n/g);
         var newLines = [];
         var errorRegex = /([cC]:.*\.cm)\((\d+)\,\s{1}(\d+)\):(.*)/gm; 
-        var gotoRegex = /\(cm-goto-def "(.[^"]+)"\s(\d+)\)/;
+        var gotoRegex = /\(cm-goto-def "(.[^"]+)"\s(\d+)/;
         var debugRegex = /^cm\sD>\s*?$/;
         var autoCompleteRegex = /^\[VSCODE\]\[AutoComplete\]:(.+)$/;
         var noise = /(.*)#custom\.qaTools(.*)/;
