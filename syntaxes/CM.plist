@@ -1387,7 +1387,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>\b(public|private|protected|static|final|native|synchronized|volatile|abstract|threadsafe|transient|extend)\b</string>
+			<string>\b(public|private|protected|static|final|native|synchronized|volatile|abstract|threadsafe|transient|extend|const)\b</string>
 		</dict>
 		<key>strings</key>
 		<dict>
