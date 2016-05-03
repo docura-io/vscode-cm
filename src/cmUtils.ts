@@ -291,6 +291,10 @@ export class cmUtils {
 */
 
 package {Package};
+
+public class {Class} {
+    
+}
 `
         var pkg = vscode.workspace.asRelativePath( uri );
         pkg = pkg.substring( 0, pkg.lastIndexOf( '\\' ) ).replace( /\\/g, '.' );
@@ -299,19 +303,32 @@ package {Package};
         // add comment to top of file
         vscode.workspace.openTextDocument( uri )
         .then( (doc) => {
+            if ( doc.lineCount > 1 ) return;
             if ( doc.lineAt( 0 ).text.match( /Configura CET Source Copyright Notice/ ) ) { // it's already got the copyright, so don't add it again
                 return;
             }
             vscode.window.showTextDocument( doc )
                 .then( (editor) => {
                     editor.edit( (edit) => {
-                        edit.insert( new vscode.Position( 0, 0 ), copy.replace( "{Package}", pkg ) );
+                        edit.insert( new vscode.Position( 0, 0 ), copy.replace( "{Package}", pkg ).replace( "{Class}", uri.path.substring( uri.path.lastIndexOf( '/' ) + 1, uri.path.lastIndexOf( '.' ) ) ) );
                     } )
-                        .then( (res) => {
-                            editor.revealRange( editor.selection, vscode.TextEditorRevealType.InCenter );
-                            doc.save();
-                        });
-                } );
+                    .then( (res) => {
+                        const fileStart = new vscode.Position( 0, 0 );
+                        editor.selection = new vscode.Selection(fileStart, fileStart);
+                    })
+                        // return vscode.commands.executeCommand( "editor.fold" )
+                    .then( (res) => {
+                        const newPosition = new vscode.Position( 39, 4 );
+                        const newSelection = new vscode.Selection(newPosition, newPosition);
+                        editor.selection = newSelection;
+                        
+                        editor.revealRange( editor.selection, vscode.TextEditorRevealType.InCenter );
+                        
+                        doc.save();  
+                                
+                            // });
+                    })                    
+                } )
         });
     }
 }
