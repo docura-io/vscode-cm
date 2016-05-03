@@ -1,6 +1,10 @@
 [![Build Status](https://travis-ci.org/docura-io/vscode-cm.svg?branch=master)](https://travis-ci.org/docura-io/vscode-cm)
 # VSCode CM Extension
 
+## Overview
+This is a VSCode extension to add CM ([Configura](http://configura.com), CET Designer/Developer) language
+support.
+
 ## Installation
 Visual Studio Code (VSCode) is required to use this extension, yuou can get
 a free copy from https://code.visualstudio.com/Download.
