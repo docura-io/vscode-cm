@@ -11,9 +11,11 @@ import { cmUtils } from './cmUtils';
 let indexCode = `
 package {CurPackage};
 
-{usings}
-
 {
+    use cm.runtime;
+    use cm.io;
+    use cm.format.json;
+    
     str[] items = {Packages};
     
     symbol{} symbols();
@@ -105,18 +107,19 @@ export class LiveAutoCompleteIndexer {
         contents = contents.replace( '{CurPackage}', cmUtils.getCurrentPackage() );
         
         // get usings
-        let injectUsings = indexCodeUsings;
-        let declaredUsings = cmUtils.packageFileUsings();
+        // let injectUsings = indexCodeUsings;
+        // let declaredUsings = cmUtils.packageFileUsings();
         
-        injectUsings = injectUsings.filter( (i) => {
-           return declaredUsings.indexOf( i ) < 0; 
-        });
+        // injectUsings = injectUsings.filter( (i) => {
+        //    return declaredUsings.indexOf( i ) < 0; 
+        // });
         
-        injectUsings.forEach( (i, ind) => {
-            injectUsings[ind] = "use " + i + ";";
-        } );
+        // injectUsings.forEach( (i, ind) => {
+        //     injectUsings[ind] = "use " + i + ";";
+        // } );
         
-        contents = contents.replace( "{usings}", injectUsings.join( "\r\n" ) );
+        // contents = contents.replace( "{usings}", injectUsings.join( "\r\n" ) );
+        // contents = contents.replace( "{usings}", injectUsings.join( "\r\n" ) );
         
         fs.writeFile( this.autoCompleteCMFile(), contents, (err) => {
             run( this.autoCompleteCMFile() );
