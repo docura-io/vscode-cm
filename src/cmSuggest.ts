@@ -13,13 +13,15 @@ function vscodeKindFromCmCodeClass(kind: string): vscode.CompletionItemKind {
         case "package":
             return vscode.CompletionItemKind.Module;
         case "func":
+        case "method":
             return vscode.CompletionItemKind.Function;
         case "class":
             return vscode.CompletionItemKind.Class;
         case "constructor":
             return vscode.CompletionItemKind.Constructor;
         case "property":
-            return vscode.CompletionItemKind.Property
+            // return vscode.CompletionItemKind.Property;
+            return vscode.CompletionItemKind.Field;
         default:
             return vscode.CompletionItemKind.Method;
     }
@@ -29,9 +31,14 @@ function vscodeKindFromCmCodeClass(kind: string): vscode.CompletionItemKind {
 export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
 
     private index: IndexContainer;
+    private remoteCache: { [key: string]: any[]; } = {};
 
     constructor() {
         this.index = IndexContainer.getInstance();
+    }
+    
+    public purgeCache(): void {
+        this.remoteCache = {};
     }
 
     public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Thenable<vscode.CompletionItem[]> {
@@ -62,9 +69,9 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
             }
 
             var usings = cmUtils.getUsingStatements(document);
-                
+
             // go get the completions
-                
+
             let completions: { [c: string]: vscode.CompletionItem[] } = Object.create(null);
             // var items: vscode.CompletionItem[] = [];
             // var autoCompleteText = splitDotted.filter(Boolean).join('.');
@@ -101,7 +108,7 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
                     var items: vscode.CompletionItem[] = [];
 
                     for (let key in completions) {
-                        let suggestion = completions[key][0], 
+                        let suggestion = completions[key][0],
                             overloadCount = completions[key].length - 1;
 
                         if (overloadCount === 0) {
@@ -127,10 +134,16 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
             var ids = namespaces.filter((u) => {
                 return u.startsWith("cm.");
             }).join(",");
+
+            const url = cmConfig.completionUrl( ids, memberName );
+
+            console.log( `Remote URL: ${url}`);
             
-            console.log( `Remote URL: ${cmConfig.completionUrl( ids, memberName )}`);
-            
-            request.get(cmConfig.completionUrl(ids, memberName), (error, res, body) => {
+            if ( this.remoteCache[url] ) {
+                resolve( this.remoteCache[url] );
+            }
+
+            request.get(url, (error, res, body) => {
                 if (error) {
                     resolve([]);
                 }
@@ -150,6 +163,7 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
                         });
                     } catch (e) { }
 
+                    this.remoteCache[url] = items;
                     resolve(items);
                 } else if (res.statusCode == 404) {
                     resolve([]);

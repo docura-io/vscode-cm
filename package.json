@@ -2,7 +2,7 @@
     "name": "cm",
     "displayName": "CM",
     "description": "CM Language Support",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "publisher": "docuraio",
     "engines": {
         "vscode": "^0.10.6"
@@ -116,6 +116,12 @@
                 "command": "cm.stopwriteoutputfile",
                 "title": "Disable File Logging",
                 "description": "Stops output channel wirting",
+                "category": "CM"
+            },
+            {
+                "command": "cm.purgeRemoteCache",
+                "title": "Purge Remote Cache",
+                "description": "Clears the remote intellisense cache",
                 "category": "CM"
             }            
         ],

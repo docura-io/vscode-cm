@@ -35,12 +35,12 @@ export class cmConfig {
     }
     
     static definitionUrl( usings: string, statement: string ): string {
-        var url = `${this.apiUrl()}/definition?usings=${usings}&statement=${statement}`;
+        var url = `${this.apiUrl()}definition?usings=${usings}&statement=${statement}`;
         return url;
     }
     
     static completionUrl( usings: string, statement: string ): string {
-        var url = `${this.apiUrl()}/autocomplete?usings=${usings}&statement=${statement}`;
+        var url = `${this.apiUrl()}autocomplete?usings=${usings}&statement=${statement}`;
         return url;
     }
     

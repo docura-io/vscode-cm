@@ -1,10 +1,12 @@
 'use strict';
 
 import { cmCompilerAdapter } from './cmCompilerAdapter';
+import { CMCompletionItemProvider } from './cmSuggest';
 import { cmConfig } from './cmConfig';
+
 import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace } from 'vscode';
 
-export function registerCommands( compiler: cmCompilerAdapter ) {
+export function registerCommands( compiler: cmCompilerAdapter, completeProvider: CMCompletionItemProvider ) {
     let d1 = commands.registerCommand( "cm.start", () => compiler.start() );
     let d2 = commands.registerCommand( "cm.stopcm", () => compiler.stop() );
     let d3 = commands.registerCommand( "cm.cleancm", () => compiler.clean() );
@@ -79,6 +81,10 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
     let d16 = commands.registerCommand( "cm.stopwriteoutputfile", () => {
         compiler.stopWritingOutputFile();
     });
+   
+    let d17 =  commands.registerCommand( "cm.purgeRemoteCache", () => {
+        completeProvider.purgeCache(); 
+    } );
    
     return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16 );
 }

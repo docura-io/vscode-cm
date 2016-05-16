@@ -38,9 +38,11 @@ export function activate(context: ExtensionContext) {
     var watcher = createWatcher();
     // createFileOpenWatcher();
     
+    var completionProvider = new CMCompletionItemProvider();
+    
     // subscriptions
     disposables.push(languages.registerDefinitionProvider(CM_MODE, new CMDefinitionProvider()));
-    disposables.push(languages.registerCompletionItemProvider(CM_MODE, new CMCompletionItemProvider(), '.'));
+    disposables.push(languages.registerCompletionItemProvider(CM_MODE, completionProvider, '.' ) );
     disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
     disposables.push(languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
     
@@ -55,7 +57,7 @@ export function activate(context: ExtensionContext) {
     // commands
     // cm commands
     // setupCMCommands( context, compilerAdapter );
-    disposables.push( registerCommands( compilerAdapter ) );
+    disposables.push( registerCommands( compilerAdapter, completionProvider ) );
     
     setupLangConfig();
     
