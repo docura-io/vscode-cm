@@ -25,7 +25,6 @@ function vscodeKindFromCmCodeClass(kind: string): vscode.CompletionItemKind {
         default:
             return vscode.CompletionItemKind.Method;
     }
-    return vscode.CompletionItemKind.Property;
 }
 
 export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
@@ -179,11 +178,11 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
         return new Promise((resolve, reject) => {
 
             var localUsings = usings.filter((u) => {
-                return !u.startsWith("cm.");
+                return !u.startsWith("cm.") && !u.startsWith("cm:");
             });
 
             var items = [];
-
+            
             localUsings.forEach((u) => {
                 // split on the Dots
                 var parts = word.split('.');

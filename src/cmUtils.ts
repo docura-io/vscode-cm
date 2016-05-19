@@ -12,7 +12,10 @@ export interface CurrentSymbol {
 export class cmUtils {
 
     static packageFileUsings(): string[] {
-        var contents = fs.readFileSync(path.join(vscode.workspace.rootPath, "package.cm"), 'utf8');
+        let folder = vscode.window.activeTextEditor.document.uri.fsPath;
+        folder = folder.substring( 0, folder.lastIndexOf('\\') );
+        
+        var contents = fs.readFileSync(path.join(folder, "package.cm"), 'utf8');
         var lines = contents.split('\r\n');
         var usings: string[] = [];
 

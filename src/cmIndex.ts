@@ -73,7 +73,8 @@ export class IndexContainer {
             term = '.' + term;
         }
         
-        var regex = new RegExp( "^" + type.replace(".", "\\.") + term + "[^\\.]*?$", "i");
+        const regexStr = "^" + type.replace(/\./g, "\\.") + term + "[^\\.]*?$";
+        var regex = new RegExp( regexStr, "i");
         
         Object.keys( this.index ).forEach( (k) => {
             if ( k.indexOf( type ) > -1 ) {
