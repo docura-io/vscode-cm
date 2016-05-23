@@ -49,6 +49,8 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
             if (dottedString == null || typeof dottedString === 'undefined') return resolve([]);
 
             var splitDotted = dottedString.split('.');
+            
+            let standalone = null;
 
             if (splitDotted.length == 1 || splitDotted[0] == 'this') {
                 // Intellisense invoked with either "(...)" or "SomePartial(...)"
@@ -56,7 +58,8 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
                 let match = document.getText().match( /(?:public|private)\sclass\s(.[^\s]*)/ );
                 if ( match ) {
                     if ( splitDotted.length == 1 ) {
-                        splitDotted.push( splitDotted[0] )
+                        standalone = splitDotted[0];
+                        splitDotted.push( splitDotted[0] );
                     }
                     splitDotted[0] = match[1];
                 } else {
@@ -75,11 +78,10 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
                 splitDotted[0] = first.type; // replace the variable name with the type
             }
 
-            var usings = cmUtils.getUsingStatements(document);
-
             // go get the completions
-
+            var usings = cmUtils.getUsingStatements(document);
             let completions: { [c: string]: vscode.CompletionItem[] } = Object.create(null);
+
             // var items: vscode.CompletionItem[] = [];
             // var autoCompleteText = splitDotted.filter(Boolean).join('.');
             var autoCompleteText = splitDotted.join('.');
@@ -109,7 +111,19 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
                     });
                 });
 
-            Promise.all([remoteP, localP])
+            var localP2 = this.getLocalCompletions( usings, standalone )                
+                .then((res) => {
+                    res.forEach((i) => {
+                        let array = completions[i.label];
+                        if (!array) {
+                            completions[i.label] = [i];
+                        } else {
+                            array.push(i);
+                        }
+                    });
+                });
+
+            Promise.all([remoteP, localP, localP2])
             // Promise.all( [localP] )
                 .then(() => {
                     var items: vscode.CompletionItem[] = [];
@@ -185,6 +199,11 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
 
     private getLocalCompletions(usings: string[], word: string): Thenable<vscode.CompletionItem[]> {
         return new Promise((resolve, reject) => {
+
+            if ( !word ) {
+                resolve([]);
+                return;
+            }
 
             var localUsings = usings.filter((u) => {
                 return !u.startsWith("cm.") && !u.startsWith("cm:");
