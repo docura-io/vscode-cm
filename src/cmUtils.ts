@@ -46,18 +46,41 @@ export class cmUtils {
         return root;
     }
     
+    static getDirsUnder( symPath: string, parent: string ): string[] {
+        let dirs = fs.readdirSync(symPath)
+            .filter((file) => {
+                return file != ".vscode" && file != ".git" && fs.statSync(path.join( symPath, file)).isDirectory();
+            })
+            .map( (file) => {
+                return {
+                    name: file, 
+                    path: parent ? parent + "." + file : file
+                }
+            });
+        
+        let subDirs = [];
+        
+        dirs.forEach(dir => {
+            subDirs = subDirs.concat( this.getDirsUnder( path.join( symPath, dir.name ), dir.path ) );
+        });
+        
+        return dirs.map( (d) => { return d.path } ).concat(subDirs);
+    }
+    
     /**
      * Gets the current CM Package based on the open folder
      */
     static getPackagesInCurrentPackage(): string[] {
         var root = vscode.workspace.rootPath;
 
-        var dirs = fs.readdirSync(root)
-            .filter((file) => {
-                return file != ".vscode" && file != ".git" && fs.statSync(path.join(root, file)).isDirectory();
-            });
+        var dirs = this.getDirsUnder( root, "" );
 
         var curPackage = cmUtils.getCurrentPackage();
+
+        dirs = dirs.filter( (part) => {
+            const packFile = path.join( root, part.replace(/\./g, '\\' ) ) + "\\package.cm";
+            return fs.existsSync( packFile );
+        } );
 
         dirs.forEach((part, index) => {
             dirs[index] = `${curPackage}.${part}`
@@ -234,7 +257,7 @@ export class cmUtils {
             if ( match )  {            
                 return match[1];
             }
-            return properLine;
+            return properLine.replace(/(\/\/.*(?:\n|\r\n|\n\r))/, '' ).trim();
         }
     }
     
