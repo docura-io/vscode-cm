@@ -86,7 +86,7 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
             // var autoCompleteText = splitDotted.filter(Boolean).join('.');
             var autoCompleteText = splitDotted.join('.');
 
-            var remoteP = this.getRemoteCompletions(usings, autoCompleteText)
+            var remoteP = this.getRemoteCompletions(usings, standalone ? standalone : autoCompleteText)
                 .then((res) => {
                     res.forEach((i) => {
                         i.label = i.label.substr(i.label.lastIndexOf('.') + 1);
@@ -151,7 +151,6 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
     }
 
     private getRemoteCompletions(namespaces: string[], memberName: string): Thenable<vscode.CompletionItem[]> {
-        console.log(memberName);
         return new Promise((resolve, reject) => {
             var ids = namespaces.filter((u) => {
                 return u.startsWith("cm.");
@@ -159,7 +158,7 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
 
             const url = cmConfig.completionUrl( ids, memberName );
 
-            // console.log( `Remote URL: ${url}`);
+            console.log( `Remote URL: ${url}`);
             
             if ( this.remoteCache[url] ) {
                 resolve( this.remoteCache[url] );
