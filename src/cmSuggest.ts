@@ -50,13 +50,22 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
 
             var splitDotted = dottedString.split('.');
 
-            if (splitDotted.length == 1) {
+            if (splitDotted.length == 1 || splitDotted[0] == 'this') {
                 // Intellisense invoked with either "(...)" or "SomePartial(...)"
+                // attempt to get the class from the current file
+                let match = document.getText().match( /(?:public|private)\sclass\s(.[^\s]*)/ );
+                if ( match ) {
+                    if ( splitDotted.length == 1 ) {
+                        splitDotted.push( splitDotted[0] )
+                    }
+                    splitDotted[0] = match[1];
+                } else {
+                    resolve([]);
+                }
             } else {
                 // Intellisense invoked with either "SomePartialThing.(...)" or "SomePartialThing.Mem(...)"
                 var finder = new VariableFinder();
                 var results = finder.findDefinitionInText(document.getText(), splitDotted[0]);
-
                 if (results.length == 0) {
                     if (cmConfig.isDebug()) vscode.window.showWarningMessage(`Unable to determine type of "${splitDotted[0]}" to load completion suggestions`);
                     return resolve([]);
@@ -64,7 +73,6 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
 
                 var first = results[0];
                 splitDotted[0] = first.type; // replace the variable name with the type
-                console.log(splitDotted[0]);
             }
 
             var usings = cmUtils.getUsingStatements(document);
@@ -129,6 +137,7 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
     }
 
     private getRemoteCompletions(namespaces: string[], memberName: string): Thenable<vscode.CompletionItem[]> {
+        console.log(memberName);
         return new Promise((resolve, reject) => {
             var ids = namespaces.filter((u) => {
                 return u.startsWith("cm.");
@@ -136,7 +145,7 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
 
             const url = cmConfig.completionUrl( ids, memberName );
 
-            console.log( `Remote URL: ${url}`);
+            // console.log( `Remote URL: ${url}`);
             
             if ( this.remoteCache[url] ) {
                 resolve( this.remoteCache[url] );
