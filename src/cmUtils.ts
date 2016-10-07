@@ -319,12 +319,13 @@ export class cmUtils {
 package {Package};
 
 public class {Class} {
-    
-}
-`
+    public constructor() {
+    }   
+}`;
         var pkg = vscode.workspace.asRelativePath( uri );
-        pkg = pkg.substring( 0, pkg.lastIndexOf( '\\' ) ).replace( /\\/g, '.' );
-        pkg = cmUtils.getCurrentPackage() + pkg;
+        
+        pkg = pkg.substring( 0, pkg.lastIndexOf( '/' ) ).replace( /\//g, '.' );
+        pkg = cmUtils.getCurrentPackage() + '.' + pkg;
         
         // add comment to top of file
         vscode.workspace.openTextDocument( uri )
@@ -353,6 +354,47 @@ public class {Class} {
                         doc.save();  
                                 
                             // });
+                    })                    
+                } )
+        });
+    }
+
+    static createResourceTemplate(uri: vscode.Uri) {
+        var template =
+`package {Package};
+
+$ {
+    english "";
+}`;
+
+        var pkg = vscode.workspace.asRelativePath( uri );
+        
+        pkg = pkg.substring( 0, pkg.lastIndexOf( '/' ) ).replace( /\//g, '.' );
+        pkg = cmUtils.getCurrentPackage() + '.' + pkg;
+        
+        // add comment to top of file
+        vscode.workspace.openTextDocument( uri )
+        .then( (doc) => {
+            if ( doc.lineCount > 1 ) return;
+            if ( doc.lineAt( 0 ).text.match( /package / ) ) return;
+
+            vscode.window.showTextDocument( doc )
+                .then( (editor) => {
+                    editor.edit( (edit) => {
+                        edit.insert( new vscode.Position( 0, 0 ), template.replace( "{Package}", pkg ));
+                    } )
+                    .then( (res) => {
+                        const fileStart = new vscode.Position( 0, 0 );
+                        editor.selection = new vscode.Selection(fileStart, fileStart);
+                    })
+                    .then( (res) => {
+                        const newPosition = new vscode.Position( 2, 1 );
+                        const newSelection = new vscode.Selection(newPosition, newPosition);
+                        editor.selection = newSelection;
+                        
+                        editor.revealRange( editor.selection, vscode.TextEditorRevealType.InCenter );
+                        
+                        doc.save();
                     })                    
                 } )
         });

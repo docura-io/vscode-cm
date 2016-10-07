@@ -938,7 +938,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(return|break|case|continue|default|do|while|for|switch|if|else)\b</string>
+					<string>\b(return|break|case|continue|default|do|while|for|switch|if|else|and|or|in|as)\b</string>
 					<key>name</key>
 					<string>keyword.control.java</string>
 				</dict>
@@ -1013,6 +1013,12 @@
 					<string>;</string>
 					<key>name</key>
 					<string>punctuation.terminator.java</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\b(var|function)\b</string>
+					<key>name</key>
+					<string>meta.token.keyword.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -1358,7 +1364,7 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\b(?:void|bool|byte|char|short|int|float|long|double|str|point|point2D|angle)(\[\]|{})*\b</string>
+					<string>\b(?:pkgSizeInfo|color|colorF|distance|hsvI|weight|tiger192|version|versionEx|cuId|partialTextLayoutStyle|date|package|range|rangeF|rangeI|time|timespan|textLayoutStyle|zmq_msg_t|gridMovement|fontSizeInterval|lparam|mbitmap|mbrush|mdc|mfont|micon|mmenu|mpen|mrgn|mwnd|sizeModification|dwgHandle|nudgeEdgeOfCurrent|mcursor|vectorF|datetime|cacheId|sizeSpecificDistance|uvPoint|hsv|multiSizeModification|lcid|cstr|void|bool|int|symbol|str8|uvPointF|ellipse|ellipseF|sphereF|ellipticalArc|padding|paddingF|indexRes|double|float|box|vector2D|vectorI|lineFIntersect|angleF|arc|char|cchar|arcF|arcFIntersect|arcIntersect|circle|boxF|circleF|line2D|line2DIntersect|lineF2D|lineF2DIntersect|matrixF22|masterIID|point2D|pointF2D|rect|rectF|rectI|size2D|sizeF2D|mmeta|aabbLineIntersect|interval|detailMask3D|vector|sizeI|currencyId|size|angle|rayF|str|glMatrix|wparam|line|lineF|lineIntersect|orientation|orientationF|plane|planeF|point|pointF|sizeF|sphere|deprecated_transform2D|vectorF2D|geoid|guid|minternet|mimc|pointI|matrix22|tinyKey128|byte|int8|int16|int64|bigint|arch_int|nat|arch_nat|word|wstr|wchar|ptr)(\[\]|{})*\b</string>
 					<key>name</key>
 					<string>storage.type.primitive.array.java</string>
 				</dict>
@@ -1370,7 +1376,7 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\b(?:void|bool|byte|int|int8|int16|int64|bigint|arch_int|nat|arch_nat|word|float|double|symbol|str|str8|cstr|wstr|char|wchar|cchar|ptr|point|point2D|angle)\b</string>
+					<string>\b(?:pkgSizeInfo|color|colorF|distance|hsvI|weight|tiger192|version|versionEx|cuId|partialTextLayoutStyle|date|package|range|rangeF|rangeI|time|timespan|textLayoutStyle|zmq_msg_t|gridMovement|fontSizeInterval|lparam|mbitmap|mbrush|mdc|mfont|micon|mmenu|mpen|mrgn|mwnd|sizeModification|dwgHandle|nudgeEdgeOfCurrent|mcursor|vectorF|datetime|cacheId|sizeSpecificDistance|uvPoint|hsv|multiSizeModification|lcid|cstr|void|bool|int|symbol|str8|uvPointF|ellipse|ellipseF|sphereF|ellipticalArc|padding|paddingF|indexRes|double|float|box|vector2D|vectorI|lineFIntersect|angleF|arc|char|cchar|arcF|arcFIntersect|arcIntersect|circle|boxF|circleF|line2D|line2DIntersect|lineF2D|lineF2DIntersect|matrixF22|masterIID|point2D|pointF2D|rect|rectF|rectI|size2D|sizeF2D|mmeta|aabbLineIntersect|interval|detailMask3D|vector|sizeI|currencyId|size|angle|rayF|str|glMatrix|wparam|line|lineF|lineIntersect|orientation|orientationF|plane|planeF|point|pointF|sizeF|sphere|deprecated_transform2D|vectorF2D|geoid|guid|minternet|mimc|pointI|matrix22|tinyKey128|byte|int8|int16|int64|bigint|arch_int|nat|arch_nat|word|wstr|wchar|ptr|statement|expr|member|definition|block|formalArgList|forKeywordArg|forKeywordArgs|actualArgList|classMember|actualArg)\b</string>
 					<key>name</key>
 					<string>storage.type.primitive.java</string>
 				</dict>
@@ -1387,7 +1393,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>\b(public|private|protected|static|final|native|synchronized|volatile|abstract|threadsafe|transient|extend|const)\b</string>
+			<string>\b(public|private|protected|package|static|final|native|synchronized|volatile|abstract|threadsafe|transient|extend|const)\b</string>
 		</dict>
 		<key>strings</key>
 		<dict>
@@ -1513,7 +1519,7 @@
 					<key>begin</key>
 					<string>(?x:(?=
                         (?:
-                            (?:private|protected|public|native|synchronized|volatile|abstract|threadsafe|transient|static|final) # visibility/modifier
+                            (?:private|protected|public|package|native|synchronized|volatile|abstract|threadsafe|transient|static|final) # visibility/modifier
                                 |
                             (?:def)
                                 |
@@ -1522,7 +1528,7 @@
                             (?:(?:[a-z]\w*\.)*[A-Z]+\w*) # object type
                         )
                         \s+
-                        (?!private|protected|public|native|synchronized|volatile|abstract|threadsafe|transient|static|final|def|void|bool|byte|char|short|int|float|long|double|str)
+                        (?!private|protected|public|package|native|synchronized|volatile|abstract|threadsafe|transient|static|final|def|void|bool|byte|char|short|int|float|long|double|str)
                         [\w\d_&lt;&gt;\[\],\?][\w\d_&lt;&gt;\[\],\? \t]*
                         (?:=|$)
 
