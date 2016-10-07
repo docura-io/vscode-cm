@@ -29,7 +29,7 @@
     "If": {
         "prefix": "if",
         "body": [
-            "if ( $1 ) {",
+            "if ($1) {",
             "\t$0",
             "}"
         ],
@@ -38,7 +38,7 @@
     "Using": {
         "prefix": "using",
         "body": [
-            "using ( $1 ) {",
+            "using ($1) {",
             "\t$0",
             "}"
         ],
@@ -47,10 +47,107 @@
     "For loop": {
         "prefix": "for",
         "body": [
-            "for ( $1 in $2 ) {",
+            "for ($1 in $2) {",
             "\t$0",
             "}"
         ],
-        "description": "for loop statement"
+        "description": "For loop statement"
+    },
+    "While loop": {
+        "prefix": "while",
+        "body": [
+            "while ($1) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "While loop statement"
+    },
+    "Public method": {
+        "prefix": "pbm",
+        "body": [
+            "extend public $1 $2($3) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Public method declaration"
+    },
+    "Private method": {
+        "prefix": "pvm",
+        "body": [
+            "extend private $1 $2($3) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Private method declaration"
+    },
+    "Switch statement": {
+        "prefix": "switch",
+        "body": [
+            "switch ($1) {",
+            "\tcase $2: $3",
+            "\tdefault: $0",
+            "}"
+        ],
+        "description": "Private method declaration"
+    },
+    "Pln": {
+        "prefix": "pln",
+        "body": [
+            "pln($0);"
+        ],
+        "description": "Private method declaration"
+    },
+    "Auto constructor": {
+        "prefix": "cauto",
+        "body": [
+            "public constructor auto();"
+        ],
+        "description": "Auto constructor declaration"
+    },
+    "Public property": {
+        "prefix": "prop",
+        "body": [
+            "public $1 $0;"
+        ],
+        "description": "Public property declaration"
+    },
+    "Constructor auto set": {
+        "prefix": "cset",
+        "body": [
+            "set*(this: $0);"
+        ],
+        "description": "Constructor auto set statement"
+    },
+    "Supper call": {
+        "prefix": "super",
+        "body": [
+            "super(..);"
+        ],
+        "description": "Supper call"
+    },
+    "Array has items": {
+        "prefix": "ahas",
+        "body": [
+            "if ($1 and $1.any()) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Check if an array has any items"
+    },
+    "Array is empty": {
+        "prefix": "aemp",
+        "body": [
+            "if (!$1 or $1.empty()) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Check if an array is empty"
+    },
+    "Abstract public method": {
+        "prefix": "apbm",
+        "body": [
+            "extend public $1 $2($0) : abstract {}"
+        ],
+        "description": "Abstract public method declaration"
     }
 }
