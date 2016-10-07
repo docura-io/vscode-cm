@@ -321,7 +321,7 @@ package {Package};
 public class {Class} {
     public constructor() {
     }   
-}`
+}`;
         var pkg = vscode.workspace.asRelativePath( uri );
         
         pkg = pkg.substring( 0, pkg.lastIndexOf( '/' ) ).replace( /\//g, '.' );
@@ -365,7 +365,7 @@ public class {Class} {
 
 $ {
     english "";
-}`
+}`;
 
         var pkg = vscode.workspace.asRelativePath( uri );
         
