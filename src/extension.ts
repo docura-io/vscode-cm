@@ -35,7 +35,8 @@ export function activate(context: ExtensionContext) {
     compilerAdapter = new cmCompilerAdapter( diagnosticCollection, cmConfig.cmOutputFilePath() );
     
     // setup watcher
-    var watcher = createWatcher();
+    var cmWatcher = createCmWatcher();
+    var rsWatcher = createRsWatcher();
     // createFileOpenWatcher();
     
     var completionProvider = new CMCompletionItemProvider();
@@ -117,7 +118,7 @@ function createFileOpenWatcher() {
     // } );
 }
 
-function createWatcher(): FileSystemWatcher {
+function createCmWatcher(): FileSystemWatcher {
     var watcher = workspace.createFileSystemWatcher( `${workspace.rootPath}/**/*.cm` );
     
     function runAutoComplete( adapter: cmCompilerAdapter, file: string ) {
@@ -139,6 +140,16 @@ function createWatcher(): FileSystemWatcher {
     
     watcher.onDidDelete( (e) => {
         runAutoComplete( compilerAdapter, e.toString() );
+    });
+    
+    return watcher;
+}
+
+function createRsWatcher(): FileSystemWatcher {
+    var watcher = workspace.createFileSystemWatcher( `${workspace.rootPath}/**/*.rs` );
+    
+    watcher.onDidCreate((e) => {
+        cmUtils.createResourceTemplate(e);
     });
     
     return watcher;
