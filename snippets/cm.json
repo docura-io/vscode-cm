@@ -53,6 +53,15 @@
         ],
         "description": "For loop statement"
     },
+    "For range loop": {
+        "prefix": "forr",
+        "body": [
+            "for ($1 in ($2..$3)) {",
+            "\t$0",
+            "}"
+        ],
+        "description": "For with range loop statement"
+    },
     "While loop": {
         "prefix": "while",
         "body": [
@@ -88,14 +97,14 @@
             "\tdefault: $0",
             "}"
         ],
-        "description": "Private method declaration"
+        "description": "Switch statement"
     },
     "Pln": {
         "prefix": "pln",
         "body": [
             "pln($0);"
         ],
-        "description": "Private method declaration"
+        "description": "Pln"
     },
     "Auto constructor": {
         "prefix": "cauto",
