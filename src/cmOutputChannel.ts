@@ -8,6 +8,7 @@ import fs = require('fs');
 export class cmOutputChannel {
     
     private output: vscode.OutputChannel;
+    private hashOutput: vscode.OutputChannel;
     private goToPromise: Thenable<vscode.Location>;
     private goToResolver: (value?: {} | PromiseLike<{}>) => void;
     private goToRejector: (value?: {} | PromiseLike<{}>) => void;
@@ -23,6 +24,7 @@ export class cmOutputChannel {
     constructor( diags: vscode.DiagnosticCollection, filePath: string ) { 
         this.filePath = filePath;
         this.output = vscode.window.createOutputChannel( 'CM' );
+        this.hashOutput = vscode.window.createOutputChannel( 'CM > #' );
         this.diagnostics = diags;
         this.msgCounterId = setInterval( () => {
             if ( this.msgPerSec > 0 ) {
@@ -55,7 +57,11 @@ export class cmOutputChannel {
             this.output.append(data);
         } else {
             this.treshholdBroken = false;
-            this.output.append( this.lineParser( data ) );
+            var lineResults = this.lineParser( data );
+            this.output.append( lineResults.newLines );
+            if ( lineResults.hashLines.length > 0 ) {
+                this.hashOutput.append( lineResults.hashLines );
+            }
         }
         
     }
@@ -77,10 +83,11 @@ export class cmOutputChannel {
             throw error;
         } ); 
     }
-    
+
     public lineParser( data ) {
         var lines = data.split(/\r\n/g);
         var newLines = [];
+        var hashLines = [];
         var errorRegex = /([cC]:.*\.cm)\((\d+)\,\s{1}(\d+)\):(.*)/gm; 
         var gotoRegex = /\(cm-goto-def "(.[^"]+)"\s(\d+)/;
         var debugRegex = /^cm\sD>\s*?$/;
@@ -88,6 +95,7 @@ export class cmOutputChannel {
         var noise = /(.*)#custom\.qaTools(.*)/;
         let nextErrorRegex = /\(next-error\).cm>\s*/;
         var cetAltClickRegex = /'\(cm-show-file-at-pos-selected-window\s"(.*)"\s(\d+)\)\)/;
+        let plnHashRegex = /^[A-Za-z0-9]*=.*$/;
 
         lines.forEach(element => {
             var errorMatch = errorRegex.exec(element);
@@ -95,10 +103,14 @@ export class cmOutputChannel {
             var cetAltClickMatch = cetAltClickRegex.exec( element );
             var nextErrorMatch = nextErrorRegex.exec( element );
             
+            if ( plnHashRegex.test(element) ) {
+                hashLines.push( element );
+            } 
+
             if ( noise.test(element ) || element.indexOf('#custom.qaTools') > -1 ) {
                 // get rid of this crap from output
                 return;
-            } else if ( cetAltClickMatch ) {
+            } else if ( cetAltClickMatch ) {    
                 this.goToFileLocation( cetAltClickMatch[1], parseInt(cetAltClickMatch[2]) );
             } else if ( gotoRegex.test( element ) ) {
                 var match = gotoRegex.exec( element );
@@ -141,7 +153,18 @@ export class cmOutputChannel {
             newLines.push( element );
         });
         
-        return newLines.join('\r\n');
+        if ( hashLines.length == 1 ) {
+            hashLines[0] += '\r\n';
+        }
+
+        if ( newLines.length == 1 ) {
+            newLines[0] += '\r\n';
+        }
+
+        return {
+            newLines: newLines.join('\r\n'),
+            hashLines: hashLines.join('\r\n')
+        };
     }
     
     private goToFileLocation( file:string, offset: number ) {
