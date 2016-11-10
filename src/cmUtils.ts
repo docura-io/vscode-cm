@@ -325,7 +325,9 @@ public class {Class} {
         var pkg = vscode.workspace.asRelativePath( uri );
         
         pkg = pkg.substring( 0, pkg.lastIndexOf( '/' ) ).replace( /\//g, '.' );
-        pkg = cmUtils.getCurrentPackage() + '.' + pkg;
+        pkg = pkg == "" ? "" : '.' + pkg;
+
+        let nameSpace = cmUtils.getCurrentPackage() + pkg;
         
         // add comment to top of file
         vscode.workspace.openTextDocument( uri )
@@ -337,7 +339,7 @@ public class {Class} {
             vscode.window.showTextDocument( doc )
                 .then( (editor) => {
                     editor.edit( (edit) => {
-                        edit.insert( new vscode.Position( 0, 0 ), copy.replace( "{Package}", pkg ).replace( "{Class}", uri.path.substring( uri.path.lastIndexOf( '/' ) + 1, uri.path.lastIndexOf( '.' ) ) ) );
+                        edit.insert( new vscode.Position( 0, 0 ), copy.replace( "{Package}", nameSpace ).replace( "{Class}", uri.path.substring( uri.path.lastIndexOf( '/' ) + 1, uri.path.lastIndexOf( '.' ) ) ) );
                     } )
                     .then( (res) => {
                         const fileStart = new vscode.Position( 0, 0 );
