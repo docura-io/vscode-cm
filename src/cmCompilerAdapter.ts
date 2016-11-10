@@ -140,7 +140,7 @@ export class cmCompilerAdapter {
             file = file.replace( /\\/g, '/' ); // make sure we have the right slashses        
             this.compiler.write( `cm.runtime.refers("${file}", ${offset});` );
             return promise;    
-        } );
+        });
 
     }
     

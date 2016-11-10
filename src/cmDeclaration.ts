@@ -26,7 +26,32 @@ export class CMDefinitionProvider implements vscode.DefinitionProvider {
         //             new vscode.Position( 1, 5 ) )
         //     );
         //     resolve( loc );
-        // });   
+        // });
+
+        if ( document.isDirty ) {
+            var file = document.fileName;
+
+            var promise = new Promise( (rsv, rj) => {
+                document.save()
+                .then( res => {
+                    if (res) {
+                        this.compiler.compileFile( file );
+                        setTimeout( () => {
+                            rsv( this.runDef( document, position ) );
+                        }, 250 );
+                    } else {
+                        rj("save failed");      
+                    }
+                }); 
+            });
+
+            return promise;
+        } else {
+            return this.runDef( document, position );
+        }
+    }
+
+    private runDef( document: vscode.TextDocument, position: vscode.Position ): Thenable<vscode.Location> {
         var file = document.fileName;
         var offset = document.offsetAt( position );
         offset += 1 - position.line; // emacs is 1 based, and it treats line end as 1 character not 2

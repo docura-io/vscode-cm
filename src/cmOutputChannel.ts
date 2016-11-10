@@ -72,6 +72,9 @@ export class cmOutputChannel {
         .then( (loc) => {
             this.goToPromise = null;
             return loc;
+        }, (error) => {
+            this.goToPromise = null;
+            throw error;
         } ); 
     }
     
@@ -83,12 +86,14 @@ export class cmOutputChannel {
         var debugRegex = /^cm\sD>\s*?$/;
         var autoCompleteRegex = /^\[VSCODE\]\[AutoComplete\]:(.+)$/;
         var noise = /(.*)#custom\.qaTools(.*)/;
+        let nextErrorRegex = /\(next-error\).cm>\s*/;
         var cetAltClickRegex = /'\(cm-show-file-at-pos-selected-window\s"(.*)"\s(\d+)\)\)/;
 
         lines.forEach(element => {
             var errorMatch = errorRegex.exec(element);
             var autoCompleteMatch = autoCompleteRegex.exec( element );
             var cetAltClickMatch = cetAltClickRegex.exec( element );
+            var nextErrorMatch = nextErrorRegex.exec( element );
             
             if ( noise.test(element ) || element.indexOf('#custom.qaTools') > -1 ) {
                 // get rid of this crap from output
@@ -127,6 +132,10 @@ export class cmOutputChannel {
                 //indexer.receivedItem( JSON.parse( autoCompleteMatch[1] ) );
                 indexer.readACFile( autoCompleteMatch[1] );
                 return;
+            } else if ( nextErrorMatch ) {
+                if ( this.goToPromise && this.goToRejector ) {
+                    this.goToRejector();
+                }
             }
             
             newLines.push( element );
