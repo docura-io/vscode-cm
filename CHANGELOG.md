@@ -1,4 +1,4 @@
-# Version 0.2.21
+# Version 0.2.12
 Fixing an issue with `Go To Definition` that was causing it to sometimes not do anything
 
 # Version 0.2.11
