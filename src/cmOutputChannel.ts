@@ -9,6 +9,7 @@ export class cmOutputChannel {
     
     private output: vscode.OutputChannel;
     private hashOutput: vscode.OutputChannel;
+    private isResolving = false;
     private goToPromise: Thenable<vscode.Location>;
     private goToResolver: (value?: {} | PromiseLike<{}>) => void;
     private goToRejector: (value?: {} | PromiseLike<{}>) => void;
@@ -69,6 +70,7 @@ export class cmOutputChannel {
     public goToDefinitionPromise() {
         if ( !this.goToPromise ) {
             this.goToPromise = new Promise( (resolve, reject) => {
+                this.isResolving = false;
                 this.goToResolver = resolve;
                 this.goToRejector = reject;
             });
@@ -116,7 +118,8 @@ export class cmOutputChannel {
                 var match = gotoRegex.exec( element );
                 var file = match[1];
                 var offset = parseInt( match[2] );
-                
+                this.isResolving = true;
+
                 vscode.workspace.openTextDocument( file )
                 .then( (doc) => {
                     var position = doc.positionAt( offset );
@@ -128,7 +131,7 @@ export class cmOutputChannel {
                         console.log( 'no promise for go to def' );
                     }
                 });
-                return;
+                // return;
             } else if ( errorMatch ) {
                 if(errorMatch) {
                     // this.setDiagnostics( errorMatch[1], parseInt( errorMatch[2] ), parseInt( errorMatch[3] ), errorMatch[4] );
@@ -144,10 +147,13 @@ export class cmOutputChannel {
                 //indexer.receivedItem( JSON.parse( autoCompleteMatch[1] ) );
                 indexer.readACFile( autoCompleteMatch[1] );
                 return;
-            } else if ( nextErrorMatch ) {
-                if ( this.goToPromise && this.goToRejector ) {
-                    this.goToRejector();
-                }
+            } else if ( nextErrorMatch && !this.isResolving ) {
+                // setTimeout( () => {
+                    if ( this.goToPromise && this.goToRejector ) {
+                        this.goToRejector();
+                    }
+                // }, 500 );
+                
             }
             
             newLines.push( element );
