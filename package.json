@@ -2,7 +2,7 @@
     "name": "cm",
     "displayName": "CM",
     "description": "CM Language Support",
-    "version": "0.2.12",
+    "version": "1.0.0",
     "publisher": "docuraio",
     "engines": {
         "vscode": "^0.10.6"
@@ -131,7 +131,7 @@
             "properties": {
                 "cm.root": {
                     "type": "string",
-                    "default": "C:\\CetDev\\version7.0",
+                    "default": "C:\\CetDev\\version7.5",
                     "description": "The path to the CM home"
                 },
                 "cm.apiUrl": {
@@ -148,6 +148,11 @@
                     "type": "string",
                     "default": "C:\\temp\\cm_output.txt",
                     "description": "File that mirrors the content of the output windows for debugging purposes"
+                },
+                "cm.clearOutputBuild": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Auto clears the CM Output window each time a build/run is is done."
                 }
             }
         },

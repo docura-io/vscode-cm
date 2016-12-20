@@ -17,6 +17,14 @@ export class cmConfig {
         }
         return isEnabled;
     }
+
+    static clearOutputOnBuild(): boolean {
+        let isEnabled = this.getConfig()["clearOutputBuild"]; 
+        if ( typeof isEnabled !== "boolean" ) {
+            isEnabled = false;
+        }
+        return isEnabled;
+    }
     
     static cmOutputFilePath(): string {
         return this.getConfig()["outputFilePath"];

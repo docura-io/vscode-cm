@@ -36,7 +36,7 @@ export class cmOutputChannel {
     }
     
     public clear() {
-        // this.output.clear();
+        this.output.clear();
         this.msgPerSec = 0;
     }
     
@@ -131,7 +131,7 @@ export class cmOutputChannel {
                         console.log( 'no promise for go to def' );
                     }
                 });
-                // return;
+                return;
             } else if ( errorMatch ) {
                 if(errorMatch) {
                     // this.setDiagnostics( errorMatch[1], parseInt( errorMatch[2] ), parseInt( errorMatch[3] ), errorMatch[4] );

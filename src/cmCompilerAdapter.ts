@@ -72,7 +72,7 @@ export class cmCompilerAdapter {
     }
     
     public clean() {
-        this.channel.clear();
+        this.clearOutputIfNeeded();
         var results = this.compiler.clean();
         this.channel.write( "[INFO make clean-cm:]\n" );
         this.channel.write( "---------------------\n" );
@@ -84,7 +84,7 @@ export class cmCompilerAdapter {
     
     public stop() {
         if ( !this.isStarted ) return;
-        this.channel.clear();
+        this.clearOutputIfNeeded();
         this.channel.write( "[INFO CM Killed]\n" );
         this.compiler.kill();
         this.isStarted = false;
@@ -101,12 +101,14 @@ export class cmCompilerAdapter {
 
     public compileWorkspace() {
         this.startIfNotStarted().then( (succuess) => {
+
             const path = vscode.workspace.rootPath.replace( /\\/g, "/" ) + "/";
             this.run( `{ use cm.runtime.util; compileAllBelow(CompileAllEnv("${path}")); }` );
         } );
     }
     
     public compileFile( file: string ) {
+        this.clearOutputIfNeeded();
         this.diagnostics.clear();
         this.startIfNotStarted().then((success) => {
             this.compiler.compileFile( file );
@@ -114,6 +116,7 @@ export class cmCompilerAdapter {
     }
     
     public run( cmCode: string ) {
+        this.clearOutputIfNeeded();
         this.diagnostics.clear();
         this.startIfNotStarted().then((success) => {
             this.compiler.write( cmCode );
@@ -121,6 +124,7 @@ export class cmCompilerAdapter {
     }
     
     public runCurrentFile( file: string ) {
+        if ( !file.endsWith("acloader.cm") ) this.clearOutputIfNeeded();
         this.diagnostics.clear();
         this.startIfNotStarted().then((success) => {
             this.compiler.runFile( file );
@@ -149,5 +153,11 @@ export class cmCompilerAdapter {
             return new Promise((resolve, reject) => { resolve(true); });
         
         return this.start();
+    }
+
+    private clearOutputIfNeeded() {
+        if ( cmConfig.clearOutputOnBuild() ) {
+            this.channel.clear();
+        }
     }
 }
