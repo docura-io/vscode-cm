@@ -2,7 +2,7 @@
     "name": "cm",
     "displayName": "CM",
     "description": "CM Language Support",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "docuraio",
     "engines": {
         "vscode": "^0.10.6"
@@ -136,7 +136,7 @@
                 },
                 "cm.apiUrl": {
                     "type": "string",
-                    "default": "http://docura.io/api/",
+                    "default": "http://docura-io.azurewebsites.net/api/",
                     "description": "The base url for the cm documentation api"
                 },
                 "cm.debugMode": {

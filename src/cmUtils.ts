@@ -14,21 +14,26 @@ export class cmUtils {
     static packageFileUsings(): string[] {
         let folder = vscode.window.activeTextEditor.document.uri.fsPath;
         folder = folder.substring( 0, folder.lastIndexOf('\\') );
-        
-        var contents = fs.readFileSync(path.join(folder, "package.cm"), 'utf8');
-        var lines = contents.split('\r\n');
-        var usings: string[] = [];
+        let fullPath = path.join(folder, "package.cm");
 
-        lines.forEach((l) => {
-            if (l == "") return;
-            let match = /^\s*?use\s+(.*);$/.exec(l);
+        if ( fs.existsSync( fullPath ) ) {
+            var contents = fs.readFileSync(fullPath, 'utf8');
+            var lines = contents.split('\r\n');
+            var usings: string[] = [];
 
-            if (match) {
-                usings.push(match[1]);
-            }
-        });
+            lines.forEach((l) => {
+                if (l == "") return;
+                let match = /^\s*?use\s+(.*);$/.exec(l);
 
-        return usings;
+                if (match) {
+                    usings.push(match[1]);
+                }
+            });
+
+            return usings;
+        } else {
+            return [];
+        }
     }
     
     /**

@@ -52,7 +52,7 @@ export class CMCompletionItemProvider implements vscode.CompletionItemProvider {
             
             let standalone = null;
 
-            if (splitDotted.length == 1 || splitDotted[0] == 'this') {
+            if ( dottedString.indexOf('.') == -1 && splitDotted.length == 1 || splitDotted[0] == 'this') {
                 // Intellisense invoked with either "(...)" or "SomePartial(...)"
                 // attempt to get the class from the current file
                 let match = document.getText().match( /(?:public|private)\sclass\s(.[^\s]*)/ );
