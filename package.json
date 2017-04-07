@@ -2,7 +2,7 @@
     "name": "cm",
     "displayName": "CM",
     "description": "CM Language Support",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "publisher": "docuraio",
     "engines": {
         "vscode": "^0.10.6"

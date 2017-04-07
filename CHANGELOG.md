@@ -1,3 +1,6 @@
+# Version 1.0.3 - ALL THE INSTANCES
+- Added `multiple_instances` flag so you can now run multiple VSCode's with CM running.
+
 # Version 1.0.2 - Now With More RS!
 - New RS file save watcher. Tells CM to reparse RS files when they are saved. This makes it so you can just save an RS file and then `F5` or `CTRL+F5` in CET after saving RS file and see the changes
   - This can be disabled by setting the `cm.rsSaveWatch` config value to `false`
