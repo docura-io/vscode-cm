@@ -115,6 +115,14 @@ export class cmCompilerAdapter {
         });    
     }
     
+    public runIfStarted( cmCode: string ) {
+        this.clearOutputIfNeeded();
+        this.diagnostics.clear();
+        if ( this.isStarted ) {
+            this.compiler.write( cmCode );
+        }
+    }
+
     public run( cmCode: string ) {
         this.clearOutputIfNeeded();
         this.diagnostics.clear();

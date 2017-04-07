@@ -51,6 +51,10 @@ export class cmConfig {
         var url = `${this.apiUrl()}autocomplete?usings=${usings}&statement=${statement}`;
         return url;
     }
+
+    static rsWatcherEnabled(): Boolean {
+        return this.getConfig()["rsSaveWatch"];
+    }
     
     static emacsClientExe() {
         return this.getConfig()["emacsclientexe"];

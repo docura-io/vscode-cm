@@ -85,6 +85,10 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
     let d17 =  commands.registerCommand( "cm.purgeRemoteCache", () => {
         completeProvider.purgeCache(); 
     } );
+
+    let d18 = commands.registerCommand( "cm.testAC", () => {
+        compiler.run( "cvm_ac(\"c:/CetDev/version8.0/home/profile/test/test.cm\", 1892);" );
+    })
    
     return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16 );
 }

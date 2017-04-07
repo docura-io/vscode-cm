@@ -38,6 +38,7 @@ export function activate(context: ExtensionContext) {
     var cmWatcher = createCmWatcher();
     var rsWatcher = createRsWatcher();
     // createFileOpenWatcher();
+    createRsSaveWatcher();
     
     var completionProvider = new CMCompletionItemProvider();
     
@@ -153,4 +154,14 @@ function createRsWatcher(): FileSystemWatcher {
     });
     
     return watcher;
+}
+
+function createRsSaveWatcher() {
+    if ( cmConfig.rsWatcherEnabled() ) {
+        workspace.onDidSaveTextDocument( (e) => {
+            if ( e.fileName.endsWith(".rs") ) {
+                compilerAdapter.runIfStarted( `{ cm.rs.loadRs( cm.io.Url("${e.fileName.replace( /\\/g, "/" )}"), force=true ); }` );
+            }
+        });
+    }
 }

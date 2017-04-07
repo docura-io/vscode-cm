@@ -11,7 +11,8 @@
         "Other"
     ],
     "activationEvents": [
-        "onLanguage:cm"
+        "onLanguage:cm",
+        "workspaceContains:package.cm"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -123,7 +124,13 @@
                 "title": "Purge Remote Cache",
                 "description": "Clears the remote intellisense cache",
                 "category": "CM"
-            }            
+            },
+            {
+                "command": "cm.testAC",
+                "title": "Test AC",
+                "description": "Testing Autocomplete",
+                "category": "CM"
+            }          
         ],
         "configuration": {
             "type": "object",
@@ -153,6 +160,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Auto clears the CM Output window each time a build/run is is done."
+                },
+                "cm.rsSaveWatch": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Automatically tells CET to reload an RS file on save"
                 }
             }
         },
