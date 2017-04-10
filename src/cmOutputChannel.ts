@@ -21,6 +21,11 @@ export class cmOutputChannel {
     private treshholdBroken = false;
     public writeOutputToFile: boolean;
     private filePath: string;
+
+    private watchResolve: (value?: {} | PromiseLike<{}>) => void;
+    private watchReject: (value?: {} | PromiseLike<{}>) => void;
+    private watchSuccess: RegExp;
+    private watchFail: RegExp;
     
     constructor( diags: vscode.DiagnosticCollection, filePath: string ) { 
         this.filePath = filePath;
@@ -153,7 +158,14 @@ export class cmOutputChannel {
                         this.goToRejector();
                     }
                 // }, 500 );
-                
+            } else if ( this.watchSuccess != null ) {
+                if ( this.watchSuccess.test( element ) ) {
+                    this.watchResolve();
+                    this.clearOutputWatch();
+                } else if ( this.watchFail.test ( element ) )  {
+                    this.watchReject();
+                    this.clearOutputWatch();
+                }
             }
             
             newLines.push( element );
@@ -173,6 +185,20 @@ export class cmOutputChannel {
         };
     }
     
+    public addOutputWatch( res: (value?: {} | PromiseLike<{}>) => void, rej: (value?: {} | PromiseLike<{}>) => void, success: RegExp, fail: RegExp ) {
+        this.watchResolve = res;
+        this.watchReject = rej;
+        this.watchSuccess = success;
+        this.watchFail = fail;
+    }
+
+    public clearOutputWatch() {
+        this.watchResolve = null;
+        this.watchReject = null;
+        this.watchSuccess = null;
+        this.watchFail = null;
+    }
+
     private goToFileLocation( file:string, offset: number ) {
         vscode.workspace.openTextDocument( file )
             .then( (doc) => {

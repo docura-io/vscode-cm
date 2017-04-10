@@ -114,6 +114,27 @@ export class cmCompilerAdapter {
             this.compiler.compileFile( file );
         });    
     }
+
+    public runStatement( statement: CodeStatement ): Thenable<boolean> {
+        if ( !statement.start && !this.isStarted ) return;
+        this.clearOutputIfNeeded();
+        return this.startIfNotStarted()
+        .then( (success) => {
+            var promise = new Promise( (res, rej) => { 
+                this.channel.addOutputWatch( 
+                    res, 
+                    rej, 
+                    /\(load.[^\)]*\)/,
+                    /\(cm-ac-result-none\)/ );
+                this.compiler.write( statement.code );
+                setTimeout( () => {
+                    this.channel.clearOutputWatch();
+                }, 2000 ); // give CM 2 seconds to respond 
+            });
+            
+            return promise;
+        });
+    }
     
     public runIfStarted( cmCode: string ) {
         this.clearOutputIfNeeded();
@@ -168,4 +189,15 @@ export class cmCompilerAdapter {
             this.channel.clear();
         }
     }
+}
+
+export interface CodeStatement {
+    // should start compiler if not started
+    start: boolean; 
+    // code to execute
+    code: string;
+    // regex to match for "success"
+    successEx: RegExp;
+    // regex to match for "failure"
+    failureEx: RegExp;
 }
