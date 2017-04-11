@@ -28,7 +28,7 @@ export function getCompiler(): cmCompilerAdapter {
 export function activate(context: ExtensionContext) {
 
     const disposables: Disposable[] = [];
-
+    
     console.log("--STARTING CM EXTENSION--");
     
     diagnosticCollection = languages.createDiagnosticCollection( "cm" );

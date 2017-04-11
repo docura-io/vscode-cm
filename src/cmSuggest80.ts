@@ -1,6 +1,6 @@
 'use strict';
 
-import { CancellationToken, CompletionItem, CompletionItemProvider, CompletionList, Position, Range, TextDocument } from 'vscode';
+import { CancellationToken, CompletionItem, CompletionItemProvider, CompletionList, Position, Range, SnippetString, TextDocument } from 'vscode';
 import { getCompiler } from './extension';
 import { CodeStatement } from './cmCompilerAdapter';
 
@@ -37,7 +37,7 @@ export class CM80CompletionItemProvider implements CompletionItemProvider {
                         var match = null;
                         while( match = regex.exec(data) ) {
                             var item = new CompletionItem( `${match[1]}${match[2]}` );
-                            item.insertText = `${match[1]}`;
+                            item.insertText = new SnippetString( match[1] + "( ${1:int a}, ${2:int b} )" );
                             items.push(item);
                         }
                         

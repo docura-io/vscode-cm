@@ -11,7 +11,7 @@ export class IndexContainer {
     private index:any = {};
     private changed:boolean = false;
     
-    private intervalHandle: number;
+    private intervalHandle: NodeJS.Timer;
     
     /**
      * Creates or gets the current singleton
