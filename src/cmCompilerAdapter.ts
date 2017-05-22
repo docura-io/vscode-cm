@@ -65,6 +65,7 @@ export class cmCompilerAdapter {
     }
     
     public runAutoComplete(force?: boolean) {
+        if ( cmConfig.cmAutoComplete80Enabled ) return;
         if ( !force && !cmConfig.cmAutoCompleteEnabled() || !this.isStarted ) return; // for now if it's not started don't do it.
         this.indexer.start( 
             (file) => { this.runCurrentFile( file ); } 
@@ -117,15 +118,15 @@ export class cmCompilerAdapter {
 
     public runStatement( statement: CodeStatement ): Thenable<boolean> {
         if ( !statement.start && !this.isStarted ) return;
-        this.clearOutputIfNeeded();
+        this.clearOutputIfNeeded( statement.doNotClear );
         return this.startIfNotStarted()
         .then( (success) => {
             var promise = new Promise( (res, rej) => { 
                 this.channel.addOutputWatch( 
                     res, 
                     rej, 
-                    /\(load.[^\)]*\)/,
-                    /\(cm-ac-result-none\)/ );
+                    statement.successEx,
+                    statement.failureEx );
                 this.compiler.write( statement.code );
                 setTimeout( () => {
                     this.channel.clearOutputWatch();
@@ -184,7 +185,8 @@ export class cmCompilerAdapter {
         return this.start();
     }
 
-    private clearOutputIfNeeded() {
+    private clearOutputIfNeeded( skip = false ) {
+        if ( skip ) return;
         if ( cmConfig.clearOutputOnBuild() ) {
             this.channel.clear();
         }
@@ -200,4 +202,6 @@ export interface CodeStatement {
     successEx: RegExp;
     // regex to match for "failure"
     failureEx: RegExp;
+    // should clear output
+    doNotClear: boolean;
 }

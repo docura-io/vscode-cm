@@ -17,7 +17,7 @@ export class cmOutputChannel {
     private diagnostics: vscode.DiagnosticCollection;
     
     private msgPerSec = 0;
-    private msgCounterId = 0;
+    private msgCounterId = null;
     private treshholdBroken = false;
     public writeOutputToFile: boolean;
     private filePath: string;
@@ -34,7 +34,7 @@ export class cmOutputChannel {
         this.diagnostics = diags;
         this.msgCounterId = setInterval( () => {
             if ( this.msgPerSec > 0 ) {
-                console.log("Messages Per Second: " + this.msgPerSec);
+                // console.log("Messages Per Second: " + this.msgPerSec);
                 this.msgPerSec = 0;
             }
         }, 1000 );
@@ -103,6 +103,7 @@ export class cmOutputChannel {
         let nextErrorRegex = /\(next-error\).cm>\s*/;
         var cetAltClickRegex = /'\(cm-show-file-at-pos-selected-window\s"(.*)"\s(\d+)\)\)/;
         let plnHashRegex = /^[A-Za-z0-9]*=.*$/;
+        let cmACRegex = /tt|\(load\s".*"\s.*\)|\(cm-ac-result-none\)/;
 
         lines.forEach(element => {
             var errorMatch = errorRegex.exec(element);
@@ -166,6 +167,10 @@ export class cmOutputChannel {
                     this.watchReject();
                     this.clearOutputWatch();
                 }
+            }
+
+            if ( cmACRegex.test( element ) ) {
+                return;
             }
             
             newLines.push( element );

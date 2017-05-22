@@ -3,6 +3,7 @@
 import { CancellationToken, CompletionItem, CompletionItemProvider, CompletionList, Position, Range, SnippetString, TextDocument } from 'vscode';
 import { getCompiler } from './extension';
 import { CodeStatement } from './cmCompilerAdapter';
+import { cmConfig } from './cmConfig';
 
 import fs = require('fs');
 
@@ -25,23 +26,48 @@ export class CM80CompletionItemProvider implements CompletionItemProvider {
                 this.compiler.runStatement( {
                     start: false,
                     code: `cvm_ac(\"${document.fileName.replace( /\\/g, '/' )}\", ${this.getOffset(document, position)});`,
-                    successEx: /test/,
-                    failureEx: /test/
+                    successEx: /\(load.[^\)]*\)/,
+                    failureEx: /\(cm-ac-result-none\)/,
+                    doNotClear: true
                 } )
                 .then( () => {
                     console.log('CM AC Success');
-                    
-                    fs.readFile( "c:/CetDev/version8.0/write/cm-ac-candidates.el", "utf-8", (err, data) => {
+                    fs.readFile( cmConfig.cmRoot() + "/write/cm-ac-candidates.el", "utf-8", (err, data) => {
+                        if ( err ) reject();
                         var items: CompletionItem[] = [];
                         let regex = new RegExp( `\\(cm-ac1\\s"(.[^"]*)"\\s"(.[^"]*)"\\s"(.[^"]*)"\\s\\(cons\\s\\(cm-ac-url\\s(\\d*)\\)\\s(\\d*)\\)\\)`, "g" );
                         var match = null;
                         while( match = regex.exec(data) ) {
                             var item = new CompletionItem( `${match[1]}${match[2]}` );
-                            item.insertText = new SnippetString( match[1] + "( ${1:int a}, ${2:int b} )" );
+                            var params = match[2].match( /(\w+?\s\w+(?:=\w*)?)/g );
+                            var rtnType = /(\w+$)/.exec(match[2]);
+
+                            if ( match[2].match( /^\s->\s/ ) ) {
+                                item.insertText = match[1];
+                            } else {
+                                var snipStr = match[1] + "(";
+                                if ( params ) {
+                                    var count = 1;
+                                    params.forEach(element => {
+                                        snipStr += " ${" + count++ + ":" + element + "},";
+                                    });
+                                } else {
+                                    snipStr += ",";
+                                }
+
+                                // item.insertText = new SnippetString( match[1] + "( ${1:int a}, ${2:int b} )" );
+                                /*
+                                console.log("---START---");
+                                console.log(snipStr);
+                                console.log("---END---")
+                                */
+                                item.insertText = new SnippetString( snipStr.substring( 0, snipStr.length - 1 ) + " )" );
+                            }
                             items.push(item);
                         }
                         
-                        resolve(new CompletionList( items, prevChar == "." ) );
+                        // resolve(new CompletionList( items, prevChar == "." ) );
+                        resolve(new CompletionList( items, true ) );
                     } );
                 }, () => {
                     console.log('CM AC Failure');

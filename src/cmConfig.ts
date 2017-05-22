@@ -18,6 +18,14 @@ export class cmConfig {
         return isEnabled;
     }
 
+    static cmAutoComplete80Enabled(): boolean {
+        let isEnabled = this.getConfig()["autoComplete80Enabled"]; 
+        if ( typeof isEnabled !== "boolean" ) {
+            isEnabled = false;
+        }
+        return isEnabled;
+    }
+
     static clearOutputOnBuild(): boolean {
         let isEnabled = this.getConfig()["clearOutputBuild"]; 
         if ( typeof isEnabled !== "boolean" ) {
