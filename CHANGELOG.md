@@ -1,3 +1,15 @@
+# Version 1.0.4 - CM 8.0 Auto Complete
+This version includes beginning support for the CM8.0 autocomplete. To use this auto complete you must set the following in your visual studio code config:
+
+```json
+{
+    "cm.enableIntellisense": false,
+    "cm.autoComplete80Enabled": true
+}
+```
+
+The intellisense for now defaults to the legacy implementation, so you need to disable that and enable the new one. Note this new implementation will only work in an 8.0+ workspace. 
+
 # Version 1.0.3 - ALL THE INSTANCES
 - Added `multiple_instances` flag so you can now run multiple VSCode's with CM running.
 
