@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { DiagnosticCollection, Disposable, ExtensionContext, FileSystemWatcher, languages, window, workspace } from 'vscode';
+import { commands, DiagnosticCollection, Disposable, ExtensionContext, FileSystemWatcher, languages, window, workspace } from 'vscode';
 
 import { CMDefinitionProvider } from './cmDeclaration';
 import { CMCompletionItemProvider } from './cmSuggest';
@@ -126,6 +126,10 @@ function createCmWatcher(): FileSystemWatcher {
         if ( /acloader/.test( file ) ) return;
         cmUtils.debounce( () => { console.log('Calling AC...'); adapter.runAutoComplete(); }, 500, false );   
     }
+
+    workspace.onDidOpenTextDocument( (doc) => {
+        commands.executeCommand('vscode.foldAtLine', 1);
+    });
     
     watcher.onDidChange( (e) => {
         runAutoComplete( compilerAdapter, e.toString() );
