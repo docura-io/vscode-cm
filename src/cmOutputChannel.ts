@@ -141,11 +141,13 @@ export class cmOutputChannel {
             } else if ( errorMatch ) {
                 if(errorMatch) {
                     // this.setDiagnostics( errorMatch[1], parseInt( errorMatch[2] ), parseInt( errorMatch[3] ), errorMatch[4] );
-                    this.setDiagnostics( errorMatch[1], +errorMatch[2], +errorMatch[3], errorMatch[4] );
-                    element = '[ERROR ' + errorMatch[1] + ':' + errorMatch[2] + ':' + errorMatch[3] + ' - ' + errorMatch[4] + ']';
-                } else {
-                    element = '[ERROR ' + element + ']';                    
-                }                                
+                    var severity = vscode.DiagnosticSeverity.Error;
+                    if ( /found\sno\suses\sof/.test(element) ) {
+                        severity = vscode.DiagnosticSeverity.Warning;
+                    }
+                    this.setDiagnostics( errorMatch[1], +errorMatch[2], +errorMatch[3], errorMatch[4], severity );
+                    element = `${severity == vscode.DiagnosticSeverity.Warning ? "WARNING" : "ERROR"} ` + errorMatch[1] + ':' + errorMatch[2] + ':' + errorMatch[3] + ' - ' + errorMatch[4];
+                }                             
             } else if ( debugRegex.test( element) ) {
                 element = '[DEBUG ' + element + ']';
             } else if ( autoCompleteMatch ) {
@@ -217,11 +219,11 @@ export class cmOutputChannel {
             } );
     }
     
-    private setDiagnostics( file: string, line: number, column: number, desc: string ) {
+    private setDiagnostics( file: string, line: number, column: number, desc: string, level: vscode.DiagnosticSeverity ) {
         vscode.workspace.openTextDocument( file )
             .then( (doc) => {
                 var textLine: vscode.TextLine = doc.lineAt( line - 1 );
-                var diag = new vscode.Diagnostic( textLine.range, desc, vscode.DiagnosticSeverity.Error );
+                var diag = new vscode.Diagnostic( textLine.range, desc, level );
                 this.diagnostics.set( vscode.Uri.file( file ), [diag] )        
             });
     }
