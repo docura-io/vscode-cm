@@ -1,3 +1,28 @@
+# Version 1.1.0 - User Scripts
+- Made it so "found no uses of" errors now log as warnings instead
+- First iteration of the user defined scripts. Create a file called `vscode.scripts.cm` in your workspace root, and reload VSCode. Now you can run the command `F1 -> CM: User Scripts` and it will preset a list of the functions defined in the `vscode.scripts.cm` file.
+  - The script functions must not take any parameters
+  - Note this file must have functions in this format (it uses a simple regex to find the function names):
+    ```java
+    public void functionName() { 
+      // ...
+    }
+    ```
+- Removed some control characters from output
+- Made it so `cm.compilefile` can take in a parameter so it can be called via `vscode.commands.executeCommand( "cm.compileFile", url )`
+
+# Version 1.0.4 - CM 8.0 Auto Complete
+This version includes beginning support for the CM8.0 autocomplete. To use this auto complete you must set the following in your visual studio code config:
+
+```json
+{
+    "cm.enableIntellisense": false,
+    "cm.autoComplete80Enabled": true
+}
+```
+
+The intellisense for now defaults to the legacy implementation, so you need to disable that and enable the new one. Note this new implementation will only work in an 8.0+ workspace. 
+
 # Version 1.0.3 - ALL THE INSTANCES
 - Added `multiple_instances` flag so you can now run multiple VSCode's with CM running.
 

@@ -4,6 +4,11 @@ import { cmCompilerAdapter } from './cmCompilerAdapter';
 import { CMCompletionItemProvider } from './cmSuggest';
 import { cmConfig } from './cmConfig';
 
+const fs = require('fs');
+var didLoadScripts = false;
+var scriptPackage = "";
+var scriptFuncs = [];
+
 import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace } from 'vscode';
 
 export function registerCommands( compiler: cmCompilerAdapter, completeProvider: CMCompletionItemProvider ) {
@@ -27,8 +32,14 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
     } );
     
     let d8 = commands.registerCommand( "cm.compilefile", (args) => {
+        if ( args && args.file ) {
+            args = args.file;
+        } else {
+            args = null;
+        }
         validateCMFileAndRun( true, (editor) => {
-            compiler.compileFile( editor.document.fileName );
+            let file = args || editor.document.fileName;
+            compiler.compileFile( file );
         });
     } );
     
@@ -88,9 +99,46 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
 
     let d18 = commands.registerCommand( "cm.testAC", () => {
         compiler.run( "cvm_ac(\"c:/CetDev/version8.0/home/profile/test/test.cm\", 1892);" );
-    })
+    });
    
-    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16 );
+    let scripts = commands.registerCommand( "cm.userScript", () => {
+        window.showQuickPick( getUserScripts() )
+        .then( (picked) => {
+            if ( picked ) {
+                compiler.run( `{ use ${scriptPackage}; ${picked}();}` );
+            }
+        } );
+    });
+
+    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, scripts );
+}
+
+function getUserScripts(): Thenable<string[]> {
+    if ( scriptFuncs.length > 0 ) {
+        return Promise.resolve(scriptFuncs);
+    }
+    return new Promise((resolve, reject) => {
+        fs.readFile( workspace.rootPath + "/vscode.scripts.cm", "utf8" , (err, data) => {
+            let myReg = /public\s+void\s+(.[^\(\)]*)\s*\(\)/g;
+            let packageReg = /package\s(.[^;]*);/;
+            scriptPackage = packageReg.exec( data )[1];
+            var myArr;
+            var myFuncs = [];
+            while ( ( myArr = myReg.exec(data) ) !== null ) {
+                myFuncs.push(myArr[1]);
+            }
+
+            if ( myFuncs.length == 0 ) {
+                reject("No User Scripts Found");
+            } else {
+                didLoadScripts = true;
+                scriptFuncs = myFuncs;
+                resolve(scriptFuncs);
+            }
+
+            
+        });
+    });
 }
 
 export function foldCopyright( editor: TextEditor ) {

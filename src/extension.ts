@@ -4,6 +4,7 @@ import { DiagnosticCollection, Disposable, ExtensionContext, FileSystemWatcher, 
 
 import { CMDefinitionProvider } from './cmDeclaration';
 import { CMCompletionItemProvider } from './cmSuggest';
+import { CM80CompletionItemProvider } from './cmSuggest80';
 import SignatureHelpProvider from './cmSignatureHelper'
 import { ClangDocumentFormattingEditProvider } from './cmFormat';
 import { CMHoverProvider } from './cmHover';
@@ -27,7 +28,7 @@ export function getCompiler(): cmCompilerAdapter {
 export function activate(context: ExtensionContext) {
 
     const disposables: Disposable[] = [];
-
+    
     console.log("--STARTING CM EXTENSION--");
     
     diagnosticCollection = languages.createDiagnosticCollection( "cm" );
@@ -40,11 +41,14 @@ export function activate(context: ExtensionContext) {
     // createFileOpenWatcher();
     createRsSaveWatcher();
     
-    var completionProvider = new CMCompletionItemProvider();
-    
     // subscriptions
     disposables.push(languages.registerDefinitionProvider(CM_MODE, new CMDefinitionProvider()));
-    disposables.push(languages.registerCompletionItemProvider(CM_MODE, completionProvider, '.' ) );
+    if ( cmConfig.cmAutoComplete80Enabled() ) {
+        disposables.push(languages.registerCompletionItemProvider(CM_MODE, new CM80CompletionItemProvider(), '.' ) );
+    } else if ( cmConfig.cmAutoCompleteEnabled() ) {
+        disposables.push(languages.registerCompletionItemProvider(CM_MODE, new CMCompletionItemProvider(), '.' ) );
+    }
+    
     disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
     disposables.push(languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
     
@@ -59,7 +63,8 @@ export function activate(context: ExtensionContext) {
     // commands
     // cm commands
     // setupCMCommands( context, compilerAdapter );
-    disposables.push( registerCommands( compilerAdapter, completionProvider ) );
+    // disposables.push( registerCommands( compilerAdapter, completionProvider ) );
+    disposables.push( registerCommands( compilerAdapter, null ) );
     
     setupLangConfig();
     
@@ -121,15 +126,22 @@ function createFileOpenWatcher() {
 
 function createCmWatcher(): FileSystemWatcher {
     var watcher = workspace.createFileSystemWatcher( `${workspace.rootPath}/**/*.cm` );
-    
+
     function runAutoComplete( adapter: cmCompilerAdapter, file: string ) {
         if ( /acloader/.test( file ) ) return;
         cmUtils.debounce( () => { console.log('Calling AC...'); adapter.runAutoComplete(); }, 500, false );   
     }
     
-    watcher.onDidChange( (e) => {
-        runAutoComplete( compilerAdapter, e.toString() );
-    } );
+    // no reason to create the watchers in this case
+    if ( !cmConfig.cmAutoComplete80Enabled && cmConfig.cmAutoCompleteEnabled ) {
+        watcher.onDidChange( (e) => {
+            runAutoComplete( compilerAdapter, e.toString() );
+        } );
+
+        watcher.onDidDelete( (e) => {
+            runAutoComplete( compilerAdapter, e.toString() );
+        });
+    }
     
     watcher.onDidCreate( (e) => {
         // don't add the copyright header to the acloader.cm file
@@ -138,10 +150,6 @@ function createCmWatcher(): FileSystemWatcher {
             runAutoComplete( compilerAdapter, e.toString() );
         }
     } );
-    
-    watcher.onDidDelete( (e) => {
-        runAutoComplete( compilerAdapter, e.toString() );
-    });
     
     return watcher;
 }

@@ -266,7 +266,7 @@ export class cmUtils {
         }
     }
     
-    private static timeout: number;
+    private static timeout: NodeJS.Timer;
     
     static debounce( func: () => void, wait: number, immediate: boolean ): void {
         let args = arguments;

@@ -65,6 +65,7 @@ export class cmCompilerAdapter {
     }
     
     public runAutoComplete(force?: boolean) {
+        if ( cmConfig.cmAutoComplete80Enabled ) return;
         if ( !force && !cmConfig.cmAutoCompleteEnabled() || !this.isStarted ) return; // for now if it's not started don't do it.
         this.indexer.start( 
             (file) => { this.runCurrentFile( file ); } 
@@ -113,6 +114,27 @@ export class cmCompilerAdapter {
         this.startIfNotStarted().then((success) => {
             this.compiler.compileFile( file );
         });    
+    }
+
+    public runStatement( statement: CodeStatement ): Thenable<boolean> {
+        if ( !statement.start && !this.isStarted ) return;
+        this.clearOutputIfNeeded( statement.doNotClear );
+        return this.startIfNotStarted()
+        .then( (success) => {
+            var promise = new Promise( (res, rej) => { 
+                this.channel.addOutputWatch( 
+                    res, 
+                    rej, 
+                    statement.successEx,
+                    statement.failureEx );
+                this.compiler.write( statement.code );
+                setTimeout( () => {
+                    this.channel.clearOutputWatch();
+                }, 2000 ); // give CM 2 seconds to respond 
+            });
+            
+            return promise;
+        });
     }
     
     public runIfStarted( cmCode: string ) {
@@ -163,9 +185,23 @@ export class cmCompilerAdapter {
         return this.start();
     }
 
-    private clearOutputIfNeeded() {
+    private clearOutputIfNeeded( skip = false ) {
+        if ( skip ) return;
         if ( cmConfig.clearOutputOnBuild() ) {
             this.channel.clear();
         }
     }
+}
+
+export interface CodeStatement {
+    // should start compiler if not started
+    start: boolean; 
+    // code to execute
+    code: string;
+    // regex to match for "success"
+    successEx: RegExp;
+    // regex to match for "failure"
+    failureEx: RegExp;
+    // should clear output
+    doNotClear: boolean;
 }

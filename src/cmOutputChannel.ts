@@ -17,10 +17,15 @@ export class cmOutputChannel {
     private diagnostics: vscode.DiagnosticCollection;
     
     private msgPerSec = 0;
-    private msgCounterId = 0;
+    private msgCounterId = null;
     private treshholdBroken = false;
     public writeOutputToFile: boolean;
     private filePath: string;
+
+    private watchResolve: (value?: {} | PromiseLike<{}>) => void;
+    private watchReject: (value?: {} | PromiseLike<{}>) => void;
+    private watchSuccess: RegExp;
+    private watchFail: RegExp;
     
     constructor( diags: vscode.DiagnosticCollection, filePath: string ) { 
         this.filePath = filePath;
@@ -29,7 +34,7 @@ export class cmOutputChannel {
         this.diagnostics = diags;
         this.msgCounterId = setInterval( () => {
             if ( this.msgPerSec > 0 ) {
-                console.log("Messages Per Second: " + this.msgPerSec);
+                // console.log("Messages Per Second: " + this.msgPerSec);
                 this.msgPerSec = 0;
             }
         }, 1000 );
@@ -98,6 +103,7 @@ export class cmOutputChannel {
         let nextErrorRegex = /\(next-error\).cm>\s*/;
         var cetAltClickRegex = /'\(cm-show-file-at-pos-selected-window\s"(.*)"\s(\d+)\)\)/;
         let plnHashRegex = /^[A-Za-z0-9]*=.*$/;
+        let cmACRegex = /tt|\(load\s".*"\s.*\)|\(cm-ac-result-none\)/;
 
         lines.forEach(element => {
             var errorMatch = errorRegex.exec(element);
@@ -135,11 +141,13 @@ export class cmOutputChannel {
             } else if ( errorMatch ) {
                 if(errorMatch) {
                     // this.setDiagnostics( errorMatch[1], parseInt( errorMatch[2] ), parseInt( errorMatch[3] ), errorMatch[4] );
-                    this.setDiagnostics( errorMatch[1], +errorMatch[2], +errorMatch[3], errorMatch[4] );
-                    element = '[ERROR ' + errorMatch[1] + ':' + errorMatch[2] + ':' + errorMatch[3] + ' - ' + errorMatch[4] + ']';
-                } else {
-                    element = '[ERROR ' + element + ']';                    
-                }                                
+                    var severity = vscode.DiagnosticSeverity.Error;
+                    if ( /found\sno\suses\sof/.test(element) ) {
+                        severity = vscode.DiagnosticSeverity.Warning;
+                    }
+                    this.setDiagnostics( errorMatch[1], +errorMatch[2], +errorMatch[3], errorMatch[4], severity );
+                    element = `${severity == vscode.DiagnosticSeverity.Warning ? "WARNING" : "ERROR"} ` + errorMatch[1] + ':' + errorMatch[2] + ':' + errorMatch[3] + ' - ' + errorMatch[4];
+                }                             
             } else if ( debugRegex.test( element) ) {
                 element = '[DEBUG ' + element + ']';
             } else if ( autoCompleteMatch ) {
@@ -153,10 +161,21 @@ export class cmOutputChannel {
                         this.goToRejector();
                     }
                 // }, 500 );
-                
+            } else if ( this.watchSuccess != null ) {
+                if ( this.watchSuccess.test( element ) ) {
+                    this.watchResolve();
+                    this.clearOutputWatch();
+                } else if ( this.watchFail.test ( element ) )  {
+                    this.watchReject();
+                    this.clearOutputWatch();
+                }
+            }
+
+            if ( cmACRegex.test( element ) ) {
+                return;
             }
             
-            newLines.push( element );
+            newLines.push( element.replace( /\x01/g, "" ).replace( /\x02/g, "" ) );
         });
         
         if ( hashLines.length == 1 ) {
@@ -173,6 +192,20 @@ export class cmOutputChannel {
         };
     }
     
+    public addOutputWatch( res: (value?: {} | PromiseLike<{}>) => void, rej: (value?: {} | PromiseLike<{}>) => void, success: RegExp, fail: RegExp ) {
+        this.watchResolve = res;
+        this.watchReject = rej;
+        this.watchSuccess = success;
+        this.watchFail = fail;
+    }
+
+    public clearOutputWatch() {
+        this.watchResolve = null;
+        this.watchReject = null;
+        this.watchSuccess = null;
+        this.watchFail = null;
+    }
+
     private goToFileLocation( file:string, offset: number ) {
         vscode.workspace.openTextDocument( file )
             .then( (doc) => {
@@ -186,11 +219,11 @@ export class cmOutputChannel {
             } );
     }
     
-    private setDiagnostics( file: string, line: number, column: number, desc: string ) {
+    private setDiagnostics( file: string, line: number, column: number, desc: string, level: vscode.DiagnosticSeverity ) {
         vscode.workspace.openTextDocument( file )
             .then( (doc) => {
                 var textLine: vscode.TextLine = doc.lineAt( line - 1 );
-                var diag = new vscode.Diagnostic( textLine.range, desc, vscode.DiagnosticSeverity.Error );
+                var diag = new vscode.Diagnostic( textLine.range, desc, level );
                 this.diagnostics.set( vscode.Uri.file( file ), [diag] )        
             });
     }
