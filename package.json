@@ -130,6 +130,12 @@
                 "title": "Test AC",
                 "description": "Testing Autocomplete",
                 "category": "CM"
+            },
+            {
+                "command": "cm.userScript",
+                "title": "User Scripts",
+                "description": "Execute User Defined Script",
+                "category": "CM"
             }          
         ],
         "configuration": {

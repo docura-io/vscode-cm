@@ -1,3 +1,14 @@
+# Version 1.1.0 - User Scripts
+- Made it so "found no uses of" errors now log as warnings instead
+- First iteration of the user defined scripts. Create a file called `vscode.scripts.cm` in your workspace root, and reload VSCode. Now you can run the command `F1 -> CM: User Scripts` and it will preset a list of the functions defined in the `vscode.scripts.cm` file.
+  - The script functions must not take any parameters
+  - Note this file must have functions in this format (it uses a simple regex to find the function names):
+    ```java
+    public void functionName() { 
+      // ...
+    }
+    ```
+
 # Version 1.0.4 - CM 8.0 Auto Complete
 This version includes beginning support for the CM8.0 autocomplete. To use this auto complete you must set the following in your visual studio code config:
 
