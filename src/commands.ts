@@ -33,14 +33,13 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
     
     let d8 = commands.registerCommand( "cm.compilefile", (args) => {
         if ( args && args.file ) {
-            args = args.file;
+            compiler.compileFile( args.file );
         } else {
-            args = null;
+            validateCMFileAndRun( true, (editor) => {
+                compiler.compileFile( editor.document.fileName );
+            });
         }
-        validateCMFileAndRun( true, (editor) => {
-            let file = args || editor.document.fileName;
-            compiler.compileFile( file );
-        });
+        
     } );
     
     let d9 = commands.registerCommand( "cm.compilepackage", () => {
