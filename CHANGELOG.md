@@ -8,6 +8,8 @@
       // ...
     }
     ```
+- Removed some control characters from output
+- Made it so `cm.compilefile` can take in a parameter so it can be called via `vscode.commands.executeCommand( "cm.compileFile", url )`
 
 # Version 1.0.4 - CM 8.0 Auto Complete
 This version includes beginning support for the CM8.0 autocomplete. To use this auto complete you must set the following in your visual studio code config:

@@ -32,8 +32,14 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
     } );
     
     let d8 = commands.registerCommand( "cm.compilefile", (args) => {
+        if ( args && args.file ) {
+            args = args.file;
+        } else {
+            args = null;
+        }
         validateCMFileAndRun( true, (editor) => {
-            compiler.compileFile( editor.document.fileName );
+            let file = args || editor.document.fileName;
+            compiler.compileFile( file );
         });
     } );
     

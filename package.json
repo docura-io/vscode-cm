@@ -136,7 +136,7 @@
                 "title": "User Scripts",
                 "description": "Execute User Defined Script",
                 "category": "CM"
-            }          
+            }   
         ],
         "configuration": {
             "type": "object",

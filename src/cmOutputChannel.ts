@@ -175,7 +175,7 @@ export class cmOutputChannel {
                 return;
             }
             
-            newLines.push( element );
+            newLines.push( element.replace( /\x01/g, "" ).replace( /\x02/g, "" ) );
         });
         
         if ( hashLines.length == 1 ) {
