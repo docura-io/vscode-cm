@@ -8,6 +8,7 @@ import { CM80CompletionItemProvider } from './cmSuggest80';
 import SignatureHelpProvider from './cmSignatureHelper'
 import { ClangDocumentFormattingEditProvider } from './cmFormat';
 import { CMHoverProvider } from './cmHover';
+import { CMWorkspaceSymbolProvider } from './cmWorkspaceSymbolProvider';
 import { CM_MODE } from './cmMode';
 
 import { cmCompilerAdapter } from './cmCompilerAdapter';
@@ -48,6 +49,9 @@ export function activate(context: ExtensionContext) {
     } else if ( cmConfig.cmAutoCompleteEnabled() ) {
         disposables.push(languages.registerCompletionItemProvider(CM_MODE, new CMCompletionItemProvider(), '.' ) );
     }
+
+    // disposables.push( languages.registerDocumentSymbolProvider(CM_MODE, ))
+    // disposables.push ( languages.registerWorkspaceSymbolProvider( new CMWorkspaceSymbolProvider() ));
     
     disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
     disposables.push(languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
