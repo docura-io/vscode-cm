@@ -109,6 +109,10 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
         } );
     });
 
+    let d19 = commands.registerCommand('extension.openFile', file => {
+        workspace.openTextDocument( file ).then( doc => { window.showTextDocument( doc, { preserveFocus: true, preview: true } ); } );
+	});
+
     return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, scripts );
 }
 
