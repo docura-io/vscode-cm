@@ -1,3 +1,6 @@
+# Version 1.1.4 - Merge Fix
+Failed to merge 1.1.3 with master, so a few things were left behind.
+
 # Version 1.1.3 - tt Returns
 Fixed the suggestion output scrubber to only match lines that are only `tt` and not just any line that includes tt.
 
