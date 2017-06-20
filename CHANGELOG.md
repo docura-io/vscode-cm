@@ -1,3 +1,8 @@
+# Version 1.1.3 - tt Returns
+Fixed the suggestion output scrubber to only match lines that are only `tt` and not just any line that includes tt.
+
+Trying out the TreeView API, added a new pane under the explorer that lets you browse `home/cm` folder right from VSCode, expand the `CM Explorer` to check it out
+
 # Version 1.1.1 - Bug Fix 
 Fixed the `cm.compilefile` when an argument is passsed to it.
 
