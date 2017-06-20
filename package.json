@@ -12,7 +12,7 @@
     ],
     "activationEvents": [
         "onLanguage:cm",
-        "workspaceContains:package.cm"
+        "workspaceContains:**/*.cm"
     ],
     "main": "./out/src/extension",
     "contributes": {
