@@ -103,7 +103,7 @@ export class cmOutputChannel {
         let nextErrorRegex = /\(next-error\).cm>\s*/;
         var cetAltClickRegex = /'\(cm-show-file-at-pos-selected-window\s"(.*)"\s(\d+)\)\)/;
         let plnHashRegex = /^[A-Za-z0-9]*=.*$/;
-        let cmACRegex = /tt|\(load\s".*"\s.*\)|\(cm-ac-result-none\)/;
+        let cmACRegex = /^tt$|\(load\s".*"\s.*\)|\(cm-ac-result-none\)/;
 
         lines.forEach(element => {
             var errorMatch = errorRegex.exec(element);
