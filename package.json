@@ -2,7 +2,7 @@
     "name": "cm",
     "displayName": "CM",
     "description": "CM Language Support",
-    "version": "1.1.0",
+    "version": "1.1.4",
     "publisher": "docuraio",
     "engines": {
         "vscode": "^1.13.0"
@@ -233,6 +233,14 @@
                 "command": "cm.compilefile",
                 "group": "1_modification"
             }]
+        },
+        "views": {
+            "explorer": [
+                {
+                    "id": "cmExplorer",
+                    "name": "CM Explorer"
+                }
+            ]
         }
     },
     "scripts": {

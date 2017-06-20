@@ -8,7 +8,8 @@ import { CM80CompletionItemProvider } from './cmSuggest80';
 import SignatureHelpProvider from './cmSignatureHelper'
 import { ClangDocumentFormattingEditProvider } from './cmFormat';
 import { CMHoverProvider } from './cmHover';
-import { CMWorkspaceSymbolProvider } from './cmWorkspaceSymbolProvider';
+import { CmTreeDataProvider } from './cmExplorer';
+// import { CMWorkspaceSymbolProvider } from './cmWorkspaceSymbolProvider';
 import { CM_MODE } from './cmMode';
 
 import { cmCompilerAdapter } from './cmCompilerAdapter';
@@ -55,7 +56,8 @@ export function activate(context: ExtensionContext) {
     
     disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
     disposables.push(languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
-    
+    disposables.push( window.registerTreeDataProvider( 'cmExplorer', new CmTreeDataProvider() ) );
+
     if ( cmConfig.isDebug() ) {
         // put experimental features here
         // disposables.push( languages.registerSignatureHelpProvider( CM_MODE, new SignatureHelpProvider(), '(', ',' ) );

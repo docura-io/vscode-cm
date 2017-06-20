@@ -1,3 +1,14 @@
+# Version 1.1.4 - Merge Fix
+Failed to merge 1.1.3 with master, so a few things were left behind.
+
+# Version 1.1.3 - tt Returns
+Fixed the suggestion output scrubber to only match lines that are only `tt` and not just any line that includes tt.
+
+Trying out the TreeView API, added a new pane under the explorer that lets you browse `home/cm` folder right from VSCode, expand the `CM Explorer` to check it out
+
+# Version 1.1.1 - Bug Fix 
+Fixed the `cm.compilefile` when an argument is passsed to it.
+
 # Version 1.1.0 - User Scripts
 - Made it so "found no uses of" errors now log as warnings instead
 - First iteration of the user defined scripts. Create a file called `vscode.scripts.cm` in your workspace root, and reload VSCode. Now you can run the command `F1 -> CM: User Scripts` and it will preset a list of the functions defined in the `vscode.scripts.cm` file.
@@ -9,7 +20,7 @@
     }
     ```
 - Removed some control characters from output
-- Made it so `cm.compilefile` can take in a parameter so it can be called via `vscode.commands.executeCommand( "cm.compileFile", { file: url } )`
+- Made it so `cm.compilefile` can take in a parameter so it can be called via `vscode.commands.executeCommand( "cm.compilefile", { file: url } )`
 
 # Version 1.0.4 - CM 8.0 Auto Complete
 This version includes beginning support for the CM8.0 autocomplete. To use this auto complete you must set the following in your visual studio code config:
