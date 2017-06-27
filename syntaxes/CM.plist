@@ -413,7 +413,7 @@
         <key>class</key>
 		<dict>
 			<key>begin</key>
-			<string>(?=\w?[\w\s]*(?:class|(?:@)?interface|enum)\s+\w+)</string>
+			<string>(?=\w?[\w\s]*(?:class|(?:@)?interface|enum|aweObject)\s+\w+)</string>
 			<key>end</key>
 			<string>}</string>
 			<key>endCaptures</key>
@@ -451,7 +451,7 @@
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>(class|(?:@)?interface|enum)\s+(\w+)</string>
+					<string>(class|(?:@)?interface|enum|aweObject)\s+(\w+)</string>
 					<key>name</key>
 					<string>meta.class.identifier.java</string>
 				</dict>
@@ -494,7 +494,7 @@
 						</dict>
 					</dict>
 					<key>end</key>
-					<string>(?=\s{)</string>
+					<string>(?={)</string>
 					<key>name</key>
 					<string>meta.definition.class.inherited.classes.java</string>
 					<key>patterns</key>
@@ -636,6 +636,10 @@
 				<dict>
 					<key>include</key>
 					<string>#storage-modifiers</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#methods</string>
 				</dict>
 				<dict>
 					<key>include</key>
@@ -1068,7 +1072,7 @@
 		<key>methods</key>
 		<dict>
 			<key>begin</key>
-			<string>(?!new)(?=[\w&lt;].*\s+)(?=([^=/]|/(?!/))+\()</string>
+			<string>(?!new)(?=[a-z&lt;].*\s+)(?=([^=/&lt;]|/(?!/))+\()</string>
 			<key>end</key>
 			<string>(})|(?=;)</string>
 			<key>endCaptures</key>
@@ -1089,7 +1093,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>(\w+)(\s*&lt;&lt;)?\s*\(</string>
+					<string>([a-z]\w*)(\s*&lt;&lt;)?\s*\(</string>
 					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
@@ -1306,7 +1310,8 @@
 					<key>match</key>
 					<string>\b(?:[a-z]\w*(\.))*[A-Z]+\w*</string>
 					<key>name</key>
-					<string>entity.other.name.type.java</string>
+					<!--<string>entity.other.name.type.java</string>-->
+					<string>entity.name.type.class.java</string>
 				</dict>
 			</array>
 		</dict>
@@ -1335,6 +1340,14 @@
 				<dict>
 					<key>include</key>
 					<string>#object-types</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#constants-and-special-vars</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#method-call</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -1530,7 +1543,7 @@
                         \s+
                         (?!private|protected|public|package|native|synchronized|volatile|abstract|threadsafe|transient|static|final|def|void|bool|byte|char|short|int|float|long|double|str)
                         [\w\d_&lt;&gt;\[\],\?][\w\d_&lt;&gt;\[\],\? \t]*
-                        (?:=|$)
+                        (?:=|&lt;&lt;|$)
 
 					))</string>
 					<key>end</key>
@@ -1553,7 +1566,7 @@
 								</dict>
 							</dict>
 							<key>match</key>
-							<string>([A-Z_0-9]+)\s+(?=\=)</string>
+							<string>([A-Z_0-9]+)\s+(?=\=|&lt;&lt;)</string>
 						</dict>
 						<dict>
 							<key>captures</key>
@@ -1565,11 +1578,11 @@
 								</dict>
 							</dict>
 							<key>match</key>
-							<string>(\w[^\s,]*)\s+(?=\=)</string>
+							<string>(\w[^\s,]*)\s+(?=\=|&lt;&lt;)</string>
 						</dict>
 						<dict>
 							<key>begin</key>
-							<string>=</string>
+							<string>(=|&lt;&lt;)</string>
 							<key>beginCaptures</key>
 							<dict>
 								<key>0</key>
