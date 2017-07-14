@@ -1,0 +1,14 @@
+// comment
+
+/*
+    Multi Comment
+*/
+
+package custom.yours;
+package custom. /* whatever */ yours;
+package custom // ibrokeit;
+
+
+use cm.core;
+use cm. /*whatever */ core;
+use cm // ibrokeit;

@@ -30,7 +30,7 @@
         "grammars": [
             {
                 "language": "cm",
-                "path": "./syntaxes/cm.plist",
+                "path": "./syntaxes/cm.tmLanguage.json",
                 "scopeName": "source.cm"
             }
         ],
@@ -238,7 +238,8 @@
             "explorer": [
                 {
                     "id": "cmExplorer",
-                    "name": "CM Explorer"
+                    "name": "CM Explorer",
+                    "when": "resourceLangId == CM"
                 }
             ]
         }
