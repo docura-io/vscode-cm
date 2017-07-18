@@ -6,9 +6,70 @@
 
 package custom.yours;
 package custom. /* whatever */ yours;
-package custom // ibrokeit;
-
 
 use cm.core;
 use cm. /*whatever */ core;
-use cm // ibrokeit;
+use cm: whatever, i, use;
+
+public void doStuff() {
+
+}
+
+{
+    MyClass c = new MyClass();
+    c.doSomething();
+    doStuff();
+}
+
+public class myClass {
+    public int x;
+    public str y;
+    public MyClass x();
+    public str z = "Whatever";
+
+    public constructor() {
+        bool maybe = false;
+        bool perhaps = true;
+        x = 5inch;
+        int h = 8inch;
+        doEverything( "Whatever" );
+        this.doEverything();
+        h.doEverything();
+        
+        str x = format("Hi @x; how are you?");
+
+        if ( true and false ) {
+            
+        }
+    }
+
+    extend public void doEverything() {
+
+    }
+
+    extend public void addToMe <<( YourClass c ) {
+        this << c;
+        return x;
+    }
+}
+
+public class MyClass extends YourClass {
+    public int x;
+    public str y;
+    public MyClass x();
+    public str z = "Whatever";
+}
+
+public aweSpecialObject AwesomeClass {
+
+}
+
+public enum whatever {
+    my,
+    enum,
+    values
+}
+
+public aweSpecialEnum SpecialEnum {
+    codeVal = <"Something", "Else"> // tuples need some work
+}
