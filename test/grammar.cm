@@ -38,6 +38,11 @@ public class myClass {
         
         str x = format("Hi @x; how are you?");
 
+        h.doAnything().v0 << something.els();
+        h.doAnything().v0 << format("hi");
+        h.doAnything().v0 = something.els();
+        h.doAnything().v0 = format("hi");
+
         if ( true and false ) {
             
         }

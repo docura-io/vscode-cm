@@ -97,6 +97,10 @@
 		</dict>
 		<dict>
 			<key>include</key>
+			<string>#methods</string>
+		</dict>
+		<dict>
+			<key>include</key>
 			<string>#code</string>
 		</dict>
 	</array>
@@ -165,7 +169,7 @@
 								<key>2</key>
 								<dict>
 									<key>name</key>
-									<string>keyword.operator.assignment.java</string>
+									<string>keyword.operator.assignment.java.1</string>
 								</dict>
 							</dict>
 							<key>match</key>
@@ -639,10 +643,6 @@
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>#methods</string>
-				</dict>
-				<dict>
-					<key>include</key>
 					<string>#method-call</string>
 				</dict>
 				<dict>
@@ -954,7 +954,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>(&lt;&lt;|&gt;&gt;&gt;?|~|\^)</string>
+					<string>(&gt;&gt;&gt;?|~|\^)</string>
 					<key>name</key>
 					<string>keyword.operator.bitwise.java</string>
 				</dict>
@@ -980,7 +980,7 @@
 					<key>match</key>
 					<string>(=|&lt;&lt;)</string>
 					<key>name</key>
-					<string>keyword.operator.assignment.java</string>
+					<string>keyword.operator.assignment.java.2</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -1035,7 +1035,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>meta.method.java</string>
+					<string>entity.name.function.java</string>
 				</dict>
 				<key>2</key>
 				<dict>
@@ -1074,7 +1074,7 @@
 			<key>begin</key>
 			<string>(?!new)(?=[a-z&lt;].*\s+)(?=([^=/&lt;]|/(?!/))+\()</string>
 			<key>end</key>
-			<string>(})|(?=;)</string>
+			<string>(?<=\})|(?=;)</string>
 			<key>endCaptures</key>
 			<dict>
 				<key>1</key>
@@ -1123,31 +1123,7 @@
 						</dict>
 					</array>
 				</dict>
-				<dict>
-					<key>begin</key>
-					<string>&lt;</string>
-					<key>end</key>
-					<string>&gt;</string>
-					<key>name</key>
-					<string>storage.type.token.java</string>
-					<key>patterns</key>
-					<array>
-						<dict>
-							<key>include</key>
-							<string>#object-types</string>
-						</dict>
-						<dict>
-							<key>begin</key>
-							<string>&lt;</string>
-							<key>comment</key>
-							<string>This is just to support &lt;&gt;'s with no actual type prefix</string>
-							<key>end</key>
-							<string>&gt;|[^\w\s,\[\]&lt;]</string>
-							<key>name</key>
-							<string>storage.type.generic.java</string>
-						</dict>
-					</array>
-				</dict>
+
 				<dict>
 					<key>begin</key>
 					<string>(?=\w.*\s+\w+(?:\s*&lt;&lt;)?\s*\()</string>
@@ -1592,7 +1568,7 @@
 								<key>0</key>
 								<dict>
 									<key>name</key>
-									<string>keyword.operator.assignment.java</string>
+									<string>keyword.operator.assignment.java.3</string>
 								</dict>
 							</dict>
 							<key>end</key>
