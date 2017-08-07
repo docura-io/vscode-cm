@@ -144,8 +144,32 @@
 			]
 		},
 
+		"syntax-def": {
+			"begin": "(awe[_[:alnum:]]*)\\s*[\\({]",
+			"beginCaptures": {
+				"1": {
+					"name": "strong keyword.control.syntax.cs"
+				}
+			},
+			"end": "(?=[}\\)];?)",
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#local-variable-declaration"
+				},
+				{
+					"include": "#method-declaration"
+				},
+				{
+					"include": "#punctuation-comma"
+				}
+			]
+		},
+
 		"props-def": {
-			"begin": "(props|awe[_[:alnum:]]*)\\s*\\(",
+			"begin": "(props|awe[_[:alnum:]]*)\\s*[\\(]",
 			"beginCaptures": {
 				"1": {
 					"name": "entity.name.function.cs"
@@ -153,6 +177,9 @@
 			},
 			"end": "(?=;)",
 			"patterns": [
+				{
+					"include": "#comment"
+				},
 				{
 					"include": "#local-variable-declaration"
 				},
@@ -220,6 +247,9 @@
 				},
 				{
 					"include": "#props-def"
+				},
+				{
+					"include": "#syntax-def"
 				},
 				{
 					"include": "#type-declarations"
@@ -468,7 +498,7 @@
 			}
 		},
 		"type-builtin": {
-			"match": "\\b(bool|byte|char|decimal|double|float|int|long|object|sbyte|short|str|uint|ulong|ushort|void|box|rect)\\b",
+			"match": "\\b(bool|byte|char|decimal|double|float|int|long|object|sbyte|short|str|uint|ulong|ushort|void|box|rect|point|point2D)\\b",
 			"captures": {
 				"1": {
 					"name": "keyword.type.cs"
@@ -695,7 +725,7 @@
 					"name": "punctuation.definition.interpolation.begin.cs"
 				}
 			},
-			"end": ";",
+			"end": ";?",
 			"endCaptures": {
 				"0": {
 					"name": "punctuation.definition.interpolation.end.cs"
@@ -749,7 +779,7 @@
 				},
 				{
 					"name": "keyword.operator.bitwise.shift.cs",
-					"match": "<<|>>"
+					"match": "<<\\??|>>\\??"
 				},
 				{
 					"name": "keyword.operator.comparison.cs",
@@ -765,7 +795,7 @@
 				},
 				{
 					"name": "keyword.control.conditional.logical.cs",
-					"match": "and|or"
+					"match": "\\b(?:and|or)\\b"
 				},
 				{
 					"name": "keyword.operator.bitwise.cs",
@@ -773,7 +803,7 @@
 				},
 				{
 					"name": "keyword.operator.assignment.cs",
-					"match": "\\="
+					"match": "\\=\\??"
 				},
 				{
 					"name": "keyword.operator.decrement.cs",
@@ -1212,7 +1242,7 @@
 				},
 				{
 					"name": "constant.numeric.decimal.cs",
-					"match": "\\b[0-9_]+(F|f|D|d|M|m|inch)\\b"
+					"match": "\\b[0-9_]+(F|f|D|d|M|m|inch|deg)\\b"
 				},
 				{
 					"name": "constant.numeric.decimal.cs",
