@@ -1,3 +1,9 @@
+# Version 1.1.7 - Document Symbols
+Document Symbol search is now available (`CTRL+SHIFT+O` is the default keybind). This uses a simple regex search on the current file to find all the classes, methods and members in the current file. Also restoring the the CM Explorer, for some reason the `when` clause isn't working for CM language, so I've just turned it on full time.
+
+# Version 1.1.6 - Grammar Updates
+Fixing some grammar parsing issues.
+
 # Version 1.1.4 - Merge Fix
 Failed to merge 1.1.3 with master, so a few things were left behind.
 
