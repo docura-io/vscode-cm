@@ -1,3 +1,19 @@
+# Version 1.2.0 - Document Symbols
+Document Symbol search is now available (`CTRL+SHIFT+O` is the default keybind). This uses a simple regex search on the current file to find all the classes, methods and members in the current file. Also restoring the the CM Explorer, for some reason the `when` clause isn't working for CM language, so I've just turned it on full time. Also changing the default CM version to be 8.0 (a little late but better late then never)
+
+Adding a new option to `cm.root` configuration, if you just set this to the values `auto` like:
+
+```
+{
+  "cm.root": "auto"
+}
+```
+
+It will just assume everything before `\home\` in your current workspace is the CMRoot. So if your workspace is `C:\CetDev\workspace57\home\custom\myExtension` it will set the CMRoot to `C:\CetDev\workspace57`. Best way to use this would be set a user setting in VSCode to have the value be auto. Then if in a specific workspace you want to override it you can. For now this will be an optional choice, but should save you when migrating between CM versions, or if you just happen to forget to set the `cm.root` value.
+
+# Version 1.1.6 - Grammar Updates
+Fixing some grammar parsing issues.
+
 # Version 1.1.4 - Merge Fix
 Failed to merge 1.1.3 with master, so a few things were left behind.
 

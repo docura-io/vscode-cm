@@ -5,6 +5,7 @@ import vscode = require('vscode');
 export class cmConfig {
     
     static LangName = "cm";
+    static root: string = null;
     
     static isDebug(): boolean {
         return this.getConfig()["debugMode"];
@@ -39,7 +40,15 @@ export class cmConfig {
     }
     
     static cmRoot(): string {
-        return this.getConfig()["root"];
+        if ( !this.root ) {
+            const match = vscode.workspace.rootPath.match( /.*(?=\\home\\)/ );
+            this.root = this.getConfig()["root"];
+            if ( this.root == "auto" && match.length > 0 ) {
+                console.log("CM Root Auto Mode - Using Path '" + match.toString() + "'");
+                this.root = match.toString();
+            }
+        }
+        return this.root;
     }
     
     static cmPath(): string {
