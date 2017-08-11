@@ -238,8 +238,7 @@
             "explorer": [
                 {
                     "id": "cmExplorer",
-                    "name": "CM Explorer",
-                    "when": "resourceLangId == CM"
+                    "name": "CM Explorer"
                 }
             ]
         }

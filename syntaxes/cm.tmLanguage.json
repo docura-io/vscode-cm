@@ -666,7 +666,7 @@
 		},
 		"format-string": {
 			"name": "format.name.function.cs",
-			"begin": "(format)\\s*(\\()\\s*",
+			"begin": "(format|printf)\\s*(\\()\\s*",
 			"beginCaptures": {
 				"1": {
 					"name": "entity.name.function.cs"
@@ -725,7 +725,7 @@
 					"name": "punctuation.definition.interpolation.begin.cs"
 				}
 			},
-			"end": ";?",
+			"end": ";?(?=\")",
 			"endCaptures": {
 				"0": {
 					"name": "punctuation.definition.interpolation.end.cs"
