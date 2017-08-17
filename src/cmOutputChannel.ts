@@ -92,7 +92,7 @@ export class cmOutputChannel {
     }
 
     public lineParser( data ) {
-        var lines = data.split(/\r\n/g);
+        var lines = data.replace(/[\x01\x02]/g, "\r\n").split(/\r\n/g);
         var newLines = [];
         var hashLines = [];
         var errorRegex = /([cC]:.*\.cm)\((\d+)\,\s{1}(\d+)\):(.*)/gm; 
@@ -135,11 +135,15 @@ export class cmOutputChannel {
                         this.goToResolver( new vscode.Location( vscode.Uri.file( file ), position ) );
                     } else {
                         console.log( 'no promise for go to def' );
+                        vscode.window.showTextDocument( doc ).then( (res) => {
+                            res.selection = new vscode.Selection( position, position );
+                            res.revealRange( new vscode.Range( position, position ), vscode.TextEditorRevealType.InCenter );
+                        });
                     }
                 });
                 return;
             } else if ( errorMatch ) {
-                if(errorMatch) {
+                if ( !errorMatch[4].match( /\simplements\s\w*$/ )) { // for some reason the implements call outputs this like an error
                     // this.setDiagnostics( errorMatch[1], parseInt( errorMatch[2] ), parseInt( errorMatch[3] ), errorMatch[4] );
                     var severity = vscode.DiagnosticSeverity.Error;
                     if ( /found\sno\suses\sof/.test(element) ) {
