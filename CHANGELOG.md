@@ -1,3 +1,9 @@
+# Version 1.2.1 - Override, Implements and SubClasses
+3 new commands have been added:
+- `CC: Implemenets` - Place your cursor on a method, and see what all classes implement this method
+- `CM: Overrides`- Place your curser on a method, and this will take you to the parent class that's method is being override
+- `CM: Subclasses` - Place your cursor on a class name and it will show (for now) child classes up to 4 levels down (in a future update this will be user selectable)
+
 # Version 1.2.0 - Document Symbols
 Document Symbol search is now available (`CTRL+SHIFT+O` is the default keybind). This uses a simple regex search on the current file to find all the classes, methods and members in the current file. Also restoring the the CM Explorer, for some reason the `when` clause isn't working for CM language, so I've just turned it on full time. Also changing the default CM version to be 8.0 (a little late but better late then never)
 
