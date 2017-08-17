@@ -111,9 +111,36 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
 
     let d19 = commands.registerCommand('extension.openFile', file => {
         workspace.openTextDocument( file ).then( doc => { window.showTextDocument( doc, { preserveFocus: true, preview: true } ); } );
-	});
+    });
 
-    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, scripts );
+    let d20 = commands.registerCommand( "cm.implements", () => {
+        validateCMFileAndRun( true, (editor) => {
+            const offset = getPosition(editor);
+            compiler.run( `cm.runtime.implementsMethod("${editor.document.fileName.replace( /\\/g, '/' )}", ${offset});` );
+        } );
+    } );
+
+    let d21 = commands.registerCommand( "cm.subclasses", () => {
+        validateCMFileAndRun( true, (editor) => {
+            const offset = getPosition(editor);
+            compiler.run( `cm.runtime.subClasses("${editor.document.fileName.replace( /\\/g, '/' )}", [${offset},${offset}], 4);` );
+        })
+    });
+
+    let d22 = commands.registerCommand( "cm.overrides", () => {
+        validateCMFileAndRun( true, (editor) => {
+            const offset = getPosition(editor);
+            compiler.run( `cm.runtime.overridesMethod("${editor.document.fileName.replace( /\\/g, '/' )}", ${offset});` );
+        })
+    });
+
+    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, scripts, d20, d21 );
+}
+
+function getPosition( editor: TextEditor ): Number {
+    const position = editor.selection.start;
+    let offset = editor.document.offsetAt( position ) + ( 1 - position.line ); // emacs is 1 based, and it treats line end as 1 character not 2;
+    return offset;
 }
 
 function getUserScripts(): Thenable<string[]> {

@@ -2,7 +2,7 @@
     "name": "cm",
     "displayName": "CM",
     "description": "CM Language Support",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "publisher": "docuraio",
     "engines": {
         "vscode": "^1.13.0"
@@ -136,7 +136,25 @@
                 "title": "User Scripts",
                 "description": "Execute User Defined Script",
                 "category": "CM"
-            }   
+            },
+            {
+                "command": "cm.implements",
+                "title": "Implements",
+                "description": "Goes up to the overriden method",
+                "category": "CM"
+            },
+            {
+                "command": "cm.subclasses",
+                "title": "Sub Classes",
+                "description": "Print all the subclasses of the class under the cursor",
+                "category": "CM"
+            },
+            {
+                "command": "cm.overrides",
+                "title": "Overrides",
+                "description": "Go to the method the current method overrides",
+                "category": "CM"
+            }
         ],
         "configuration": {
             "type": "object",
