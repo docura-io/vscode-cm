@@ -121,7 +121,7 @@ export class cmCompilerAdapter {
         this.clearOutputIfNeeded( statement.doNotClear );
         return this.startIfNotStarted()
         .then( (success) => {
-            var promise = new Promise( (res, rej) => { 
+            var promise = new Promise<boolean>( (res, rej) => { 
                 this.channel.addOutputWatch( 
                     res, 
                     rej, 

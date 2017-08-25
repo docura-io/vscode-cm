@@ -10,6 +10,7 @@ import { ClangDocumentFormattingEditProvider } from './cmFormat';
 import { CMHoverProvider } from './cmHover';
 import { CmTreeDataProvider } from './cmExplorer';
 // import { CMWorkspaceSymbolProvider } from './cmWorkspaceSymbolProvider';
+import { CmCodeActionProvider } from './cmCodeActions';
 import { CMFileSymbolProvider } from './cmFileSymbolProvider';
 import { CM_MODE } from './cmMode';
 
@@ -55,6 +56,7 @@ export function activate(context: ExtensionContext) {
     disposables.push( languages.registerDocumentSymbolProvider(CM_MODE, new CMFileSymbolProvider() ));
     // disposables.push ( languages.registerWorkspaceSymbolProvider( new CMWorkspaceSymbolProvider() ));
     
+    // disposables.push( languages.registerCodeActionsProvider( CM_MODE, new CmCodeActionProvider() ));
     disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
     disposables.push(languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
     disposables.push( window.registerTreeDataProvider( 'cmExplorer', new CmTreeDataProvider() ) );

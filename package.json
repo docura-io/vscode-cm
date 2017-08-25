@@ -2,8 +2,17 @@
     "name": "cm",
     "displayName": "CM",
     "description": "CM Language Support",
-    "version": "1.2.2",
+    "version": "1.2.3",
+    "icon": "resources/cmIcon.png",
     "publisher": "docuraio",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/docura-io/vscode-cm.git"
+    },
+    "galleryBanner": {
+        "color": "#3487GC",
+        "theme": "light"
+    },
     "engines": {
         "vscode": "^1.13.0"
     },
