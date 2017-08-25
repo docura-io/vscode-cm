@@ -337,9 +337,25 @@ public class {Class} {
         // add comment to top of file
         vscode.workspace.openTextDocument( uri )
         .then( (doc) => {
-            if ( doc.lineCount > 1 ) return;
+            if ( doc.lineCount > 1 ) {
+                 // update the package
+                 let match = /^package\s[^;]*/m.exec( doc.getText() );
+                 let start = match.index;
+                 let length = match[0].length;
+ 
+                 let range = new vscode.Range( doc.positionAt( start ), doc.positionAt( start + length ) );
+ 
+                 let wEdit = new vscode.WorkspaceEdit();
+                 wEdit.replace( doc.uri, range, "package " + nameSpace );
+                 vscode.workspace.applyEdit( wEdit )
+                 .then( res => {
+                     doc.save();  
+                 });
+                 
+                 return;
+            };
             if ( doc.lineAt( 0 ).text.match( /Configura CET Source Copyright Notice/ ) ) { // it's already got the copyright, so don't add it again
-                return;
+               return;
             }
             vscode.window.showTextDocument( doc )
                 .then( (editor) => {

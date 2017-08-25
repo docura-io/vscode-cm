@@ -31,7 +31,7 @@ export class CMDefinitionProvider implements vscode.DefinitionProvider {
         if ( document.isDirty ) {
             var file = document.fileName;
 
-            var promise = new Promise( (rsv, rj) => {
+            var promise = new Promise<vscode.Location>( (rsv, rj) => {
                 document.save()
                 .then( res => {
                     if (res) {
