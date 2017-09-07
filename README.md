@@ -73,6 +73,9 @@ After cloning the repository, from command prompt run:
 ```shell
 npm install
 ```
+
+Currently, you'll need to copy `node_modules\cm-modules\findDefinition\out\variableFinder.js` to `out\node_modules\cm-modules\findDefinition`. At some point I'll figure out a way to make this better, but for now this works.
+
 If you don't have node installed, you'll need to install it from https://nodejs.org/en/download/.  You can then open the folder in vscode by just typing `code .` You should be able to build and run the project by just hitting `F5` within VSCode.  It will launch a new "Extension Development" instance of VSCode, which will automatically run the compiled version of the extension over the one you have installed.  See https://code.visualstudio.com/Docs/extensions/overview for more information and API documentation.
 
 ## Contributing
