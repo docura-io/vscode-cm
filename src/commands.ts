@@ -62,7 +62,7 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
                 window.showErrorMessage( "Unable to retrieve username");
                 return;
             }
-            workspace.openTextDocument( Uri.file( `${cmConfig.cmRoot()}\\home\\profile\\${userName}\\boot.cm` ) )
+            workspace.openTextDocument( Uri.file( `${cmConfig.cmRoot()}\\home\\profile\\${userName.toLowerCase()}\\boot.cm` ) )
             .then( (doc) => {
                 window.showTextDocument( doc );
             });
@@ -132,6 +132,20 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
             const offset = getPosition(editor);
             compiler.run( `cm.runtime.overridesMethod("${editor.document.fileName.replace( /\\/g, '/' )}", ${offset});` );
         })
+    });
+
+    let d23 = commands.registerCommand( "cm.compilepkg", () => {
+        validateCMFileAndRun( true, (editor) => {
+            const relPath = editor.document.uri.fsPath.replace( cmConfig.cmRoot() + "\\home", "");
+            let regex = /([^\\]+?)(?=\\)/g;
+            var match = null;
+            var pkg = "";
+            while( match = regex.exec(relPath) ) {
+                pkg += match[1] + "/";
+            }
+
+            compiler.run( `{ use cm.runtime.util, cm.io; compileAllBelow(cmNative("${pkg}")); }` );
+        });
     });
         
     let d99 = commands.registerCommand( "cm.Test", () => {

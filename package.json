@@ -163,6 +163,12 @@
                 "title": "Overrides",
                 "description": "Go to the method the current method overrides",
                 "category": "CM"
+            },
+            {
+                "command": "cm.compilepkg",
+                "title": "Compile current package/folder",
+                "description": "Compiles the current pkg / folder of the active editor file",
+                "category": "CM"
             }
         ],
         "configuration": {
