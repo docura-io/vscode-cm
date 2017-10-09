@@ -33,7 +33,8 @@
                 ],
                 "aliases": [
                     "CM"
-                ]
+                ],
+                "configuration": "./language-configuration.json"
             }
         ],
         "grammars": [
