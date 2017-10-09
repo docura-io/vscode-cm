@@ -75,7 +75,7 @@ export function activate(context: ExtensionContext) {
     // disposables.push( registerCommands( compilerAdapter, completionProvider ) );
     disposables.push( registerCommands( compilerAdapter, null ) );
     
-    setupLangConfig();
+    // setupLangConfig();
     
     context.subscriptions.push(...disposables);
 }
