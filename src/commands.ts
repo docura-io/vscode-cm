@@ -1,7 +1,6 @@
 'use strict';
 
 import { cmCompilerAdapter } from './cmCompilerAdapter';
-import { CMCompletionItemProvider } from './cmSuggest';
 import { cmConfig } from './cmConfig';
 
 const fs = require('fs');
@@ -11,7 +10,7 @@ var scriptFuncs = [];
 
 import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace } from 'vscode';
 
-export function registerCommands( compiler: cmCompilerAdapter, completeProvider: CMCompletionItemProvider ) {
+export function registerCommands( compiler: cmCompilerAdapter ) {
     let d1 = commands.registerCommand( "cm.start", () => compiler.start() );
     let d2 = commands.registerCommand( "cm.stopcm", () => compiler.stop() );
     let d3 = commands.registerCommand( "cm.cleancm", () => compiler.clean() );
@@ -72,10 +71,6 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
     let d12 = commands.registerCommand( "cm.compileallbelow", () => {
         compiler.compileWorkspace();
     } );
-    
-    let d13 = commands.registerCommand( "cm.runautocomplete", () => {
-        compiler.runAutoComplete(true);
-    } );
    
     let d14 = commands.registerCommand( "cm.runexternal", (args) => {
         // this is a hook for anything to run CM Commands via "commands.executeCommand(...)"
@@ -91,10 +86,6 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
     let d16 = commands.registerCommand( "cm.stopwriteoutputfile", () => {
         compiler.stopWritingOutputFile();
     });
-   
-    let d17 =  commands.registerCommand( "cm.purgeRemoteCache", () => {
-        completeProvider.purgeCache(); 
-    } );
 
     let d18 = commands.registerCommand( "cm.testAC", () => {
         compiler.run( "cvm_ac(\"c:/CetDev/version8.0/home/profile/test/test.cm\", 1892);" );
@@ -152,7 +143,7 @@ export function registerCommands( compiler: cmCompilerAdapter, completeProvider:
         console.log("I DID IT");
     } );
 
-    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, scripts, d20, d21 );
+    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, d15, d16, scripts, d20, d21 );
 }
 
 function getPosition( editor: TextEditor ): Number {

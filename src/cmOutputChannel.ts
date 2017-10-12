@@ -1,7 +1,5 @@
 'use strict';
 
-import { LiveAutoCompleteIndexer } from './cmLiveIndexer';
-
 import vscode = require('vscode');
 import fs = require('fs');
 
@@ -98,7 +96,6 @@ export class cmOutputChannel {
         var errorRegex = /([cC]:.*\.cm)\((\d+)\,\s{1}(\d+)\):(.*)/gm; 
         var gotoRegex = /\(cm-goto-def "(.[^"]+)"\s(\d+)/;
         var debugRegex = /^cm\sD>\s*?$/;
-        var autoCompleteRegex = /^\[VSCODE\]\[AutoComplete\]:(.+)$/;
         var noise = /(.*)#custom\.qaTools(.*)/;
         let nextErrorRegex = /\(next-error\).cm>\s*/;
         var cetAltClickRegex = /'\(cm-show-file-at-pos-selected-window\s"(.*)"\s(\d+)\)\)/;
@@ -107,7 +104,6 @@ export class cmOutputChannel {
 
         lines.forEach(element => {
             var errorMatch = errorRegex.exec(element);
-            var autoCompleteMatch = autoCompleteRegex.exec( element );
             var cetAltClickMatch = cetAltClickRegex.exec( element );
             var nextErrorMatch = nextErrorRegex.exec( element );
             
@@ -154,11 +150,6 @@ export class cmOutputChannel {
                 }                             
             } else if ( debugRegex.test( element) ) {
                 element = '[DEBUG ' + element + ']';
-            } else if ( autoCompleteMatch ) {
-                var indexer = LiveAutoCompleteIndexer.getInstance();
-                //indexer.receivedItem( JSON.parse( autoCompleteMatch[1] ) );
-                indexer.readACFile( autoCompleteMatch[1] );
-                return;
             } else if ( nextErrorMatch && !this.isResolving ) {
                 // setTimeout( () => {
                     if ( this.goToPromise && this.goToRejector ) {

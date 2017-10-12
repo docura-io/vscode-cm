@@ -4,13 +4,10 @@ import { cmConfig } from './cmConfig';
 import { cmOutputChannel } from './cmOutputChannel';
 import vscode = require('vscode');
 
-import { LiveAutoCompleteIndexer } from './cmLiveIndexer';
-
 var compilerContainer = require("node-cm/index.js");
 
 export class cmCompilerAdapter {
     
-    private indexer: LiveAutoCompleteIndexer;
     private channel: cmOutputChannel;
     private filePath: string;
     private compiler;
@@ -20,7 +17,6 @@ export class cmCompilerAdapter {
     constructor( diagnostics: vscode.DiagnosticCollection, filePath: string ) {
         this.filePath = filePath;
         this.channel = new cmOutputChannel( diagnostics, filePath );
-        this.indexer = new LiveAutoCompleteIndexer();
         this.diagnostics = diagnostics;
         
         this.compiler = new compilerContainer( {
@@ -34,11 +30,6 @@ export class cmCompilerAdapter {
             }//,
             //debug: true
         });
-        
-        // this.start()
-        // .then( (started) => {
-        //     this.runAutoComplete();
-        // });
     }
     
     public startWritingOutputFile() : void {
@@ -58,18 +49,9 @@ export class cmCompilerAdapter {
             this.compiler.start()
             .then( (success) => {
                 this.isStarted = success;
-                this.runAutoComplete();
                 resolve(success);  
             }, reject);
         });        
-    }
-    
-    public runAutoComplete(force?: boolean) {
-        if ( cmConfig.cmAutoComplete80Enabled ) return;
-        if ( !force && !cmConfig.cmAutoCompleteEnabled() || !this.isStarted ) return; // for now if it's not started don't do it.
-        this.indexer.start( 
-            (file) => { this.runCurrentFile( file ); } 
-        );
     }
     
     public clean() {

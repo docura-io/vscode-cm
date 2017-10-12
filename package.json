@@ -112,12 +112,6 @@
                 "category": "CM"
             },
             {
-                "command": "cm.runautocomplete",
-                "title": "Indexes Code for Autocomplete Suggestions",
-                "description": "Indexes current workspace to update autocomplete dictionary",
-                "category": "CM"
-            },
-            {
                 "command": "cm.startwriteoutputfile",
                 "title": "Enable File Logging",
                 "description": "Writes output channel contents into a text file located by default in C:\\temp\\cm_output.txt",
@@ -133,12 +127,6 @@
                 "command": "cm.purgeRemoteCache",
                 "title": "Purge Remote Cache",
                 "description": "Clears the remote intellisense cache",
-                "category": "CM"
-            },
-            {
-                "command": "cm.testAC",
-                "title": "Test AC",
-                "description": "Testing Autocomplete",
                 "category": "CM"
             },
             {
@@ -205,11 +193,6 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Automatically tells CET to reload an RS file on save"
-                },
-                "cm.enableIntellisense": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Runs Legacy version of autocomplete"
                 },
                 "cm.autoComplete80Enabled": {
                     "type": "boolean",
