@@ -3,7 +3,6 @@
 import { DiagnosticCollection, Disposable, ExtensionContext, FileSystemWatcher, languages, window, workspace } from 'vscode';
 
 import { CMDefinitionProvider } from './cmDeclaration';
-import { CMCompletionItemProvider } from './cmSuggest';
 import { CM80CompletionItemProvider } from './cmSuggest80';
 import SignatureHelpProvider from './cmSignatureHelper'
 import { ClangDocumentFormattingEditProvider } from './cmFormat';
@@ -49,8 +48,6 @@ export function activate(context: ExtensionContext) {
     disposables.push(languages.registerDefinitionProvider(CM_MODE, new CMDefinitionProvider()));
     if ( cmConfig.cmAutoComplete80Enabled() ) {
         disposables.push(languages.registerCompletionItemProvider(CM_MODE, new CM80CompletionItemProvider(), '.' ) );
-    } else if ( cmConfig.cmAutoCompleteEnabled() ) {
-        disposables.push(languages.registerCompletionItemProvider(CM_MODE, new CMCompletionItemProvider(), '.' ) );
     }
 
     disposables.push( languages.registerDocumentSymbolProvider(CM_MODE, new CMFileSymbolProvider() ));
@@ -66,14 +63,8 @@ export function activate(context: ExtensionContext) {
         // disposables.push( languages.registerSignatureHelpProvider( CM_MODE, new SignatureHelpProvider(), '(', ',' ) );
     }
     
-    
     disposables.push(diagnosticCollection);
-    
-    // commands
-    // cm commands
-    // setupCMCommands( context, compilerAdapter );
-    // disposables.push( registerCommands( compilerAdapter, completionProvider ) );
-    disposables.push( registerCommands( compilerAdapter, null ) );
+    disposables.push( registerCommands( compilerAdapter ) );
     
     // setupLangConfig();
     
@@ -135,28 +126,11 @@ function createFileOpenWatcher() {
 
 function createCmWatcher(): FileSystemWatcher {
     var watcher = workspace.createFileSystemWatcher( `${workspace.rootPath}/**/*.cm` );
-
-    function runAutoComplete( adapter: cmCompilerAdapter, file: string ) {
-        if ( /acloader/.test( file ) ) return;
-        cmUtils.debounce( () => { console.log('Calling AC...'); adapter.runAutoComplete(); }, 500, false );   
-    }
-    
-    // no reason to create the watchers in this case
-    if ( !cmConfig.cmAutoComplete80Enabled && cmConfig.cmAutoCompleteEnabled ) {
-        watcher.onDidChange( (e) => {
-            runAutoComplete( compilerAdapter, e.toString() );
-        } );
-
-        watcher.onDidDelete( (e) => {
-            runAutoComplete( compilerAdapter, e.toString() );
-        });
-    }
     
     watcher.onDidCreate( (e) => {
         // don't add the copyright header to the acloader.cm file
         if ( !/acloader/.test( e.toString() ) ) {
             cmUtils.addCopyright( e );
-            runAutoComplete( compilerAdapter, e.toString() );
         }
     } );
     

@@ -327,7 +327,7 @@ public class {Class} {
     public constructor() {
     }   
 }`;
-        var pkg = vscode.workspace.asRelativePath( uri );
+        var pkg = vscode.workspace.asRelativePath( uri ).replace(/\\/g, '/');
         
         pkg = pkg.substring( 0, pkg.lastIndexOf( '/' ) ).replace( /\//g, '.' );
         pkg = pkg == "" ? "" : '.' + pkg;

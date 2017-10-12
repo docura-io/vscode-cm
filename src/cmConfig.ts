@@ -10,14 +10,6 @@ export class cmConfig {
     static isDebug(): boolean {
         return this.getConfig()["debugMode"];
     }
-    
-    static cmAutoCompleteEnabled(): boolean {
-        let isEnabled = this.getConfig()["enableIntellisense"]; 
-        if ( typeof isEnabled !== "boolean" ) {
-            isEnabled = true;
-        }
-        return isEnabled;
-    }
 
     static cmAutoComplete80Enabled(): boolean {
         let isEnabled = this.getConfig()["autoComplete80Enabled"]; 
@@ -61,11 +53,6 @@ export class cmConfig {
     
     static definitionUrl( usings: string, statement: string ): string {
         var url = `${this.apiUrl()}definition?usings=${usings}&statement=${statement}`;
-        return url;
-    }
-    
-    static completionUrl( usings: string, statement: string ): string {
-        var url = `${this.apiUrl()}autocomplete?usings=${usings}&statement=${statement}`;
         return url;
     }
 
