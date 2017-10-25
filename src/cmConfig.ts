@@ -11,6 +11,24 @@ export class cmConfig {
         return this.getConfig()["debugMode"];
     }
 
+    static currentWorkspace(): Thenable<string> {
+        if ( vscode.workspace.workspaceFolders ) {
+            if ( vscode.workspace.workspaceFolders.length == 1 ) {
+                let path = vscode.workspace.workspaceFolders[0].uri.fsPath;
+                return Promise.resolve(path);
+            } else {
+                return vscode.window.showWorkspaceFolderPick()
+                .then( choice => {
+                    return choice.uri.fsPath;
+                } );
+                
+                // return vscode.workspace.workspaceFolders[0].uri.path;
+            }
+        } else {
+            return Promise.resolve(vscode.workspace.rootPath);
+        }
+    }
+
     static cmAutoComplete80Enabled(): boolean {
         let isEnabled = this.getConfig()["autoComplete80Enabled"]; 
         if ( typeof isEnabled !== "boolean" ) {
@@ -33,7 +51,8 @@ export class cmConfig {
     
     static cmRoot(): string {
         if ( !this.root ) {
-            const match = vscode.workspace.rootPath.match( /.*(?=\\home\\)/ );
+            // this needs to be a bit smarter, but for now we use the first folder
+            const match = vscode.workspace.workspaceFolders[0].uri.fsPath.match( /.*(?=\\home\\)/ );
             this.root = this.getConfig()["root"];
             if ( this.root == "auto" && match.length > 0 ) {
                 console.log("CM Root Auto Mode - Using Path '" + match.toString() + "'");

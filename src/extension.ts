@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { DiagnosticCollection, Disposable, ExtensionContext, FileSystemWatcher, languages, window, workspace } from 'vscode';
+import { DiagnosticCollection, Disposable, ExtensionContext, FileSystemWatcher, languages, window, workspace, RelativePattern, WorkspaceFolder, TextDocument, Uri } from 'vscode';
 
 import { CMDefinitionProvider } from './cmDeclaration';
 import { CM80CompletionItemProvider } from './cmSuggest80';
@@ -18,6 +18,7 @@ import { cmConfig } from './cmConfig';
 import { cmUtils } from './cmUtils';
 
 import { registerCommands, foldCopyright } from './commands';
+import { watch } from 'fs';
 
 let diagnosticCollection: DiagnosticCollection;
 let compilerAdapter: cmCompilerAdapter;
@@ -33,6 +34,8 @@ export function activate(context: ExtensionContext) {
     const disposables: Disposable[] = [];
     
     console.log("--STARTING CM EXTENSION--");
+
+    // console.log(cmConfig.currentWorkspace());
     
     diagnosticCollection = languages.createDiagnosticCollection( "cm" );
     // setup compiler Adapter
@@ -124,27 +127,39 @@ function createFileOpenWatcher() {
     // } );
 }
 
-function createCmWatcher(): FileSystemWatcher {
-    var watcher = workspace.createFileSystemWatcher( `${workspace.rootPath}/**/*.cm` );
+function createWatcher( func: (e: Uri)=>void, extension: string ): void {
+    var dict: any[] = [];
     
-    watcher.onDidCreate( (e) => {
-        // don't add the copyright header to the acloader.cm file
-        if ( !/acloader/.test( e.toString() ) ) {
-            cmUtils.addCopyright( e );
+        function addWatcher(wf: WorkspaceFolder) {
+            var watcher = workspace.createFileSystemWatcher( new RelativePattern(wf, `/**/*.${extension}` ) );  
+            dict.push({key: wf.uri.fsPath, value: watcher});
+            watcher.onDidCreate( (e) => {
+                func( e );
+                // cmUtils.addCopyright( e );
+            } );
         }
-    } );
     
-    return watcher;
+        workspace.workspaceFolders.forEach( wf => {
+           addWatcher( wf );
+        });
+    
+        workspace.onDidChangeWorkspaceFolders( e => {
+            e.added.forEach( a => {
+                addWatcher(a);
+            });
+            e.removed.forEach( a => {
+                let watcher: FileSystemWatcher = dict.find( o => o.key == a.uri.fsPath );
+                watcher = null;
+            })
+        } );
 }
 
-function createRsWatcher(): FileSystemWatcher {
-    var watcher = workspace.createFileSystemWatcher( `${workspace.rootPath}/**/*.rs` );
-    
-    watcher.onDidCreate((e) => {
-        cmUtils.createResourceTemplate(e);
-    });
-    
-    return watcher;
+function createCmWatcher(): void {
+    createWatcher( cmUtils.addCopyright, "cm" );
+}
+
+function createRsWatcher(): void {
+    createWatcher( cmUtils.createResourceTemplate, "rs" );
 }
 
 function createRsSaveWatcher() {

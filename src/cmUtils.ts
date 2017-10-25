@@ -1,6 +1,7 @@
 'use strict';
 
 import vscode = require('vscode');
+import { Uri } from 'vscode';
 var fs = require('fs'),
     path = require('path');
 
@@ -39,8 +40,8 @@ export class cmUtils {
     /**
      * Gets the current CM Package based on the open folder
      */
-    static getCurrentPackage(): string {
-        var root = vscode.workspace.rootPath;
+    static getCurrentPackage( uri: Uri ): string {
+        var root = vscode.workspace.getWorkspaceFolder(uri).uri.fsPath;
         var toMatch = "\\home\\";
         var matchIndex = root.indexOf("\\home\\");
 
@@ -70,34 +71,6 @@ export class cmUtils {
         });
         
         return dirs.map( (d) => { return d.path } ).concat(subDirs);
-    }
-    
-    /**
-     * Gets the current CM Package based on the open folder
-     */
-    static getPackagesInCurrentPackage(): string[] {
-        var root = vscode.workspace.rootPath;
-
-        var dirs = this.getDirsUnder( root, "" );
-
-        var curPackage = cmUtils.getCurrentPackage();
-
-        dirs = dirs.filter( (part) => {
-            const packFile = path.join( root, part.replace(/\./g, '\\' ) ) + "\\package.cm";
-            return fs.existsSync( packFile );
-        } );
-
-        dirs.forEach((part, index) => {
-            dirs[index] = `${curPackage}.${part}`
-        });
-
-        dirs.unshift(curPackage);
-        
-        // this.packageFileUsings().forEach( (i) => {
-        //     dirs.push( i );
-        // });
-        
-        return dirs;
     }
     
     /**
@@ -327,12 +300,12 @@ public class {Class} {
     public constructor() {
     }   
 }`;
-        var pkg = vscode.workspace.asRelativePath( uri ).replace(/\\/g, '/');
+        var pkg = vscode.workspace.asRelativePath( uri, false ).replace(/\\/g, '/');
         
         pkg = pkg.substring( 0, pkg.lastIndexOf( '/' ) ).replace( /\//g, '.' );
         pkg = pkg == "" ? "" : '.' + pkg;
 
-        let nameSpace = cmUtils.getCurrentPackage() + pkg;
+        let nameSpace = cmUtils.getCurrentPackage(uri) + pkg;
         
         // add comment to top of file
         vscode.workspace.openTextDocument( uri )
@@ -390,10 +363,17 @@ $ {
     english "";
 }`;
 
-        var pkg = vscode.workspace.asRelativePath( uri );
-        
+        var pkg = vscode.workspace.asRelativePath( uri, false ).replace(/\\/g, '/');
+
         pkg = pkg.substring( 0, pkg.lastIndexOf( '/' ) ).replace( /\//g, '.' );
-        pkg = cmUtils.getCurrentPackage() + '.' + pkg;
+        pkg = pkg == "" ? "" : '.' + pkg;
+
+        let nameSpace = cmUtils.getCurrentPackage(uri) + pkg;
+
+        // var pkg = vscode.workspace.asRelativePath( uri );
+        
+        // pkg = pkg.substring( 0, pkg.lastIndexOf( '/' ) ).replace( /\//g, '.' );
+        // pkg = cmUtils.getCurrentPackage(uri) + '.' + pkg;
         
         // add comment to top of file
         vscode.workspace.openTextDocument( uri )
@@ -404,7 +384,7 @@ $ {
             vscode.window.showTextDocument( doc )
                 .then( (editor) => {
                     editor.edit( (edit) => {
-                        edit.insert( new vscode.Position( 0, 0 ), template.replace( "{Package}", pkg ));
+                        edit.insert( new vscode.Position( 0, 0 ), template.replace( "{Package}", nameSpace ));
                     } )
                     .then( (res) => {
                         const fileStart = new vscode.Position( 0, 0 );
