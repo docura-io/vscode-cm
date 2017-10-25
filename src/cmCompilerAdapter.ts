@@ -84,9 +84,13 @@ export class cmCompilerAdapter {
 
     public compileWorkspace() {
         this.startIfNotStarted().then( (succuess) => {
-
-            const path = vscode.workspace.rootPath.replace( /\\/g, "/" ) + "/";
-            this.run( `{ use cm.runtime.util; compileAllBelow(CompileAllEnv("${path}")); }` );
+            cmConfig.currentWorkspace()
+            .then( path => {
+                path = path.replace( /\\/g, "/" ) + "/";
+                this.run( `{ use cm.runtime.util; compileAllBelow(CompileAllEnv("${path}")); }` );
+            })
+            // const path = cmConfig.currentWorkspace()
+            
         } );
     }
     

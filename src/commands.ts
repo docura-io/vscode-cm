@@ -95,8 +95,13 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
         window.showQuickPick( getUserScripts() )
         .then( (picked) => {
             if ( picked ) {
-                compiler.run( `{ use ${scriptPackage}; ${picked}();}` );
+                let match = /([a-zA-Z0-9]*)\s\((.*)\)/.exec(picked);
+                if ( match ) {
+                    compiler.run( `{ use ${match[2]}; ${match[1]}();}` );
+                }
             }
+        }, (err) => {
+            console.log("ooo crap");
         } );
     });
 
@@ -157,26 +162,28 @@ function getUserScripts(): Thenable<string[]> {
         return Promise.resolve(scriptFuncs);
     }
     return new Promise((resolve, reject) => {
-        fs.readFile( workspace.rootPath + "/vscode.scripts.cm", "utf8" , (err, data) => {
-            let myReg = /public\s+void\s+(.[^\(\)]*)\s*\(\)/g;
-            let packageReg = /package\s(.[^;]*);/;
-            scriptPackage = packageReg.exec( data )[1];
-            var myArr;
-            var myFuncs = [];
-            while ( ( myArr = myReg.exec(data) ) !== null ) {
-                myFuncs.push(myArr[1]);
+        workspace.workspaceFolders.forEach( wf => {
+            try {
+                let data = fs.readFileSync( wf.uri.fsPath + "/vscode.scripts.cm", "utf8" );
+                let myReg = /public\s+void\s+(.[^\(\)]*)\s*\(\)/g;
+                let packageReg = /package\s(.[^;]*);/;
+                scriptPackage = packageReg.exec( data )[1];
+                var myArr;
+                var myFuncs = [];
+                while ( ( myArr = myReg.exec(data) ) !== null ) {
+                    scriptFuncs.push(`${myArr[1]} (${scriptPackage})`);
+                }
+            } catch (err) {
+                // couldn't find the scripts file
             }
-
-            if ( myFuncs.length == 0 ) {
-                reject("No User Scripts Found");
-            } else {
-                didLoadScripts = true;
-                scriptFuncs = myFuncs;
-                resolve(scriptFuncs);
-            }
-
-            
         });
+
+        if ( scriptFuncs.length == 0 ) {
+            reject("No User Scripts Found");
+        } else {
+            didLoadScripts = true;
+            resolve(scriptFuncs);
+        }
     });
 }
 
