@@ -107,8 +107,14 @@
             },
             {
                 "command": "cm.compileallbelow",
-                "title": "Compile Entire Workspace",
-                "description": "Compiles all packages in the workspace",
+                "title": "Compile VSCode Workspace",
+                "description": "Compiles everything below each open workspace",
+                "category": "CM"
+            },
+            {
+                "command": "cm.compileworkspace",
+                "title": "Compile Specific Workspace",
+                "description": "Compiles everything in a specific workspace",
                 "category": "CM"
             },
             {

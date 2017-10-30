@@ -3,6 +3,7 @@
 import { cmConfig } from './cmConfig';
 import { cmOutputChannel } from './cmOutputChannel';
 import vscode = require('vscode');
+import { workspace } from 'vscode';
 
 var compilerContainer = require("node-cm/index.js");
 
@@ -91,6 +92,17 @@ export class cmCompilerAdapter {
             })
             // const path = cmConfig.currentWorkspace()
             
+        } );
+    }
+
+    public compileVSWorkspace() {
+        this.startIfNotStarted().then( (succuess) => {
+            var command = "";
+            workspace.workspaceFolders.forEach( wf => {
+                let path = wf.uri.fsPath.replace( /\\/g, "/" ) + "/";
+                command += `compileAllBelow(CompileAllEnv("${path}"));`;
+            });
+            this.run( `{ use cm.runtime.util; ${command} }` );
         } );
     }
     
