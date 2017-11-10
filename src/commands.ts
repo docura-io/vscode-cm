@@ -69,11 +69,11 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
     } );
     
     let d12 = commands.registerCommand( "cm.compileallbelow", () => {
-        compiler.compileWorkspace();
+        compiler.compileVSWorkspace();
     } );
 
     let d30 = commands.registerCommand( "cm.compileworkspace", () => {
-        compiler.compileVSWorkspace();
+        compiler.compileWorkspace();
     })
    
     let d14 = commands.registerCommand( "cm.runexternal", (args) => {
