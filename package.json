@@ -40,7 +40,7 @@
         "grammars": [
             {
                 "language": "cm",
-                "path": "./syntaxes/cm.plist",
+                "path": "./syntaxes/cm.tmLanguage.json",
                 "scopeName": "source.cm"
             }
         ],
