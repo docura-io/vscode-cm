@@ -1,3 +1,17 @@
+# Verion 1.3.0 - Multi-Root Workspaces
+This release has added support for the multi-root workspaces introduced into VSCode. One **BIG** note this has *NOTHING* to do with CM Workspaces. You should only open folders from the same CM Workspace.
+
+What this allows you to do is open multiple folders (again within the same CM Workspace) that are not directly related. Say you have `Ext1` and `Ext2`. You can could first open `C:\CetDev\version8.0\home\custom\ext1` and then do `File > Add folder to workspace` and pick `C:\CetDev\version8.0\home\custom\ext2` and now both extensions are open in the same vscode instance. This allows you to do things like find files across many extensions, or if you have one extension that depends on another, you can work on them both at the same time. No more having one VSCode instance kill your running compiler in another instance.
+
+With this change a few commands have been tweaked or added to help work with multiple workspaces:
+
+- `Compile VSCode Workspace`: This will compile each workspace open in VSCode in the order they show in the Explorer. (So if you have Ext2 and then Ext1 is the order of the folders in the explorer, it will compile Ext2 and then Ext1). *Note* this is the existing command, so if you had a keybind for `Compile Entire Workspace` before, this is the command it will run.
+- `Compile Specific Workspace`: This will prompt you which of the open workspaces to compile. So if you have Ext1 and Ext2 open, and run this, it will give a popup listing Ext1 and Ext2 and you can pick which to compile.
+
+User scripts should find each user script in each folder and show the folder name with the function to run those.
+
+If you find any issues when switching to multi-workspace, let us know by logging issues in Github.
+
 # Version 1.2.1 - Override, Implements and SubClasses
 3 new commands have been added:
 - `CC: Implemenets` - Place your cursor on a method, and see what all classes implement this method
