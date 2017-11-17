@@ -1,3 +1,6 @@
+# Version 1.3.1 - Auto Folding
+This is a minor release that will now auto-matically fold the copyright at the top of the CM files.
+
 # Verion 1.3.0 - Multi-Root Workspaces
 This release has added support for the multi-root workspaces introduced into VSCode. One **BIG** note this has *NOTHING* to do with CM Workspaces. You should only open folders from the same CM Workspace.
 
