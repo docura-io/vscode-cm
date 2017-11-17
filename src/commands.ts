@@ -8,7 +8,7 @@ var didLoadScripts = false;
 var scriptPackage = "";
 var scriptFuncs = [];
 
-import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace } from 'vscode';
+import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace, TextEditorRevealType } from 'vscode';
 
 export function registerCommands( compiler: cmCompilerAdapter ) {
     let d1 = commands.registerCommand( "cm.start", () => compiler.start() );
@@ -179,13 +179,13 @@ function getUserScripts(): Thenable<string[]> {
 
 export function foldCopyright( editor: TextEditor ) {
     if ( editor.document.uri.fsPath.endsWith( ".cm" ) ) {
-        let currentSelection = editor.selection;
-        let p0 = new Position( 0, 0 );
-        editor.selection = new Selection( p0, p0 );
-        commands.executeCommand( "editor.fold" )
-            .then( (res) => {
-                editor.selection = currentSelection;
-            } );
+        return commands.executeCommand( "editor.fold", { "selectionLines": [0] } )
+        .then( (val) => { 
+            editor.revealRange( editor.selection, TextEditorRevealType.InCenterIfOutsideViewport );
+        }, 
+        (err) => {
+            // console.log(err);
+        });
     }
 }
 

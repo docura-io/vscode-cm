@@ -44,6 +44,11 @@ export function activate(context: ExtensionContext) {
     // setup watcher
     var cmWatcher = createCmWatcher();
     var rsWatcher = createRsWatcher();
+
+    window.onDidChangeActiveTextEditor( (editor) => {        
+        foldCopyright( editor );
+    } );
+
     // createFileOpenWatcher();
     createRsSaveWatcher();
     
@@ -70,19 +75,6 @@ export function activate(context: ExtensionContext) {
     disposables.push( registerCommands( compilerAdapter ) );
     
     context.subscriptions.push(...disposables);
-}
-
-function createFileOpenWatcher() {
-    // workspace.onDidOpenTextDocument( (doc) => {
-    //     console.log('opened');
-    // });
-    
-    // window.onDidChangeActiveTextEditor( (editor) => {
-        
-    //     // console.log('trying to fold');
-        
-    //     foldCopyright( editor );
-    // } );
 }
 
 function createWatcher( func: (e: Uri)=>void, extension: string ): void {
