@@ -39,18 +39,20 @@ Set the following:
 }
 ```
 
-## Intellisense
-Intellisense for packages that are not in your working folder
-is provided by `docura.io/api`.  Make sure this isn't blocked by 
-your firewalls / proxies / :see_no_evil:. You can test this by 
-going to `http://docura.io/api//autocomplete?usings=cm.core&statement=Material3D`. 
-You should get a JSON response back.
+## Recommended Settings
 
-Intellisense runs each time you save a file in your workspace. It also 
-only knows about currently loaded packages, so if you have a subpackage `/custom/mycompany/chairs` 
-for example, you will need to open a CM file in this package and compile it 
-so it is picked up by autocomplete. Hopefully soon this restriction will
-be removed.
+```JSON
+"cm.autoComplete80Enabled": true,
+"cm.root": "auto",
+"[cm]": {
+    "editor.suggestOnTriggerCharacters": false,
+    "editor.quickSuggestions": {
+        "other": false,
+        "comments": false,
+        "strings": false
+    }
+}
+```
 
 ## Commands
 The following commands are available:
