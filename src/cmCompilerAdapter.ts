@@ -28,9 +28,30 @@ export class cmCompilerAdapter {
             onError: (data) => {
                 vscode.window.showInformationMessage( "Error from CM Process" );
                 this.channel.write( `[INFO: CM_Process_Error -> ${data}]` );
-            }//,
-            //debug: true
+            },
+            //debug: true,
+            "cmArch": cmConfig.arch()
         });
+    }
+
+    public reset() {
+        this.compiler.kill();
+
+        this.compiler = new compilerContainer( {
+            cmRoot: cmConfig.cmRoot(),
+            onRead: (data) => {
+                this.channel.write( data );
+            },
+            onError: (data) => {
+                vscode.window.showInformationMessage( "Error from CM Process" );
+                this.channel.write( `[INFO: CM_Process_Error -> ${data}]` );
+            },
+            //debug: true,
+            "cmArch": cmConfig.arch()
+        });
+        this.clearOutputIfNeeded();
+        this.isStarted = false;
+        return this.start();
     }
     
     public startWritingOutputFile() : void {

@@ -1,6 +1,7 @@
 'use strict';
 
 import vscode = require('vscode');
+import { getCompiler } from './extension';
 
 export class cmConfig {
     
@@ -68,6 +69,21 @@ export class cmConfig {
     
     static apiUrl(): string { 
         return this.getConfig()["apiUrl"];
+    }
+
+    static arch(): string {
+        const arch = this.getConfig()["arch"];
+        return arch == null || arch == "" ? "win64" : arch;
+    }
+
+    static setArch( val: string ): Thenable<void> {
+        // if ( val == "win64" ) {
+
+        // } else {
+            var con = vscode.workspace.getConfiguration(this.LangName);
+            return con.update( "arch", val, false ).then( () => { }, 
+            (err) => { console.log(err); } );
+        // }
     }
     
     static definitionUrl( usings: string, statement: string ): string {
