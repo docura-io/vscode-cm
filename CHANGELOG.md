@@ -1,3 +1,6 @@
+# Version 1.3.2 - Changing Architecture
+Another minor version that just adds commands to change your Architecture from 64-bit to 32-bit and back. Note after changing it your current VS Code window will need to reload for the change to take effect.
+
 # Version 1.3.1 - Auto Folding
 This is a minor release that will now auto-matically fold the copyright at the top of the CM files.
 
