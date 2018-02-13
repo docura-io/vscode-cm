@@ -81,7 +81,7 @@ function createWatcher( func: (e: Uri)=>void, extension: string ): void {
     var dict: any[] = [];
     
         function addWatcher(wf: WorkspaceFolder) {
-            var watcher = workspace.createFileSystemWatcher( new RelativePattern(wf, `/**/*.${extension}` ) );  
+            var watcher = workspace.createFileSystemWatcher( new RelativePattern(wf, `**/*.${extension}` ) );  
             dict.push({key: wf.uri.fsPath, value: watcher});
             watcher.onDidCreate( (e) => {
                 func( e );
