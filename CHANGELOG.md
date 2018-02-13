@@ -1,3 +1,6 @@
+# Version 1.3.3 - Fix File Watcher
+A fix for VSCode 1.20.0, the file watch should work again to pre-populate files.
+
 # Version 1.3.2 - Changing Architecture
 Another minor version that just adds commands to change your Architecture from 64-bit to 32-bit and back. Note after changing it your current VS Code window will need to reload for the change to take effect.
 
