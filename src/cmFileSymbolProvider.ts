@@ -12,8 +12,8 @@ export class CMFileSymbolProvider implements vscode.DocumentSymbolProvider {
 
         const searches = [
             { regex: /\b(?:public|package|private)\s+class\s+([a-zA-Z][_a-zA-Z0-9]*)/g, kind: vscode.SymbolKind.Class },
-            { regex: /(?:extend\s+)?(?:public|package|private)\s+([a-zA-Z](?:[_\-\>a-zA-Z0-9]|\{\}|\[\])*)\s+([a-zA-Z][_a-zA-Z0-9]*)\s*\(.*(?=\)\s*\{.*)/g, kind: vscode.SymbolKind.Method },
-            { regex: /(?:public|package|private)\s+([a-zA-Z](?:[_\-\>a-zA-Z0-9]|\{\}|\[\])*)\s+([a-zA-Z][_a-zA-Z0-9]*)[^{]*?(?=;)/g, kind: vscode.SymbolKind.Property }
+            { regex: /(?:extend\s+)?(?:public|package|private)\s+([a-zA-Z<](?:[_\-\>,\sa-zA-Z0-9]|\{\}|\[\])*)\s+([a-zA-Z<][_>,\sa-zA-Z0-9]*)\s*\(.*(?=\)\s*\{.*)/g, kind: vscode.SymbolKind.Method },
+            { regex: /(?:public|package|private)\s+([a-zA-Z<](?:[_\-\>,\sa-zA-Z0-9]|\{\}|\[\])*)\s+([a-zA-Z][_a-zA-Z0-9]*)[^{]*?(?=;)/g, kind: vscode.SymbolKind.Property }
         ];
 
         searches.forEach( s => {

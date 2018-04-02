@@ -62,7 +62,7 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
                 window.showErrorMessage( "Unable to retrieve username");
                 return;
             }
-            workspace.openTextDocument( Uri.file( `${cmConfig.cmRoot()}\\home\\profile\\${userName}\\boot.cm` ) )
+            workspace.openTextDocument( Uri.file( `${cmConfig.cmRoot()}\\home\\profile\\${userName.toLowerCase()}\\boot.cm` ) )
             .then( (doc) => {
                 window.showTextDocument( doc );
             });
@@ -152,6 +152,20 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
             } );
          } );
     });
+
+    let d25 = commands.registerCommand( "cm.profiletest", () => {
+        validateCMFileAndRun( false, (editor) => {
+            const userName = process.env["USER"] || process.env["USERNAME"];
+            if ( !userName ) {
+                window.showErrorMessage( "Unable to retrieve username");
+                return;
+            }
+            workspace.openTextDocument( Uri.file( `${cmConfig.cmRoot()}\\home\\profile\\${userName.toLowerCase()}\\t.cm` ) )
+            .then( (doc) => {
+                window.showTextDocument( doc );
+            });
+        } );
+    } );
 
     return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, d15, d16, scripts, d20, d21, d22, d23, d24 );
 }

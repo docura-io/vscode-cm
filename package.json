@@ -100,6 +100,12 @@
                 "category": "CM"
             },
             {
+                "command": "cm.profiletest",
+                "title": "Profile Test.cm",
+                "description": "Opens your t.cm file in your profile",
+                "category": "CM"
+            },
+            {
                 "command": "cm.loadall",
                 "title": "Load All Known",
                 "description": "Reloads all known packages",
