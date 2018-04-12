@@ -470,7 +470,7 @@
 		},
 
 		"tuple-type": {
-			"begin": "<",
+			"begin": "<(?!<)",
 			"beginCaptures": {
 				"0": {
 					"name": "punctuation.parenthesis.open.cs"
