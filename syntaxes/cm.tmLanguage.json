@@ -1858,6 +1858,9 @@
 				},
 				{
 					"include": "#local-variable-declaration"
+				},
+				{
+					"include": "#tuple-type"
 				}
 			]
 		},
