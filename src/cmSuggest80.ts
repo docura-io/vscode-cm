@@ -1,6 +1,6 @@
 'use strict';
 
-import { CancellationToken, CompletionItem, CompletionItemProvider, CompletionList, Position, Range, SnippetString, TextDocument, CompletionItemKind } from 'vscode';
+import { CancellationToken, CompletionItem, CompletionItemProvider, CompletionList, Position, Range, SnippetString, TextDocument, CompletionItemKind, MarkdownString } from 'vscode';
 import { getCompiler } from './extension';
 import { CodeStatement } from './cmCompilerAdapter';
 import { cmConfig } from './cmConfig';
@@ -63,19 +63,32 @@ export class CM80CompletionItemProvider implements CompletionItemProvider {
             let match = /\(cm-ac1\s"(.[^"]*)"\snil\s'\(\d+\s\.\s\"(.[^"]*)".*\)\)/g.exec(d);
             if ( !match ) return;
 
-            var name = "";
-            var index = match[1].indexOf("\"");
-            while( true ) {
-                index++;
-                let next = match[1][index]
-                if ( next == "(" ) break;
-                name += next;
+            // var name = "";
+            // var index = match[1].indexOf("\"");
+            // while( true ) {
+            //     index++;
+            //     let next = match[1][index]
+            //     if ( next == "(" ) break;
+            //     name += next;
+            // }
+
+            let sigMatch = /(?:^|\")([^\(]+)(\([^\)]*\))/g.exec( match[1] );
+            let retMatch = /public\s(.*)/g.exec( match[2] );
+            
+            if ( sigMatch && retMatch ) {
+                var item = new CompletionItem( sigMatch[1] + sigMatch[2] + " -> " + retMatch[1], CompletionItemKind.Function );
+                item.insertText = match[2] + " " + 
+                    match[1].replace( /^.*}/gm, "}")
+                            .replace( /;[\r\n\s]*}/g, ";\r\n}" )
+                            .replace( /\s{4}super\(\.\.\)/gm, retMatch[1] == "void" ? "super(..)" : "return super(..)" );
+                // item.detail = sigMatch[1] + sigMatch[2];
+                var docs = new MarkdownString();
+                docs.appendCodeblock( sigMatch[1] + sigMatch[2], "cm" );
+                docs.appendCodeblock( "return " + retMatch[1], "cm" );
+                // item.documentation = "returns " + retMatch[1];
+                item.documentation = docs;
+                items.push( item );
             }
-
-            var item = new CompletionItem( name, CompletionItemKind.Function );
-            item.insertText = match[2] + " " + match[1];
-
-            items.push( item );
         });
     }
 
@@ -101,7 +114,7 @@ export class CM80CompletionItemProvider implements CompletionItemProvider {
 
             var item = new CompletionItem( `${match[1]}${match[2]}`, type );
             var params = match[2].match( /(\w+?\s\w+(?:=\w*)?)/g );
-            var rtnType = /(\w+$)/.exec(match[2]);
+            var rtnType = /\s->\s(.+$)/.exec(match[2]);
 
             if ( match[2].match( /^\s->\s/ ) ) {
                 item.insertText = match[1];
@@ -130,8 +143,15 @@ export class CM80CompletionItemProvider implements CompletionItemProvider {
                 }
                 
                 item.insertText = new SnippetString( snip );
-                item.detail = match[1];
-                item.documentation = "returns " + ( rtnType ? rtnType[0] : "void" );
+                var docs = new MarkdownString();
+                docs.appendCodeblock( item.label.replace(/\s->\s.*/g, ""), "cm" );
+                docs.appendCodeblock( "return " + ( rtnType ? rtnType[1] : "void" ), "cm" );
+                // docs.appendText("returns " + ( rtnType ? rtnType[1] : "void" ) );
+                docs.appendText( "From");
+                docs.appendCodeblock( match[3] );
+                item.documentation = docs;
+                // item.detail = match[1];
+                // item.documentation = "returns " + ( rtnType ? rtnType[0] : "void" );
             }
             items.push(item);
         } );
