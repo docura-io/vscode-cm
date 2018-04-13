@@ -1,3 +1,6 @@
+# Version 1.3.4 - Intellisense Tweaks
+Adding more information to the intellisense tooltips. Some things like when invoking for overriding a method, it was not giving much useful information. It now also correctly tab formats when inserting the snippet for method overriding. Finally if the overriding method needs a return value, instead of just putting `super(..)` in the method body, it will put `return super(..)`.
+
 # Version 1.3.3 - Fix File Watcher
 A fix for VSCode 1.20.0, the file watch should work again to pre-populate files.
 
