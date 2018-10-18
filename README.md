@@ -18,6 +18,20 @@ your extension is under `/custom/mycompany` you should open this folder in
 VSCode. Opening the entire CM_ROOT will probably cause your computer to explode
 in a blaze of awful glory :fire:
 
+## Working Settings
+```
+ "cm.clearOutputBuild": true,
+ "cm.autoComplete80Enabled": true,
+ "cm.root": "auto",
+ "[cm]": {
+     "editor.suggestOnTriggerCharacters": false,
+     "editor.quickSuggestions": {
+         "other": false,
+         "comments": false,
+         "strings": false
+     }
+ }
+```
 ## Running
 The extension will automatically start when a `.CM` file is opened.
 
