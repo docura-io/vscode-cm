@@ -9,29 +9,15 @@ support.
 Visual Studio Code (VSCode) is required to use this extension, yuou can get
 a free copy from https://code.visualstudio.com/Download.
 
-To Install download the latest from Downloads page, and then open the `VSIX` 
-file from VSCode `File -> Open`. (Do not double click the VSIX file to install)
+To install, use the extensions pane of VSCode and search for the CM extension. We have posted the extension to the marketplace!
 
-## Working Folder
-This extension is built to have your specific extension folder open. E.G. if 
-your extension is under `/custom/mycompany` you should open this folder in 
-VSCode. Opening the entire CM_ROOT will probably cause your computer to explode
-in a blaze of awful glory :fire:
+## Help Pages:
 
-## Working Settings
-```
- "cm.clearOutputBuild": true,
- "cm.autoComplete80Enabled": true,
- "cm.root": "auto",
- "[cm]": {
-     "editor.suggestOnTriggerCharacters": false,
-     "editor.quickSuggestions": {
-         "other": false,
-         "comments": false,
-         "strings": false
-     }
- }
-```
+- [Getting Setup](docs\setup.md) - Help you get your VSCode up and running right
+- [Features](docs\features.md) - Explanation of all the goodies we've built in
+
+Need Help? Open an issue with any problems you are having and we will help you out!
+
 ## Running
 The extension will automatically start when a `.CM` file is opened.
 
@@ -40,33 +26,6 @@ CET Designer"
 
 `Ctrl + Shift + U` will show the output window. There is a channel called "CM" 
 that shows the output from the CM Compiler.
-
-## Configuration
-You'll need to set your workspace path (You can also set your `User Settings`
- instead to have it persist to all
-), `File -> Preferences -> Workspace Settings`. 
-Set the following:
-
-```JSON
-{
-    "cm.root": "C:\\CetDev\\version6.5-_build-train"
-}
-```
-
-## Recommended Settings
-
-```JSON
-"cm.autoComplete80Enabled": true,
-"cm.root": "auto",
-"[cm]": {
-    "editor.suggestOnTriggerCharacters": false,
-    "editor.quickSuggestions": {
-        "other": false,
-        "comments": false,
-        "strings": false
-    }
-}
-```
 
 ## Commands
 The following commands are available:
@@ -84,7 +43,8 @@ The following commands are available:
 - CM: Start writing output to file - `N/A`
 - CM: Stops writing output contents to file - `N/A`
 
-## Building
+## Contributing
+
 After cloning the repository, from command prompt run:
 ```shell
 npm install
@@ -94,5 +54,4 @@ Currently, you'll need to copy `node_modules\cm-modules\findDefinition\out\varia
 
 If you don't have node installed, you'll need to install it from https://nodejs.org/en/download/.  You can then open the folder in vscode by just typing `code .` You should be able to build and run the project by just hitting `F5` within VSCode.  It will launch a new "Extension Development" instance of VSCode, which will automatically run the compiled version of the extension over the one you have installed.  See https://code.visualstudio.com/Docs/extensions/overview for more information and API documentation.
 
-## Contributing
 Contribution can be done on many levels to this project, from submitting issues to helping add features and fixing issues. Feel free to submit issues for bugs and ideas you have for the extension. If you'd like to contribute code, feel free to fork the repository and submit pull requests for your changes.
