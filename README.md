@@ -13,8 +13,8 @@ To install, use the extensions pane of VSCode and search for the CM extension. W
 
 ## Help Pages:
 
-- [Getting Setup](docs\setup.md) - Help you get your VSCode up and running right
-- [Features](docs\features.md) - Explanation of all the goodies we've built in
+- [Getting Setup](docs/setup.md) - Help you get your VSCode up and running right
+- [Features](docs/features.md) - Explanation of all the goodies we've built in
 
 Need Help? Open an issue with any problems you are having and we will help you out!
 
