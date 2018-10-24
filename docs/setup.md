@@ -1,4 +1,4 @@
-# Settuping up CM in VSCode
+# Setting up CM in VSCode
 
 ## Recommended Settings
 
