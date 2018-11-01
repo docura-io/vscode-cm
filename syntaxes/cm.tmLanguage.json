@@ -69,7 +69,12 @@
 						"0": {
 							"name": "punctuation.definition.comment.cs"
 						}
-					}
+					},
+					"patterns": [
+						{
+							"include": "#comment"
+						}
+					]
 				},
 				{
 					"begin": "(^\\s+)?(?=//)",
