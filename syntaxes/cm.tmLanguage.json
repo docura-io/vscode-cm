@@ -1588,7 +1588,7 @@
 			"end": "(?<=\\})|(?=;)",
 			"patterns": [
 				{
-					"begin": "\\(",
+					"begin": "\\(\\s*\\?",
 					"beginCaptures": {
 						"0": {
 							"name": "punctuation.parenthesis.open.cs"
