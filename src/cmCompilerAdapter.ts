@@ -77,7 +77,9 @@ export class cmCompilerAdapter {
     }
     
     public clean() {
-        this.clearOutputIfNeeded();
+        // this.clearOutputIfNeeded();
+        this.channel.clear();
+        this.channel.write("Starting Clean...\n");
         var results = this.compiler.clean();
         this.channel.write( "[INFO make clean-cm:]\n" );
         this.channel.write( "---------------------\n" );

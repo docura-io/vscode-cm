@@ -20,6 +20,8 @@ import { cmUtils } from './cmUtils';
 import { registerCommands, foldCopyright } from './commands';
 import { watch } from 'fs';
 
+import { setup as gSetup, refProvider } from './cmGlobals';
+
 let diagnosticCollection: DiagnosticCollection;
 let compilerAdapter: cmCompilerAdapter;
 
@@ -36,10 +38,12 @@ export function activate(context: ExtensionContext) {
     console.log("--STARTING CM EXTENSION--");
 
     // console.log(cmConfig.currentWorkspace());
+
     
     diagnosticCollection = languages.createDiagnosticCollection( "cm" );
     // setup compiler Adapter
     compilerAdapter = new cmCompilerAdapter( diagnosticCollection, cmConfig.cmOutputFilePath() );
+    gSetup();
     
     // setup watcher
     var cmWatcher = createCmWatcher();
@@ -65,6 +69,7 @@ export function activate(context: ExtensionContext) {
     disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
     disposables.push(languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
     disposables.push( window.registerTreeDataProvider( 'cmExplorer', new CmTreeDataProvider() ) );
+    disposables.push( languages.registerReferenceProvider( CM_MODE, refProvider ) );
 
     if ( cmConfig.isDebug() ) {
         // put experimental features here

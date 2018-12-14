@@ -1,6 +1,9 @@
 'use strict';
 
 import vscode = require('vscode');
+
+import { refProvider } from './cmGlobals';
+
 import fs = require('fs');
 
 export class cmOutputChannel {
@@ -14,9 +17,6 @@ export class cmOutputChannel {
     
     private diagnostics: vscode.DiagnosticCollection;
     
-    private msgPerSec = 0;
-    private msgCounterId = null;
-    private treshholdBroken = false;
     public writeOutputToFile: boolean;
     private filePath: string;
 
@@ -24,49 +24,40 @@ export class cmOutputChannel {
     private watchReject: (value?: {} | PromiseLike<{}>) => void;
     private watchSuccess: RegExp;
     private watchFail: RegExp;
+
+    private parsers: LineParser[];
+    private activeParsers: LineParser[];
     
     constructor( diags: vscode.DiagnosticCollection, filePath: string ) { 
         this.filePath = filePath;
         this.output = vscode.window.createOutputChannel( 'CM' );
-        this.hashOutput = vscode.window.createOutputChannel( 'CM > #' );
+        this.hashOutput = vscode.window.createOutputChannel( 'CM - #' );
         this.diagnostics = diags;
-        this.msgCounterId = setInterval( () => {
-            if ( this.msgPerSec > 0 ) {
-                // console.log("Messages Per Second: " + this.msgPerSec);
-                this.msgPerSec = 0;
-            }
-        }, 1000 );
+        this.parsers = [];
+        this.parsers.push( new FindReferencesParser() );
+
+        this.activeParsers = [];
     }
     
     public clear() {
         this.output.clear();
-        this.msgPerSec = 0;
     }
     
     public write( data: string ) {
         //This doesn't wait for the callback response because we really don't need to wait for it
         //Its just used when CM is crashing really hard and you need to see the output in a file because VS Code crashed
         //This will write the output into a file so you can review it
-        if(this.writeOutputToFile) {
-            fs.appendFile(this.filePath, data, null);
-        }
+        // if(this.writeOutputToFile) {
+        //     fs.appendFile(this.filePath, data, null);
+        // }
         
-        this.msgPerSec++;
-        if ( this.msgPerSec > 400 ) {
-            // only show the error once per threshhold break
-            if ( !this.treshholdBroken ) vscode.window.showWarningMessage( "Too many output messages have been queued, VSCode will stop processing output, until it returns to normal levels");
-            this.treshholdBroken = true;
-            // vscode.window.showWarningMessage( "Too many output messages have been queued, force cleaning CM");
-            // vscode.commands.executeCommand( 'cm.cleancm' );
-            this.output.append(data);
-        } else {
-            this.treshholdBroken = false;
-            var lineResults = this.lineParser( data );
-            this.output.append( lineResults.newLines );
-            if ( lineResults.hashLines.length > 0 ) {
-                this.hashOutput.append( lineResults.hashLines );
-            }
-        }
+        var lineResults = this.lineParser( data );
+        this.output.append( lineResults.newLines );
+        // this.output.append( data );
+        // this.output.append(data.replace(/[\x01\x02]/g, "\r\n"));
+        // if ( lineResults.hashLines.length > 0 ) {
+        //     this.hashOutput.append( lineResults.hashLines );
+        // }
         
     }
     
@@ -93,92 +84,108 @@ export class cmOutputChannel {
         var lines = data.replace(/[\x01\x02]/g, "\r\n").split(/\r\n/g);
         var newLines = [];
         var hashLines = [];
-        var errorRegex = /([cC]:.*\.cm)\((\d+)\,\s{1}(\d+)\):(.*)/gm; 
-        var gotoRegex = /\(cm-goto-def "(.[^"]+)"\s(\d+)/;
-        var debugRegex = /^cm\sD>\s*?$/;
-        var noise = /(.*)#custom\.qaTools(.*)/;
-        let nextErrorRegex = /\(next-error\).cm>\s*/;
-        var cetAltClickRegex = /'\(cm-show-file-at-pos-selected-window\s"(.*)"\s(\d+)\)\)/;
-        let plnHashRegex = /^[A-Za-z0-9]*=.*$/;
-        let cmACRegex = /^tt$|\(load\s".*"\s.*\)|\(cm-ac-result-none\)/;
+        const errorRegex = /([cC]:.*\.cm)\((\d+)\,\s{1}(\d+)\):(.*)/gm; 
+        const gotoRegex = /\(cm-goto-def "(.[^"]+)"\s(\d+)/;
+        const debugRegex = /^cm\sD>\s*?$/;
+        // var noise = /(.*)#custom\.qaTools(.*)/;
+        const nextErrorRegex = /\(next-error\).cm>\s*/;
+        const cetAltClickRegex = /'\(cm-show-file-at-pos-selected-window\s"(.*)"\s(\d+)\)\)/;
+        // let plnHashRegex = /^[A-Za-z0-9]*=.*$/;
+        const cmACRegex = /^tt$|\(load\s".*"\s.*\)|\(cm-ac-result-none\)/;
 
         lines.forEach(element => {
-            var errorMatch = errorRegex.exec(element);
-            var cetAltClickMatch = cetAltClickRegex.exec( element );
-            var nextErrorMatch = nextErrorRegex.exec( element );
-            
-            if ( plnHashRegex.test(element) ) {
-                hashLines.push( element );
-            } 
+            // check new line parsers
+            let blocked = false;
 
-            if ( noise.test(element ) || element.indexOf('#custom.qaTools') > -1 ) {
-                // get rid of this crap from output
-                return;
-            } else if ( cetAltClickMatch ) {    
-                this.goToFileLocation( cetAltClickMatch[1], parseInt(cetAltClickMatch[2]) );
-            } else if ( gotoRegex.test( element ) ) {
-                var match = gotoRegex.exec( element );
-                var file = match[1];
-                var offset = parseInt( match[2] );
-                this.isResolving = true;
-
-                vscode.workspace.openTextDocument( file )
-                .then( (doc) => {
-                    var position = doc.positionAt( offset );
-                    position = doc.positionAt( offset + position.line );
-                    
-                    if ( this.goToPromise && this.goToResolver ) {
-                        this.goToResolver( new vscode.Location( vscode.Uri.file( file ), position ) );
-                    } else {
-                        console.log( 'no promise for go to def' );
-                        vscode.window.showTextDocument( doc ).then( (res) => {
-                            res.selection = new vscode.Selection( position, position );
-                            res.revealRange( new vscode.Range( position, position ), vscode.TextEditorRevealType.InCenter );
-                        });
-                    }
-                });
-                return;
-            } else if ( errorMatch ) {
-                if ( !errorMatch[4].match( /\simplements\s\w*$/ )) { // for some reason the implements call outputs this like an error
-                    // this.setDiagnostics( errorMatch[1], parseInt( errorMatch[2] ), parseInt( errorMatch[3] ), errorMatch[4] );
-                    var severity = vscode.DiagnosticSeverity.Error;
-                    if ( /found\sno\suses\sof/.test(element) ) {
-                        severity = vscode.DiagnosticSeverity.Warning;
-                    }
-                    this.setDiagnostics( errorMatch[1], +errorMatch[2], +errorMatch[3], errorMatch[4], severity );
-                    element = `${severity == vscode.DiagnosticSeverity.Warning ? "WARNING" : "ERROR"} ` + errorMatch[1] + ':' + errorMatch[2] + ':' + errorMatch[3] + ' - ' + errorMatch[4];
-                }                             
-            } else if ( debugRegex.test( element) ) {
-                element = '[DEBUG ' + element + ']';
-            } else if ( nextErrorMatch && !this.isResolving ) {
-                // setTimeout( () => {
-                    if ( this.goToPromise && this.goToRejector ) {
-                        this.goToRejector();
-                    }
-                // }, 500 );
-            } else if ( this.watchSuccess != null ) {
-                if ( this.watchSuccess.test( element ) ) {
-                    this.watchResolve();
-                    this.clearOutputWatch();
-                } else if ( this.watchFail.test ( element ) )  {
-                    this.watchReject();
-                    this.clearOutputWatch();
+            for (let aParse of this.parsers) {
+                element = aParse.parse( element );
+                if ( aParse.isActive && aParse.exclusive ) {
+                    blocked = true;
+                    break;
                 }
             }
 
-            if ( cmACRegex.test( element ) ) {
-                return;
+            if( !blocked ) {
+                var errorMatch = errorRegex.exec(element);
+                var cetAltClickMatch = cetAltClickRegex.exec( element );
+                var nextErrorMatch = nextErrorRegex.exec( element );
+                
+                // if ( plnHashRegex.test(element) ) {
+                //     hashLines.push( element );
+                // } 
+
+                // if ( noise.test(element ) || element.indexOf('#custom.qaTools') > -1 ) {
+                    // get rid of this crap from output
+                    // return;
+                // } else 
+                if ( cetAltClickMatch ) {    
+                    this.goToFileLocation( cetAltClickMatch[1], parseInt(cetAltClickMatch[2]) );
+                } else if ( gotoRegex.test( element ) ) {
+                    var match = gotoRegex.exec( element );
+                    var file = match[1];
+                    var offset = parseInt( match[2] );
+                    this.isResolving = true;
+
+                    vscode.workspace.openTextDocument( file )
+                    .then( (doc) => {
+                        var position = doc.positionAt( offset );
+                        position = doc.positionAt( offset + position.line );
+                        
+                        if ( this.goToPromise && this.goToResolver ) {
+                            this.goToResolver( new vscode.Location( vscode.Uri.file( file ), position ) );
+                        } else {
+                            console.log( 'no promise for go to def' );
+                            vscode.window.showTextDocument( doc ).then( (res) => {
+                                res.selection = new vscode.Selection( position, position );
+                                res.revealRange( new vscode.Range( position, position ), vscode.TextEditorRevealType.InCenter );
+                            });
+                        }
+                    });
+                    return;
+                } else if ( errorMatch ) {
+                    if ( !errorMatch[4].match( /\simplements\s\w*$/ )) { // for some reason the implements call outputs this like an error
+                        // this.setDiagnostics( errorMatch[1], parseInt( errorMatch[2] ), parseInt( errorMatch[3] ), errorMatch[4] );
+                        var severity = vscode.DiagnosticSeverity.Error;
+                        if ( /found\sno\suses\sof/.test(element) ) {
+                            severity = vscode.DiagnosticSeverity.Warning;
+                        }
+                        this.setDiagnostics( errorMatch[1], +errorMatch[2], +errorMatch[3], errorMatch[4], severity );
+                        element = `${severity == vscode.DiagnosticSeverity.Warning ? "WARNING" : "ERROR"} ` + errorMatch[1] + ':' + errorMatch[2] + ':' + errorMatch[3] + ' - ' + errorMatch[4];
+                    }                             
+                // } else if ( debugRegex.test( element) ) {
+                    // element = '[DEBUG ' + element + ']';
+                } else if ( nextErrorMatch && !this.isResolving ) {
+                    // setTimeout( () => {
+                        if ( this.goToPromise && this.goToRejector ) {
+                            this.goToRejector();
+                        }
+                    // }, 500 );
+                } else if ( this.watchSuccess != null ) {
+                    if ( this.watchSuccess.test( element ) ) {
+                        this.watchResolve();
+                        this.clearOutputWatch();
+                    } else if ( this.watchFail.test ( element ) )  {
+                        this.watchReject();
+                        this.clearOutputWatch();
+                    }
+                }
+
+                if ( cmACRegex.test( element ) ) {
+                    return;
+                }
             }
             
-            newLines.push( element.replace( /\x01/g, "" ).replace( /\x02/g, "" ) );
+            if ( element != null ) {
+                newLines.push( element.replace( /\x01/g, "" ).replace( /\x02/g, "" ) );
+            }
         });
         
-        if ( hashLines.length == 1 ) {
-            hashLines[0] += '\r\n';
-        }
+        // if ( hashLines.length == 1 ) {
+        //     hashLines[0] += '\r\n';
+        // }
 
         if ( newLines.length == 1 ) {
-            newLines[0] += '\r\n';
+            // newLines[0] += '\r\n';
         }
 
         return {
@@ -221,5 +228,63 @@ export class cmOutputChannel {
                 var diag = new vscode.Diagnostic( textLine.range, desc, level );
                 this.diagnostics.set( vscode.Uri.file( file ), [diag] )        
             });
+    }
+}
+
+interface LineParser {
+    isActive: boolean;
+    exclusive: boolean;
+    parse(line: string): string; // if active, parse it
+}
+
+const srcMatch = /([cC]:.*\.cm)\((\d+),\s(\d+)\)(.*)/g;
+
+class SrcRefParser implements LineParser {
+    isActive = false;    
+    exclusive = false;
+
+    public parse( line: string ): string {
+        let lineM = srcMatch.exec( line );
+        if ( lineM ) {
+            // probably add to the find all referenc cache
+            this.didMatch( lineM[1], +lineM[2], +lineM[3], lineM[4] );
+            return lineM[1]+"("+lineM[2]+","+lineM[3]+"): "+lineM[4];
+        }
+        return line;
+    }
+
+    public didMatch( file: string, line: number, column: number, rest: string ) {}
+}
+
+class FindReferencesParser extends SrcRefParser {
+    exclusive = true;
+
+    private readonly startR = /\(cm-push-def\s"[^"]*"\s\d+\)/g;
+    private readonly endR = /\(cm-next-error\)/g;
+    
+    public parse( line: string ): string {
+        if ( !this.isActive ) {
+            // see if it should activate
+            let match = this.startR.exec(line);
+            if ( match ) {
+                this.isActive = true;
+                return "Found References:";
+            }
+            return line;
+        } else {
+            let end = this.endR.exec(line);
+            if ( end ) {
+                this.isActive = false;
+                refProvider.complete();
+                return null;
+            }
+            // parse the line
+            return super.parse(line);
+        }
+    }
+
+    public didMatch( file: string, line: number, column: number, rest: string ) {
+        // eventually add to somethign like find all ref cache
+        refProvider.addReference( file, line, column );
     }
 }
