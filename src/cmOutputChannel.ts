@@ -25,6 +25,8 @@ export class cmOutputChannel {
     private watchSuccess: RegExp;
     private watchFail: RegExp;
 
+    private partial = '';
+
     private parsers: LineParser[];
     private activeParsers: LineParser[];
     
@@ -50,9 +52,16 @@ export class cmOutputChannel {
         // if(this.writeOutputToFile) {
         //     fs.appendFile(this.filePath, data, null);
         // }
-        
+        if ( this.partial.length > 0 ) {
+            // console.log('appending partial');
+            data = this.partial + data;
+            this.partial = '';
+        }
         var lineResults = this.lineParser( data );
-        this.output.append( lineResults.newLines );
+
+        // if ( lineResults.newLines.length > 0 ) {
+            this.output.append( lineResults.newLines );
+        // }
         // this.output.append( data );
         // this.output.append(data.replace(/[\x01\x02]/g, "\r\n"));
         // if ( lineResults.hashLines.length > 0 ) {
@@ -81,7 +90,14 @@ export class cmOutputChannel {
     }
 
     public lineParser( data ) {
-        var lines = data.replace(/[\x01\x02]/g, "\r\n").split(/\r\n/g);
+        let rawData =  data.replace(/[\x01\x02]/g, "\r\n");
+        let hasNewLine = data.indexOf('\r\n') > -1;
+        if ( !hasNewLine && rawData.indexOf( "cm>" ) == -1 ) {
+            // console.log("partial found");
+            this.partial = rawData;
+            return { newLines: '' }
+        }
+        var lines = rawData.split(/\r\n/g);
         var newLines = [];
         var hashLines = [];
         const errorRegex = /([cC]:.*\.cm)\((\d+)\,\s{1}(\d+)\):(.*)/gm; 
