@@ -45,13 +45,20 @@ export class cmOutputChannel {
         this.output.clear();
     }
     
-    public write( data: string ) {
+    public write( data: string, force: boolean=false ) {
         //This doesn't wait for the callback response because we really don't need to wait for it
         //Its just used when CM is crashing really hard and you need to see the output in a file because VS Code crashed
         //This will write the output into a file so you can review it
         // if(this.writeOutputToFile) {
         //     fs.appendFile(this.filePath, data, null);
         // }
+
+        if ( force ) {
+            if ( this.partial.length > 0 ) this.output.appendLine( this.partial );
+            this.output.append(data);
+            return;
+        }
+
         if ( this.partial.length > 0 ) {
             // console.log('appending partial');
             data = this.partial + data;
@@ -108,6 +115,9 @@ export class cmOutputChannel {
         const cetAltClickRegex = /'\(cm-show-file-at-pos-selected-window\s"(.*)"\s(\d+)\)\)/;
         // let plnHashRegex = /^[A-Za-z0-9]*=.*$/;
         const cmACRegex = /^tt$|\(load\s".*"\s.*\)|\(cm-ac-result-none\)/;
+        const cmPrompt = /cm>/;
+
+        var invokeDate = Date.now();
 
         lines.forEach(element => {
             // check new line parsers
@@ -116,8 +126,19 @@ export class cmOutputChannel {
             for (let aParse of this.parsers) {
                 element = aParse.parse( element );
                 if ( aParse.isActive && aParse.exclusive ) {
-                    blocked = true;
-                    break;
+                    let diff =  invokeDate - aParse.started;
+                    if ( diff < 10000 ) {
+                        blocked = true;
+                        break;
+                    } else {
+                        // its been more then 10 seconds...your time is done
+                        aParse.isActive = false;
+                        
+                        // temp fix
+                        if ( this.goToRejector ) this.goToRejector();
+
+                        aParse.complete();
+                    }
                 }
             }
 
@@ -134,7 +155,12 @@ export class cmOutputChannel {
                     // get rid of this crap from output
                     // return;
                 // } else 
-                if ( cetAltClickMatch ) {    
+                // don't reject if its in process of doing it
+                if ( cmPrompt.test(element ) && this.goToPromise && !this.isResolving ) {
+                    this.goToRejector();
+                    this.goToPromise = null;
+                    // return;
+                } else if ( cetAltClickMatch ) {    
                     this.goToFileLocation( cetAltClickMatch[1], parseInt(cetAltClickMatch[2]) );
                 } else if ( gotoRegex.test( element ) ) {
                     var match = gotoRegex.exec( element );
@@ -146,15 +172,15 @@ export class cmOutputChannel {
                     .then( (doc) => {
                         var position = doc.positionAt( offset );
                         position = doc.positionAt( offset + position.line );
-                        
+
                         if ( this.goToPromise && this.goToResolver ) {
                             this.goToResolver( new vscode.Location( vscode.Uri.file( file ), position ) );
                         } else {
                             console.log( 'no promise for go to def' );
-                            vscode.window.showTextDocument( doc ).then( (res) => {
-                                res.selection = new vscode.Selection( position, position );
-                                res.revealRange( new vscode.Range( position, position ), vscode.TextEditorRevealType.InCenter );
-                            });
+                            // vscode.window.showTextDocument( doc ).then( (res) => {
+                            //     res.selection = new vscode.Selection( position, position );
+                            //     res.revealRange( new vscode.Range( position, position ), vscode.TextEditorRevealType.InCenter );
+                            // });
                         }
                     });
                     return;
@@ -187,7 +213,7 @@ export class cmOutputChannel {
                 }
 
                 if ( cmACRegex.test( element ) ) {
-                    return;
+                    // return;
                 }
             }
             
@@ -250,7 +276,9 @@ export class cmOutputChannel {
 interface LineParser {
     isActive: boolean;
     exclusive: boolean;
+    started: number;
     parse(line: string): string; // if active, parse it
+    complete();
 }
 
 const srcMatch = /([cC]:.*\.cm)\((\d+),\s(\d+)\)(.*)/g;
@@ -258,6 +286,7 @@ const srcMatch = /([cC]:.*\.cm)\((\d+),\s(\d+)\)(.*)/g;
 class SrcRefParser implements LineParser {
     isActive = false;    
     exclusive = false;
+    started = null;
 
     public parse( line: string ): string {
         let lineM = srcMatch.exec( line );
@@ -268,6 +297,8 @@ class SrcRefParser implements LineParser {
         }
         return line;
     }
+
+    public complete() {}
 
     public didMatch( file: string, line: number, column: number, rest: string ) {}
 }
@@ -284,6 +315,7 @@ class FindReferencesParser extends SrcRefParser {
             let match = this.startR.exec(line);
             if ( match ) {
                 this.isActive = true;
+                this.started = Date.now();
                 return "Found References:";
             }
             return line;
@@ -291,12 +323,16 @@ class FindReferencesParser extends SrcRefParser {
             let end = this.endR.exec(line);
             if ( end ) {
                 this.isActive = false;
-                refProvider.complete();
+                this.complete();
                 return null;
             }
             // parse the line
             return super.parse(line);
         }
+    }
+
+    public complete() {
+        refProvider.complete();
     }
 
     public didMatch( file: string, line: number, column: number, rest: string ) {

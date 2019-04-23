@@ -35,7 +35,7 @@ export class CMReferenceProvider implements ReferenceProvider {
     }
 
     complete() {
-        this.pRes( this.cache );
+        if ( this.pRes ) this.pRes( this.cache );
         this.pRes = null;
         this.pRej = null;
     }
@@ -51,6 +51,7 @@ export class CMReferenceProvider implements ReferenceProvider {
         let uri = Uri.file(file);
         let startPos = new Position( line-1, 0 );
         let endPos = new Position( line-1, column );
+        if( !this.cache ) this.cache = [];
         this.cache.push( new Location( uri, new Range(startPos, endPos ) ) );
     }
 

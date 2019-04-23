@@ -2,6 +2,8 @@
 
 import vscode = require('vscode');
 import { getCompiler } from './extension';
+import fs = require('fs');
+import path = require('path');
 
 export class cmConfig {
     
@@ -53,9 +55,9 @@ export class cmConfig {
     static cmRoot(): string {
         if ( !this.root ) {
             // this needs to be a bit smarter, but for now we use the first folder
-            const match = vscode.workspace.workspaceFolders[0].uri.fsPath.match( /.*(?=\\home\\)/ );
+            const match = vscode.workspace.workspaceFolders[0].uri.fsPath.match( /.*(?=\\home\\|\\base\\|\\extensions\\|\\personal\\)/ );
             this.root = this.getConfig()["root"];
-            if ( this.root == "auto" && match.length > 0 ) {
+            if ( this.root == "auto" && match && match.length > 0 ) {
                 console.log("CM Root Auto Mode - Using Path '" + match.toString() + "'");
                 this.root = match.toString();
             }
@@ -63,6 +65,14 @@ export class cmConfig {
         return this.root;
     }
     
+    static cmGitMode(): boolean {
+        let force = this.getConfig()["gitMode"];
+        if ( typeof force !== 'undefined' ) return force;
+        // attempt to autodetect
+        let root = this.cmRoot();
+        return fs.existsSync( path.join(root, 'base' ) );
+    }
+
     static cmPath(): string {
         return this.cmRoot() + "\\home";
     }

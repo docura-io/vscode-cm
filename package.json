@@ -40,7 +40,7 @@
         "grammars": [
             {
                 "language": "cm",
-                "path": "./syntaxes/CM.plist",
+                "path": "./syntaxes/cm.plist",
                 "scopeName": "source.cm"
             }
         ],
@@ -184,7 +184,7 @@
             "properties": {
                 "cm.root": {
                     "type": "string",
-                    "default": "C:\\CetDev\\version8.0",
+                    "default": "auto",
                     "description": "The path to the CM home"
                 },
                 "cm.apiUrl": {

@@ -16,9 +16,11 @@ export class CM80CompletionItemProvider implements CompletionItemProvider {
     }
 
     public provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken): Thenable<CompletionList> {
-        return new Promise( (resolve, reject) => {
+
+        var p;
+        p = new Promise<CompletionList>( (resolve, reject) => {
             
-            const prevChar = document.getText( new Range( position.translate(0, -1), position  ) );
+            // const prevChar = document.getText( new Range( position.translate(0, -1), position  ) );
 
             document.save()
             .then( () => {
@@ -31,7 +33,7 @@ export class CM80CompletionItemProvider implements CompletionItemProvider {
                     doNotClear: true
                 } )
                 .then( () => {
-                    console.log('CM AC Success');
+                    console.log('CM AC Success ' + p );
                     fs.readFile( cmConfig.cmRoot() + "/write/cm-ac-candidates.el", "utf-8", (err, data) => {
                         if ( err ) reject();
                         
@@ -49,7 +51,9 @@ export class CM80CompletionItemProvider implements CompletionItemProvider {
                     reject();
                 });
             });
-        })
+        });
+
+        return p;
     }
 
     private getOffset( document: TextDocument, position: Position ): number {

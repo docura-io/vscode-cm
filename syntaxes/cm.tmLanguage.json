@@ -17,10 +17,21 @@
 			"include": "#directives"
 		},
 		{
+			"include": "#globals"
+		},
+		{
 			"include": "#block"
 		}
 	],
 	"repository": {
+		"globals": {
+			"patterns": [
+				{ "include": "#storage-modifier" },
+				{ "include": "#field-declaration" },
+				{ "include": "#variable-initializer" },
+				{ "include": "#punctuation-semicolon" }
+			]
+		},
 		"declartions": {
 			"patterns": [
 				{
@@ -115,7 +126,7 @@
 			]
 		},
 		"package-declaration": {
-			"begin": "\\b(package)\\s+",
+			"begin": "\\b(package)\\s+(?=\\w+\\.)",
 			"beginCaptures": {
 				"1": {
 					"name": "keyword.other.namespace.cs"
@@ -1392,9 +1403,16 @@
 					"include": "#parenthesized-parameter-list"
 				},
 				{
+					"include": "#method-extenders"
+				},
+				{
 					"include": "#block"
 				}
 			]
+		},
+		"method-extenders": {
+			"match": "(referred|nonfglue|free|args|unsafe|abstract|copy=reference|copy=null|stream=reference|stream=null|encrypted)",
+			"name": "keyword.control.flow.return.cs"
 		},
 		"constructor-declaration": {
 			"begin": "(?=constructor*\\s*\\()",
