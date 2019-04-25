@@ -74,7 +74,7 @@ export class cmConfig {
     }
 
     static cmPath(): string {
-        return this.cmRoot() + "\\home";
+        return this.cmRoot() + (this.cmGitMode() ? "\\base" : "\\home");
     }
     
     static apiUrl(): string { 

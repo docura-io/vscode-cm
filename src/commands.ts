@@ -57,12 +57,7 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
     
     let d11 = commands.registerCommand( "cm.profileboot", () => {
         validateCMFileAndRun( false, (editor) => {
-            const userName = process.env["USER"] || process.env["USERNAME"];
-            if ( !userName ) {
-                window.showErrorMessage( "Unable to retrieve username");
-                return;
-            }
-            workspace.openTextDocument( Uri.file( `${cmConfig.cmRoot()}\\home\\profile\\${userName.toLowerCase()}\\boot.cm` ) )
+            workspace.openTextDocument( getFilePathInUserProfile("boot.cm") )
             .then( (doc) => {
                 window.showTextDocument( doc );
             });
@@ -90,10 +85,6 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
     
     let d16 = commands.registerCommand( "cm.stopwriteoutputfile", () => {
         compiler.stopWritingOutputFile();
-    });
-
-    let d18 = commands.registerCommand( "cm.testAC", () => {
-        compiler.run( "cvm_ac(\"c:/CetDev/version8.0/home/profile/test/test.cm\", 1892);" );
     });
    
     let scripts = commands.registerCommand( "cm.userScript", () => {
@@ -155,12 +146,7 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
 
     let d25 = commands.registerCommand( "cm.profiletest", () => {
         validateCMFileAndRun( false, (editor) => {
-            const userName = process.env["USER"] || process.env["USERNAME"];
-            if ( !userName ) {
-                window.showErrorMessage( "Unable to retrieve username");
-                return;
-            }
-            workspace.openTextDocument( Uri.file( `${cmConfig.cmRoot()}\\home\\profile\\${userName.toLowerCase()}\\t.cm` ) )
+            workspace.openTextDocument( getFilePathInUserProfile("t.cm") )
             .then( (doc) => {
                 window.showTextDocument( doc );
             });
@@ -230,4 +216,14 @@ function validateCMFileAndRun( requireCMFile: boolean, func: ( editor: TextEdito
         if ( editor.document.languageId != "cm" ) return;
     }
     func( editor );
+}
+
+function getFilePathInUserProfile( file: string ): Uri {
+    const userName = process.env["USER"] || process.env["USERNAME"];
+    if ( !userName ) {
+        window.showErrorMessage( "Unable to retrieve username");
+        return;
+    }
+    let profilePath = cmConfig.cmGitMode() ? "personal" : "home";
+    return Uri.file( `${cmConfig.cmRoot()}\\${profilePath}\\profile\\${userName.toLowerCase()}\\${file}` );
 }
