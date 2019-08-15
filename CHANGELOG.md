@@ -1,3 +1,23 @@
+# Version 1.4.1 - Git Going to webpack syntax
+
+There a few items new and updated in this release:
+
+## Git CM Workspace support
+
+Starting in version `1.4.0` you can now work in GIT Workspaces as well as Perforce workspaces for CET development. VSCode should automatically detect the correct mode your workspace is in, but if it doesn't, you can set "cm.gitMode" in your VSCode settings (You'll have to go into the JSON of your settings to set this) and set it to `true` or `false` depending if your using a GIT workspace or not.
+
+## Go To Definition Improvements
+
+Often times the CM compiler when you invoke Go to Definition (`F12`) it would respond as-if you did Find All References. With this release when this happens, it will treat the first item in the return from the compiler as the item to jump to. No more having to CTRL+Click the items in the output window!
+
+## New Colorizer Option
+
+I've been slowly working on a brand new colorizer (grammer) file for CM. (Built using tmLanguage). If you want to try it out you can enable the "New Syntax" setting under your settings in VSCode. After checking or unchecking this value, it'll ask you to restart VSCode for it to take effect. This new language has been based on a C# language definition and I've had a lot more luck customizing it verse the original one that has been used previously (which was based on a Java). Try it out and hopefully you like it!
+
+## Housekeeping
+
+The VSCode extension is now being bundled with webpack, so this should give a little performance boost for the extension.
+
 # Version 1.3.4 - Intellisense Tweaks
 Adding more information to the intellisense tooltips. Some things like when invoking for overriding a method, it was not giving much useful information. It now also correctly tab formats when inserting the snippet for method overriding. Finally if the overriding method needs a return value, instead of just putting `super(..)` in the method body, it will put `return super(..)`.
 
