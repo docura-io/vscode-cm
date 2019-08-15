@@ -2,7 +2,6 @@
 
 import { cmCompilerAdapter } from './cmCompilerAdapter';
 import { cmConfig } from './cmConfig';
-import { showReloadConfirm } from './helpers/reload';
 
 const fs = require('fs');
 var didLoadScripts = false;
@@ -126,24 +125,6 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
         })
     });
 
-    let d23 = commands.registerCommand( "cm.setarch32", () => {
-        cmConfig.setArch( "win32" ).then( () => {
-            showReloadConfirm()
-            .then( res => {
-                if ( res ) commands.executeCommand("workbench.action.reloadWindow");
-            } );
-         } );
-    });
-
-    let d24 = commands.registerCommand( "cm.setarch64", () => {
-        cmConfig.setArch( "win64" ).then( () => {
-            showReloadConfirm()
-            .then( res => {
-                if ( res ) commands.executeCommand("workbench.action.reloadWindow");
-            } );
-         } );
-    });
-
     let d25 = commands.registerCommand( "cm.profiletest", () => {
         validateCMFileAndRun( false, (editor) => {
             workspace.openTextDocument( getFilePathInUserProfile("t.cm") )
@@ -153,7 +134,7 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
         } );
     } );
 
-    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, d15, d16, scripts, d20, d21, d22, d23, d24 );
+    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, d15, d16, scripts, d20, d21, d22 );
 }
     
     let d99 = commands.registerCommand( "cm.Test", () => {

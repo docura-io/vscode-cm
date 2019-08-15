@@ -12,7 +12,7 @@ export class cmOutputChannel {
     private hashOutput: vscode.OutputChannel;
     private isResolving = false;
     private goToPromise: Thenable<vscode.Location>;
-    private goToResolver: (value?: {} | PromiseLike<{}>) => void;
+    public goToResolver: (value?: {} | vscode.Location | PromiseLike<{}>) => void;
     private goToRejector: (value?: {} | PromiseLike<{}>) => void;
     
     private diagnostics: vscode.DiagnosticCollection;
@@ -36,7 +36,7 @@ export class cmOutputChannel {
         this.hashOutput = vscode.window.createOutputChannel( 'CM - #' );
         this.diagnostics = diags;
         this.parsers = [];
-        this.parsers.push( new FindReferencesParser() );
+        this.parsers.push( new FindReferencesParser(this) );
 
         this.activeParsers = [];
     }
@@ -76,7 +76,7 @@ export class cmOutputChannel {
         // }
         
     }
-    
+
     public goToDefinitionPromise() {
         if ( !this.goToPromise ) {
             this.goToPromise = new Promise( (resolve, reject) => {
@@ -305,9 +305,15 @@ class SrcRefParser implements LineParser {
 
 class FindReferencesParser extends SrcRefParser {
     exclusive = true;
+    private channel: cmOutputChannel;
 
     private readonly startR = /\(cm-push-def\s"[^"]*"\s\d+\)/g;
     private readonly endR = /\(cm-next-error\)/g;
+
+    constructor( c: cmOutputChannel ) {
+        super();
+        this.channel = c;
+    }
     
     public parse( line: string ): string {
         if ( !this.isActive ) {
@@ -332,7 +338,13 @@ class FindReferencesParser extends SrcRefParser {
     }
 
     public complete() {
-        refProvider.complete();
+        let gotoRes = this.channel.goToResolver;
+        let first = refProvider.first();
+        if ( gotoRes != null && first != null ) {
+            gotoRes( first );
+        } else {
+            refProvider.complete();
+        }
     }
 
     public didMatch( file: string, line: number, column: number, rest: string ) {

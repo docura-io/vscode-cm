@@ -7,8 +7,8 @@ const path = require("path");
 import {TextDocument, CancellationToken, ProviderResult} from 'vscode';
 
 export class CMFileSymbolProvider implements vscode.DocumentSymbolProvider {
-    public provideDocumentSymbols(document: vscode.TextDocument, token: CancellationToken): ProviderResult<vscode.DocumentSymbol[]> {
-        let symbols: vscode.DocumentSymbol[] = [];
+    public provideDocumentSymbols(document: vscode.TextDocument, token: CancellationToken): ProviderResult<vscode.SymbolInformation[]> {
+        let symbols: vscode.SymbolInformation[] = [];
 
         const searches = [
             { regex: /\b(?:public|package|private)\s+class\s+([a-zA-Z][_a-zA-Z0-9]*)/g, kind: vscode.SymbolKind.Class },
@@ -33,14 +33,13 @@ export class CMFileSymbolProvider implements vscode.DocumentSymbolProvider {
                 // constructor(name: string, detail: string, kind: SymbolKind, range: Range, selectionRange: Range);
                 var pos = document.positionAt( match.index );
                 symbols.push( 
-                    new vscode.DocumentSymbol(
+                    new vscode.SymbolInformation(
                         this.getNameFromKind( match, s.kind ),
-                        'Im the Detail',
                         s.kind,
-                        new vscode.Range( pos, pos ),
-                        new vscode.Range( pos, pos ),
+                        "",
+                        new vscode.Location( document.uri, pos )
                     )
-                )
+                );
             } 
         });
 

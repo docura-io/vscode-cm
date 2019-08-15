@@ -47,6 +47,10 @@ export class CMReferenceProvider implements ReferenceProvider {
         this.pRej = null;
     }
 
+    first() : Location {
+        return ( this.cache.length > 0 ? this.cache[0] : null);
+    }
+
     addReference( file: string, line: number, column: number ) {
         let uri = Uri.file(file);
         let startPos = new Position( line-1, 0 );

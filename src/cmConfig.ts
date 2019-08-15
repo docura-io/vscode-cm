@@ -76,33 +76,21 @@ export class cmConfig {
     static cmPath(): string {
         return this.cmRoot() + (this.cmGitMode() ? "\\base" : "\\home");
     }
-    
-    static apiUrl(): string { 
-        return this.getConfig()["apiUrl"];
-    }
 
     static arch(): string {
-        const arch = this.getConfig()["arch"];
-        return arch == null || arch == "" ? "win64" : arch;
-    }
-
-    static setArch( val: string ): Thenable<void> {
-        // if ( val == "win64" ) {
-
-        // } else {
-            var con = vscode.workspace.getConfiguration(this.LangName);
-            return con.update( "arch", val, false ).then( () => { }, 
-            (err) => { console.log(err); } );
-        // }
-    }
-    
-    static definitionUrl( usings: string, statement: string ): string {
-        var url = `${this.apiUrl()}definition?usings=${usings}&statement=${statement}`;
-        return url;
+        return "win64";
     }
 
     static rsWatcherEnabled(): Boolean {
         return this.getConfig()["rsSaveWatch"];
+    }
+
+    static useNewSyntax(): Boolean {
+        let useNewSyntax = this.getConfig()["newSyntax"]; 
+        if ( typeof useNewSyntax !== "boolean" ) {
+            useNewSyntax = false;
+        }
+        return useNewSyntax;
     }
     
     static emacsClientExe() {
@@ -114,7 +102,7 @@ export class cmConfig {
     }
     
     private static getConfig() {
-        return vscode.workspace.getConfiguration(this.LangName)
+        return vscode.workspace.getConfiguration(this.LangName);
     }
     
 }
