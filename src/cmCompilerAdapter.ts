@@ -22,6 +22,7 @@ export class cmCompilerAdapter {
         
         this.compiler = new compilerContainer( {
             cmRoot: cmConfig.cmRoot(),
+            gitMode: cmConfig.cmGitMode(),
             onRead: (data) => {
                 this.channel.write( data );
             },
@@ -77,20 +78,22 @@ export class cmCompilerAdapter {
     }
     
     public clean() {
-        this.clearOutputIfNeeded();
+        // this.clearOutputIfNeeded();
+        this.channel.clear();
+        this.channel.write("Starting Clean...\n", true);
         var results = this.compiler.clean();
-        this.channel.write( "[INFO make clean-cm:]\n" );
-        this.channel.write( "---------------------\n" );
-        this.channel.write( results );
-        this.channel.write( "---------------------\n" );
-        this.channel.write( "[INFO CM Clean]\n" );
+        this.channel.write( "[INFO make clean-cm:]\n", true );
+        this.channel.write( "---------------------\n", true );
+        this.channel.write( results, true );
+        this.channel.write( "---------------------\n", true );
+        this.channel.write( "[INFO CM Clean]\n", true );
         this.isStarted = false;
     }
     
     public stop() {
         if ( !this.isStarted ) return;
         this.clearOutputIfNeeded();
-        this.channel.write( "[INFO CM Killed]\n" );
+        this.channel.write( "[INFO CM Killed]\n", true );
         this.compiler.kill();
         this.isStarted = false;
     }

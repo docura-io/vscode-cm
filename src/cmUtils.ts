@@ -42,13 +42,14 @@ export class cmUtils {
      */
     static getCurrentPackage( uri: Uri ): string {
         var root = vscode.workspace.getWorkspaceFolder(uri).uri.fsPath;
-        var toMatch = "\\home\\";
-        var matchIndex = root.indexOf("\\home\\");
-
-        if (matchIndex > -1) {
-            root = root.substring(matchIndex + toMatch.length).replace('\\', '.');
+        var toMatch = ["\\home\\","\\base\\","\\extensions\\","\\personal\\"];
+        var matchIndex = -1; 
+        for (const match of toMatch) {
+            matchIndex = root.indexOf(match);
+            if ( matchIndex > -1 ) return root.substring(matchIndex + match.length).replace('\\', '.');;
         }
 
+        // this shouldn't happen
         return root;
     }
     

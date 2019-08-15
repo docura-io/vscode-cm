@@ -1,7 +1,7 @@
 'use strict';
 
 import { HoverProvider, Hover, TextDocument, Position, CancellationToken } from 'vscode';
-import { VariableFinder, VariableFindResult } from 'cm-modules/findDefinition/variableFinder';
+import { VariableFinder } from './helpers/variableFinder';
 
 
 export class CMHoverProvider implements HoverProvider {

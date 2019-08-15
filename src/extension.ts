@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { DiagnosticCollection, Disposable, ExtensionContext, FileSystemWatcher, languages, window, workspace, RelativePattern, WorkspaceFolder, TextDocument, Uri } from 'vscode';
+import { commands, DiagnosticCollection, Disposable, extensions, Extension, ExtensionContext, FileSystemWatcher, languages, window, workspace, RelativePattern, WorkspaceFolder, TextDocument, Uri } from 'vscode';
 
 import { CMDefinitionProvider } from './cmDeclaration';
 import { CM80CompletionItemProvider } from './cmSuggest80';
@@ -12,6 +12,7 @@ import { CmTreeDataProvider } from './cmExplorer';
 import { CmCodeActionProvider } from './cmCodeActions';
 import { CMFileSymbolProvider } from './cmFileSymbolProvider';
 import { CM_MODE } from './cmMode';
+import { showReloadConfirm } from './helpers/reload';
 
 import { cmCompilerAdapter } from './cmCompilerAdapter';
 import { cmConfig } from './cmConfig';
@@ -19,6 +20,9 @@ import { cmUtils } from './cmUtils';
 
 import { registerCommands, foldCopyright } from './commands';
 import { watch } from 'fs';
+import fs = require('fs');
+
+import { setup as gSetup, refProvider } from './cmGlobals';
 
 let diagnosticCollection: DiagnosticCollection;
 let compilerAdapter: cmCompilerAdapter;
@@ -27,19 +31,53 @@ export function getCompiler(): cmCompilerAdapter {
     return compilerAdapter;
 }
 
+function setupConfigListener( ctx: ExtensionContext ) {
+    workspace.onDidChangeConfiguration( (e) => {
+        if ( e.affectsConfiguration( "cm.newSyntax" ) ) {
+            updatePackageConfig( ctx.asAbsolutePath("package.json") );
+        }
+    } );
+}
+
+function updatePackageConfig( filePath: string  ) {
+    fs.readFile( filePath, {encoding: "utf8"}, (err,data) => {
+        if ( err ) {
+            console.log("Couldn't find config");
+            return;
+        }
+        let config = JSON.parse(data);
+        // console.log(config.contributes.grammars[0].path);
+        let requestedSyntax = "./syntaxes/" + ( cmConfig.useNewSyntax() ? "cm.tmLanguage.json" : "CM.plist");
+        console.log("REQUESTED CM SYNTAX " + requestedSyntax );
+        if ( config.contributes.grammars[0].path != requestedSyntax ) {
+            console.log("Changing CM Syntax Config");
+            config.contributes.grammars[0].path = "./syntaxes/" + ( cmConfig.useNewSyntax() ? "cm.tmLanguage.json" : "CM.plist");
+            fs.writeFileSync( filePath, JSON.stringify(config, null, 2) );
+            
+            showReloadConfirm( "You CM Language syntax setting was changed you must reload VSCode for the change to take effect" )
+            .then( (v) => {
+                if ( v ) commands.executeCommand( "workbench.action.reloadWindow" );
+            });
+            
+        }
+    } );
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
-
+    setupConfigListener( context );
     const disposables: Disposable[] = [];
     
     console.log("--STARTING CM EXTENSION--");
 
     // console.log(cmConfig.currentWorkspace());
+
     
     diagnosticCollection = languages.createDiagnosticCollection( "cm" );
     // setup compiler Adapter
     compilerAdapter = new cmCompilerAdapter( diagnosticCollection, cmConfig.cmOutputFilePath() );
+    gSetup();
     
     // setup watcher
     var cmWatcher = createCmWatcher();
@@ -65,6 +103,7 @@ export function activate(context: ExtensionContext) {
     disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
     disposables.push(languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
     disposables.push( window.registerTreeDataProvider( 'cmExplorer', new CmTreeDataProvider() ) );
+    disposables.push( languages.registerReferenceProvider( CM_MODE, refProvider ) );
 
     if ( cmConfig.isDebug() ) {
         // put experimental features here

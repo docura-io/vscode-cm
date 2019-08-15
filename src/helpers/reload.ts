@@ -2,9 +2,9 @@
 
 import { window } from 'vscode';
 
-export const showReloadConfirm = (): Promise<boolean> => {
+export const showReloadConfirm = (msg): Promise<boolean> => {
     return new Promise( (res, rej) => {
-        window.showInformationMessage( "CM: You must reload the window for the architecture change to take effect", "Reload" )
+        window.showInformationMessage( msg, "Reload" )
         .then( value => {
             if ( value == "Reload" ) {
                 res(true);

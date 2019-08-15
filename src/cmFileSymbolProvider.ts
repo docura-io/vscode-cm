@@ -12,7 +12,7 @@ export class CMFileSymbolProvider implements vscode.DocumentSymbolProvider {
 
         const searches = [
             { regex: /\b(?:public|package|private)\s+class\s+([a-zA-Z][_a-zA-Z0-9]*)/g, kind: vscode.SymbolKind.Class },
-            { regex: /(?:extend\s+)?(?:public|package|private)\s+([a-zA-Z<](?:[_\-\>,\sa-zA-Z0-9]|\{\}|\[\])*)\s+([a-zA-Z<][_>,\sa-zA-Z0-9]*)\s*\(.*(?=\)\s*\{.*)/g, kind: vscode.SymbolKind.Method },
+            { regex: /(?:extend\s+)?(?:public|package|private)\s+([a-zA-Z<](?:[_\-\>,\sa-zA-Z0-9]|\{\}|\[\])*)\s+([a-zA-Z<][_>,\sa-zA-Z0-9]*)\s*\((.*)(?=\)\s*\{.*)/g, kind: vscode.SymbolKind.Method },
             { regex: /(?:public|package|private)\s+([a-zA-Z<](?:[_\-\>,\sa-zA-Z0-9]|\{\}|\[\])*)\s+([a-zA-Z][_a-zA-Z0-9]*)[^{]*?(?=;)/g, kind: vscode.SymbolKind.Property }
         ];
 
@@ -20,14 +20,24 @@ export class CMFileSymbolProvider implements vscode.DocumentSymbolProvider {
             const txt = document.getText();
             var match: RegExpExecArray;
             while( ( match = s.regex.exec(txt) ) !== null ) {
-                symbols.push( new vscode.SymbolInformation(
+                // symbols.push( new vscode.SymbolInformation(
+                //         this.getNameFromKind( match, s.kind ),
+                //         s.kind,
+                //         document.fileName,
+                //         new vscode.Location(
+                //             document.uri,
+                //             document.positionAt( match.index )
+                //         )
+                //     )
+                // );
+                // constructor(name: string, detail: string, kind: SymbolKind, range: Range, selectionRange: Range);
+                var pos = document.positionAt( match.index );
+                symbols.push( 
+                    new vscode.SymbolInformation(
                         this.getNameFromKind( match, s.kind ),
                         s.kind,
-                        document.fileName,
-                        new vscode.Location(
-                            document.uri,
-                            document.positionAt( match.index )
-                        )
+                        "",
+                        new vscode.Location( document.uri, pos )
                     )
                 );
             } 
@@ -40,7 +50,7 @@ export class CMFileSymbolProvider implements vscode.DocumentSymbolProvider {
         if ( kind == vscode.SymbolKind.Class ) {
             return match[1];
         } else if ( kind == vscode.SymbolKind.Method ) {
-            return `${match[2]}() : ${match[1]}`;
+            return `${match[2]}(${match[3]}) : ${match[1]}`;
         } else if ( kind == vscode.SymbolKind.Property ) {
             return `${match[2]} : ${match[1]}`;
         }

@@ -1,303 +1,286 @@
 {
-    "name": "cm",
-    "displayName": "CM",
-    "description": "CM Language Support",
-    "version": "1.3.4",
-    "icon": "resources/cmIcon.png",
-    "publisher": "docuraio",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/docura-io/vscode-cm.git"
-    },
-    "galleryBanner": {
-        "color": "#3487GC",
-        "theme": "light"
-    },
-    "engines": {
-        "vscode": "^1.18.0"
-    },
-    "categories": [
-        "Other"
+  "name": "cm",
+  "displayName": "CM",
+  "description": "CM Language Support",
+  "version": "1.4.1",
+  "icon": "resources/cmIcon.png",
+  "publisher": "docuraio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/docura-io/vscode-cm.git"
+  },
+  "galleryBanner": {
+    "color": "#3487GC",
+    "theme": "light"
+  },
+  "engines": {
+    "vscode": "^1.25.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:cm",
+    "workspaceContains:**/*.cm"
+  ],
+  "main": "./dist/extension",
+  "contributes": {
+    "languages": [
+      {
+        "id": "cm",
+        "extensions": [
+          ".cm"
+        ],
+        "aliases": [
+          "CM"
+        ],
+        "configuration": "./language-configuration.json"
+      }
     ],
-    "activationEvents": [
-        "onLanguage:cm",
-        "workspaceContains:**/*.cm"
+    "grammars": [
+      {
+        "language": "cm",
+        "path": "./syntaxes/CM.plist",
+        "scopeName": "source.cm"
+      }
     ],
-    "main": "./out/src/extension",
-    "contributes": {
-        "languages": [
-            {
-                "id": "cm",
-                "extensions": [
-                    ".cm"
-                ],
-                "aliases": [
-                    "CM"
-                ],
-                "configuration": "./language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "cm",
-                "path": "./syntaxes/CM.plist",
-                "scopeName": "source.cm"
-            }
-        ],
-        "commands": [
-            {
-                "command": "cm.start",
-                "title": "Start CM",
-                "description": "Starts the CM Compiler.",
-                "category": "CM"
-            },
-            {
-                "command": "cm.cleancm",
-                "title": "Clean CM",
-                "description": "Cleans the CM Compiler.",
-                "category": "CM"
-            },
-            {
-                "command": "cm.stopcm",
-                "title": "Stops CM",
-                "description": "Stops CM Environment.",
-                "category": "CM"
-            },
-            {
-                "command": "cm.runcurrentfile",
-                "title": "Run Current File",
-                "description": "Runs the current file.",
-                "category": "CM"
-            },
-            {
-                "command": "cm.compilefile",
-                "title": "Compile File",
-                "description": "Compiles the current file.",
-                "category": "CM"
-            },
-            {
-                "command": "cm.quitdebug",
-                "title": "Quit Debug",
-                "description": "Ends the debug session.",
-                "category": "CM"
-            },
-            {
-                "command": "cm.startcet",
-                "title": "Start CET Designer",
-                "description": "Starts CET Designer.",
-                "category": "CM"
-            },
-            {
-                "command": "cm.runline",
-                "title": "Run Current Line",
-                "description": "Runs the current line of code",
-                "category": "CM"
-            },
-            {
-                "command": "cm.profileboot",
-                "title": "Profile Boot",
-                "description": "Opens your boot.cm file in your profile",
-                "category": "CM"
-            },
-            {
-                "command": "cm.profiletest",
-                "title": "Profile Test.cm",
-                "description": "Opens your t.cm file in your profile",
-                "category": "CM"
-            },
-            {
-                "command": "cm.loadall",
-                "title": "Load All Known",
-                "description": "Reloads all known packages",
-                "category": "cm"
-            },
-            {
-                "command": "cm.compileallbelow",
-                "title": "Compile VSCode Workspace",
-                "description": "Compiles everything below each open workspace",
-                "category": "CM"
-            },
-            {
-                "command": "cm.compileworkspace",
-                "title": "Compile Specific Workspace",
-                "description": "Compiles everything in a specific workspace",
-                "category": "CM"
-            },
-            {
-                "command": "cm.startwriteoutputfile",
-                "title": "Enable File Logging",
-                "description": "Writes output channel contents into a text file located by default in C:\\temp\\cm_output.txt",
-                "category": "CM"
-            },
-            {
-                "command": "cm.stopwriteoutputfile",
-                "title": "Disable File Logging",
-                "description": "Stops output channel wirting",
-                "category": "CM"
-            },
-            {
-                "command": "cm.purgeRemoteCache",
-                "title": "Purge Remote Cache",
-                "description": "Clears the remote intellisense cache",
-                "category": "CM"
-            },
-            {
-                "command": "cm.userScript",
-                "title": "User Scripts",
-                "description": "Execute User Defined Script",
-                "category": "CM"
-            },
-            {
-                "command": "cm.implements",
-                "title": "Implements",
-                "description": "Goes up to the overriden method",
-                "category": "CM"
-            },
-            {
-                "command": "cm.subclasses",
-                "title": "Sub Classes",
-                "description": "Print all the subclasses of the class under the cursor",
-                "category": "CM"
-            },
-            {
-                "command": "cm.overrides",
-                "title": "Overrides",
-                "description": "Go to the method the current method overrides",
-                "category": "CM"
-            },
-            {
-                "command": "cm.setarch32",
-                "title": "Set Arch 32-bit",
-                "description": "Stops compiler and sets the architecture to 32-bit",
-                "category": "CM"
-            },
-            {
-                "command": "cm.setarch64",
-                "title": "Set Arch 64-bit",
-                "description": "Stops compiler and sets the architecture to 64-bit",
-                "category": "CM"
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "title": "CM Configuration",
-            "properties": {
-                "cm.root": {
-                    "type": "string",
-                    "default": "C:\\CetDev\\version8.0",
-                    "description": "The path to the CM home"
-                },
-                "cm.apiUrl": {
-                    "type": "string",
-                    "default": "http://docura-io.azurewebsites.net/api/",
-                    "description": "The base url for the cm documentation api"
-                },
-                "cm.debugMode": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If you want to run the VSCode extension in debug mode"
-                },
-                "cm.outputFilePath": {
-                    "type": "string",
-                    "default": "C:\\temp\\cm_output.txt",
-                    "description": "File that mirrors the content of the output windows for debugging purposes"
-                },
-                "cm.clearOutputBuild": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Auto clears the CM Output window each time a build/run is is done."
-                },
-                "cm.rsSaveWatch": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Automatically tells CET to reload an RS file on save"
-                },
-                "cm.autoComplete80Enabled": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Runs CM 8.0+ autocomplete"
-                },
-                "cm.arch": {
-                    "type": "string",
-                    "default": "win64",
-                    "description": "CM Architecture to use"
-                }
-            }
+    "commands": [
+      {
+        "command": "cm.start",
+        "title": "Start CM",
+        "description": "Starts the CM Compiler.",
+        "category": "CM"
+      },
+      {
+        "command": "cm.cleancm",
+        "title": "Clean CM",
+        "description": "Cleans the CM Compiler.",
+        "category": "CM"
+      },
+      {
+        "command": "cm.stopcm",
+        "title": "Stops CM",
+        "description": "Stops CM Environment.",
+        "category": "CM"
+      },
+      {
+        "command": "cm.runcurrentfile",
+        "title": "Run Current File",
+        "description": "Runs the current file.",
+        "category": "CM"
+      },
+      {
+        "command": "cm.compilefile",
+        "title": "Compile File",
+        "description": "Compiles the current file.",
+        "category": "CM"
+      },
+      {
+        "command": "cm.quitdebug",
+        "title": "Quit Debug",
+        "description": "Ends the debug session.",
+        "category": "CM"
+      },
+      {
+        "command": "cm.startcet",
+        "title": "Start CET Designer",
+        "description": "Starts CET Designer.",
+        "category": "CM"
+      },
+      {
+        "command": "cm.runline",
+        "title": "Run Current Line",
+        "description": "Runs the current line of code",
+        "category": "CM"
+      },
+      {
+        "command": "cm.profileboot",
+        "title": "Profile Boot",
+        "description": "Opens your boot.cm file in your profile",
+        "category": "CM"
+      },
+      {
+        "command": "cm.profiletest",
+        "title": "Profile Test.cm",
+        "description": "Opens your t.cm file in your profile",
+        "category": "CM"
+      },
+      {
+        "command": "cm.loadall",
+        "title": "Load All Known",
+        "description": "Reloads all known packages",
+        "category": "cm"
+      },
+      {
+        "command": "cm.compileallbelow",
+        "title": "Compile VSCode Workspace",
+        "description": "Compiles everything below each open workspace",
+        "category": "CM"
+      },
+      {
+        "command": "cm.compileworkspace",
+        "title": "Compile Specific Workspace",
+        "description": "Compiles everything in a specific workspace",
+        "category": "CM"
+      },
+      {
+        "command": "cm.startwriteoutputfile",
+        "title": "Enable File Logging",
+        "description": "Writes output channel contents into a text file located by default in C:\\temp\\cm_output.txt",
+        "category": "CM"
+      },
+      {
+        "command": "cm.stopwriteoutputfile",
+        "title": "Disable File Logging",
+        "description": "Stops output channel wirting",
+        "category": "CM"
+      },
+      {
+        "command": "cm.userScript",
+        "title": "User Scripts",
+        "description": "Execute User Defined Script",
+        "category": "CM"
+      },
+      {
+        "command": "cm.implements",
+        "title": "Implements",
+        "description": "Goes up to the overriden method",
+        "category": "CM"
+      },
+      {
+        "command": "cm.subclasses",
+        "title": "Sub Classes",
+        "description": "Print all the subclasses of the class under the cursor",
+        "category": "CM"
+      },
+      {
+        "command": "cm.overrides",
+        "title": "Overrides",
+        "description": "Go to the method the current method overrides",
+        "category": "CM"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "CM Configuration",
+      "properties": {
+        "cm.root": {
+          "type": "string",
+          "default": "auto",
+          "description": "The path to the CM home"
         },
-        "keybindings": [
-            {
-                "command": "cm.cleancm",
-                "key": "shift+f5",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "cm.runcurrentfile",
-                "key": "ctrl+alt+p",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "cm.compilefile",
-                "key": "ctrl+alt+u",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "cm.quitdebug",
-                "key": "ctrl+alt+q",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "cm.quitdebug",
-                "key": "ctrl+alt+q",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "cm.runline",
-                "key": "ctrl+alt+space",
-                "when": "editorTextFocus"
-            },
-            {
-                "command": "cm.loadall",
-                "key": "ctrl+alt+y",
-                "when": "editorTextFocus"
-            }
-        ],
-        "snippets": [
-            {
-                "language": "cm",
-                "path": "./snippets/cm.json"
-            }
-        ],
-        "menus": {
-            "editor/context": [{
-                "when": "resourceLangId == cm",
-                "command": "cm.compilefile",
-                "group": "1_modification"
-            }]
+        "cm.newSyntax": {
+          "type": "boolean",
+          "default": false,
+          "description": "If you want to try the new syntax based on C#"
         },
-        "views": {
-            "explorer": [
-                {
-                    "id": "cmExplorer",
-                    "name": "CM Explorer",
-                    "when": "resourceLangId == 'cm'"
-                }
-            ]
+        "cm.debugMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "If you want to run the VSCode extension in debug mode"
+        },
+        "cm.outputFilePath": {
+          "type": "string",
+          "default": "C:\\temp\\cm_output.txt",
+          "description": "File that mirrors the content of the output windows for debugging purposes"
+        },
+        "cm.clearOutputBuild": {
+          "type": "boolean",
+          "default": false,
+          "description": "Auto clears the CM Output window each time a build/run is is done."
+        },
+        "cm.rsSaveWatch": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically tells CET to reload an RS file on save"
+        },
+        "cm.autoComplete80Enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Runs CM 8.0+ autocomplete"
         }
+      }
     },
-    "scripts": {
-        "vscode:prepublish": "tsc -p ./",
-        "compile": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install"
+    "keybindings": [
+      {
+        "command": "cm.cleancm",
+        "key": "shift+f5",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "cm.runcurrentfile",
+        "key": "ctrl+alt+p",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "cm.compilefile",
+        "key": "ctrl+alt+u",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "cm.quitdebug",
+        "key": "ctrl+alt+q",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "cm.runline",
+        "key": "ctrl+alt+space",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "cm.loadall",
+        "key": "ctrl+alt+y",
+        "when": "editorTextFocus"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "cm",
+        "path": "./snippets/cm.json"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceLangId == cm",
+          "command": "cm.compilefile",
+          "group": "1_modification"
+        },
+        {
+          "when": "resourceLangId == cm",
+          "command": "cm.runcurrentfile",
+          "group": "1_modification"
+        }
+      ]
     },
-    "devDependencies": {
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0",
-        "@types/node": "^6.0.40"
-    },
-    "dependencies": {
-        "clang-format": "^1.0.34",
-        "cm-modules": "https://github.com/docura-io/cm-modules.git",
-        "node-cm": "https://github.com/docura-io/node-cm.git",
-        "request": "^2.67.0"
+    "views": {
+      "explorer": [
+        {
+          "id": "cmExplorer",
+          "name": "CM Explorer",
+          "when": "resourceLangId == 'cm'"
+        }
+      ]
     }
+  },
+  "scripts": {
+    "vscode:prepublish": "webpack --mode production",
+    "compile": "webpack --mode none",
+    "watch": "webpack --mode none --watch",
+    "test-compile": "tsc -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "@types/node": "^8.10.25",
+    "ts-loader": "^5.4.3",
+    "typescript": "^2.6.1",
+    "vscode": "^1.1.33",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.1"
+  },
+  "dependencies": {
+    "clang-format": "^1.0.34",
+    "node-cm": "git+https://github.com/docura-io/node-cm.git",
+    "semantic-release": "^15.13.3"
+  }
 }
