@@ -427,7 +427,7 @@
 		},
 
 		"field-declaration": {
-			"begin": "(?x)\n(?<type-name>\n  (?:\n    (?:\n      (?:(?<identifier>(?:[_[:alpha:]][_[:alnum:]]*|(?=<)))\\s*\\:\\:\\s*)? # alias-qualification\n      (?<name-and-type-args> # identifier + type arguments (if any)\n        \\g<identifier>\\s*\n        (?<type-args>\\s*<(?:[^<>]|\\g<type-args>)+>\\s*)?\n      )\n      (?:\\s*\\.\\s*\\g<name-and-type-args>)* | # Are there any more names being dotted into?\n      (?<tuple>\\s*\\((?:[^\\(\\)]|\\g<tuple>)+\\))\n    )\n    (?:\\s*\\*\\s*)* # pointer suffix?\n    (?:\\s*\\?\\s*)? # nullable suffix?\n    (?:\\s*[\\[{](?:\\s*,\\s*)*[\\]}]\\s*)* # array suffix?\n  )\n)\\s+\n(\\g<identifier>)\\s* # first field name\n(?!=>|==)(?=,|;|=|$)",
+			"begin": "(?x)\n(?<type-name>\n  (?:\n    (?:\n      (?:(?<identifier>(?:[_[:alpha:]][_[:alnum:]]*|(?=<)))\\s*\\:\\:\\s*)? # alias-qualification\n      (?<name-and-type-args> # identifier + type arguments (if any)\n        \\g<identifier>\\s*\n        (?<type-args>\\s*<(?:[^<>]|\\g<type-args>)+>\\s*)?\n      )\n      (?:\\s*(?:\\.|->)\\s*\\g<name-and-type-args>)* | # Are there any more names being dotted into?\n      (?<tuple>\\s*\\((?:[^\\(\\)]|\\g<tuple>)+\\))\n    )\n    (?:\\s*\\*\\s*)* # pointer suffix?\n    (?:\\s*\\?\\s*)? # nullable suffix?\n    (?:\\s*[\\[{](?:\\s*,\\s*)*[\\]}]\\s*)* # array suffix?\n  )\n)\\s+\n(\\g<identifier>)\\s* # first field name\n(?!=>|==)(?=,|;|=|$)",
 			"beginCaptures": {
 				"1": {
 					"patterns": [
@@ -481,6 +481,9 @@
 				},
 				{
 					"include": "#type-set-suffix"
+				},
+				{
+					"include": "#type-map-suffix"
 				}
 			]
 		},
@@ -533,7 +536,7 @@
 		"type-name": {
 			"patterns": [
 				{
-					"match": "([_[:alpha:]][_[:alnum:]]*)\\s*(\\.)",
+					"match": "([_[:alpha:]][_[:alnum:]]*)\\s*(\\$)",
 					"captures": {
 						"1": {
 							"name": "storage.type.cs"
@@ -544,7 +547,7 @@
 					}
 				},
 				{
-					"match": "(\\.)\\s*([_[:alpha:]][_[:alnum:]]*)",
+					"match": "(\\$)\\s*([_[:alpha:]][_[:alnum:]]*)",
 					"captures": {
 						"1": {
 							"name": "punctuation.accessor.cs"
@@ -560,14 +563,22 @@
 				}
 			]
 		},
+		"type-map-suffix": {
+			"patterns": [
+				{
+					"name": "map.cs",
+					"match": "->"
+				}
+			]
+		},
 		"type-set-suffix": {
-			"begin": "{",
+			"begin": "\\{",
 			"beginCaptures": {
 				"0": {
 					"name": "punctuation.squarebracket.open.cs"
 				}
 			},
-			"end": "}",
+			"end": "\\}",
 			"endCaptures": {
 				"0": {
 					"name": "punctuation.squarebracket.close.cs"
@@ -620,6 +631,9 @@
 					"include": "#comment"
 				},
 				{
+					"include": "#local-variable-init-syntax"
+				},
+				{
 					"include": "#nameof-expression"
 				},
 				{
@@ -647,7 +661,13 @@
 					"include": "#object-creation-expression"
 				},
 				{
+					"include": "#shorthand-constructor"
+				},
+				{
 					"include": "#array-creation-expression"
+				},
+				{
+					"include": "#set-creation-expression"
 				},
 				{
 					"include": "#invocation-expression"
@@ -769,7 +789,7 @@
 					"name": "punctuation.definition.interpolation.begin.cs"
 				}
 			},
-			"end": ";?(?=\")",
+			"end": "(?=\"|;)",
 			"endCaptures": {
 				"0": {
 					"name": "punctuation.definition.interpolation.end.cs"
@@ -831,7 +851,7 @@
 				},
 				{
 					"name": "keyword.operator.relational.cs",
-					"match": "<=|>=|<|>"
+					"match": "<=|>=|<|(?<!-)>"
 				},
 				{
 					"name": "keyword.operator.logical.cs",
@@ -859,7 +879,7 @@
 				},
 				{
 					"name": "keyword.operator.arithmetic.cs",
-					"match": "%|\\*|/|-|\\+"
+					"match": "%|\\*|/|-(?!\\>)|\\+"
 				},
 				{
 					"name": "keyword.operator.null-coalescing.cs",
@@ -1032,7 +1052,7 @@
 			]
 		},
 		"declaration-expression-local": {
-			"match": "(?x) # e.g. int x OR var x\n(?:\n  \\b(var)\\b|\n  (?<type-name>\n    (?:\n      (?:\n        (?:(?<identifier>[_[:alpha:]][_[:alnum:]]*)\\s*\\:\\:\\s*)? # alias-qualification\n        (?<name-and-type-args> # identifier + type arguments (if any)\n          \\g<identifier>\\s*\n          (?<type-args>\\s*<(?:[^<>]|\\g<type-args>)+>\\s*)?\n        )\n        (?:\\s*\\.\\s*\\g<name-and-type-args>)* | # Are there any more names being dotted into?\n        (?<tuple>\\s*\\((?:[^\\(\\)]|\\g<tuple>)+\\))\n      )\n      (?:\\s*\\*\\s*)* # pointer suffix?\n      (?:\\s*\\?\\s*)? # nullable suffix?\n      (?:\\s*\\[(?:\\s*,\\s*)*\\]\\s*)* # array suffix?\n    )\n  )\n)\\s+\n\\b(\\g<identifier>)\\b\\s*\n(?=[,)\\]])",
+			"match": "(?x) # e.g. int x OR var x\n(?:\n  \\b(var)\\b|\n  (?<type-name>\n    (?:\n      (?:\n        (?:(?<identifier>[_[:alpha:]][_[:alnum:]]*)\\s*\\:\\:\\s*)? # alias-qualification\n        (?<name-and-type-args> # identifier + type arguments (if any)\n          \\g<identifier>\\s*\n          (?<type-args>\\s*<(?:[^<>]|\\g<type-args>)+>\\s*)?\n        )\n        (?:\\s*(?:\\.|->)\\s*\\g<name-and-type-args>)* | # Are there any more names being dotted into?\n        (?<tuple>\\s*\\((?:[^\\(\\)]|\\g<tuple>)+\\))\n      )\n      (?:\\s*\\*\\s*)* # pointer suffix?\n      (?:\\s*\\?\\s*)? # nullable suffix?\n      (?:\\s*\\[(?:\\s*,\\s*)*\\]\\s*)* # array suffix?\n    )\n  )\n)\\s+\n\\b(\\g<identifier>)\\b\\s*\n(?=[,)\\]])",
 			"captures": {
 				"1": {
 					"name": "keyword.other.var.cs"
@@ -1070,14 +1090,23 @@
 				}
 			]
 		},
+		"set-creation-expression": {
+			"begin": "(?={)",
+			"end": "(?<=})",
+			"patterns": [
+				{
+					"include": "#bracketed-argument-list"
+				}
+			]
+		},
 		"bracketed-argument-list": {
-			"begin": "\\[",
+			"begin": "\\[|{",
 			"beginCaptures": {
 				"0": {
 					"name": "punctuation.squarebracket.open.cs"
 				}
 			},
-			"end": "\\]",
+			"end": "\\]|}",
 			"endCaptures": {
 				"0": {
 					"name": "punctuation.squarebracket.close.cs"
@@ -1922,9 +1951,50 @@
 			]
 		},
 
+		"shorthand-constructor": {
+			"begin": "(?<!\\.)\\b([_[:alpha:]][_[:alnum:]]*)\\b(\\?)?\\s*([_[:alpha:]][_[:alnum:]]*)\\s*(?=\\()",
+			"beginCaptures": {
+				"1": {
+					"name": "storage.type.cs"
+				},
+				"2": {
+					"name": "keyword.operator.null-conditional.cs"
+				},
+				"3": { 
+					"name": "entity.name.variable.local.cs"
+				}
+			},
+			"end": "(?=;)",
+			"patterns": [
+				{
+					"include": "#argument-list"
+				}
+			]
+		},
+
+		"local-variable-init-syntax": {
+			"begin": "(?<!\\.)\\b(init)\\b(\\?)?\\s*([_[:alpha:]][_[:alnum:]]*)\\s*(?=\\()",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.conditional.if.cs"
+				},
+				"2": {
+					"name": "keyword.operator.null-conditional.cs"
+				},
+				"3": { 
+					"name": "entity.name.variable.local.cs"
+				}
+			},
+			"end": "(?=;)",
+			"patterns": [
+				{
+					"include": "#argument-list"
+				}
+			]
+		},
 
 		"local-variable-declaration": {
-			"begin": "(?x)\n(?:\n  (?:(\\bref)\\s+)?(\\bvar\\b)| # ref local\n  (?<type-name>\n    (?:\n      (?:ref\\s+)?   # ref local\n      (?:\\?)?   # cast init\n      (?:\n        (?:(?<identifier>[_[:alpha:]][_[:alnum:]]*)\\s*\\:\\:\\s*)? # alias-qualification\n        (?<name-and-type-args> # identifier + type arguments (if any)\n          \\g<identifier>\\s*\n          (?<type-args>\\s*<(?:[^<>]|\\g<type-args>)+>\\s*)?\n        )\n        (?:\\s*\\.\\s*\\g<name-and-type-args>)* | # Are there any more names being dotted into?\n        (?<tuple>\\s*\\((?:[^\\(\\)]|\\g<tuple>)+\\))\n      )\n      (?:\\s*\\*\\s*)* # pointer suffix?\n      (?:\\s*\\?\\s*)? # nullable suffix?\n      (?:\\s*[\\[{](?:\\s*,\\s*)*[\\]}]\\s*)* # array suffix?\n    )\n  )\n)\\s+\n(\\g<identifier>)\\s*\n(?=,|;|=|\\))",
+			"begin": "(?x)\n(?:\n  (?:(\\bref)\\s+)?(\\bvar\\b)| # ref local\n  (?<type-name>\n    (?:\n      (?:ref\\s+)?   # ref local\n      (?:\\?)?   # cast init\n      (?:\n        (?:(?<identifier>[_[:alpha:]][_[:alnum:]]*)\\s*\\:\\:\\s*)? # alias-qualification\n        (?<name-and-type-args> # identifier + type arguments (if any)\n          \\g<identifier>\\s*\n          (?<type-args>\\s*<(?:[^<>]|\\g<type-args>)+>\\s*)?\n        )\n        (?:\\s*(?:\\.|->)\\s*\\g<name-and-type-args>)* | # Are there any more names being dotted into?\n        (?<tuple>\\s*\\((?:[^\\(\\)]|\\g<tuple>)+\\))\n      )\n      (?:\\s*\\*\\s*)* # pointer suffix?\n      (?:\\s*\\?\\s*)? # nullable suffix?\n      (?:\\s*[\\[{](?:\\s*,\\s*)*[\\]}]\\s*)* # array suffix?\n    )\n  )\n)\\s+\n(\\g<identifier>)\\s*\n(?=,|;|=|\\))",
 			"beginCaptures": {
 				"1": {
 					"name": "storage.modifier.cs"

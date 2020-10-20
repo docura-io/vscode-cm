@@ -1,6 +1,7 @@
 'use strict';
 
 import { cmCompilerAdapter } from './cmCompilerAdapter';
+import { cmCompilerAdapter2 } from './cmCompilerAdapter2';
 import { cmConfig } from './cmConfig';
 
 const fs = require('fs');
@@ -11,8 +12,11 @@ var scriptFuncs = [];
 import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace, TextEditorRevealType } from 'vscode';
 
 export function registerCommands( compiler: cmCompilerAdapter ) {
+    // let adapt2 = new cmCompilerAdapter2();
     let d1 = commands.registerCommand( "cm.start", () => compiler.start() );
+    // let d1 = commands.registerCommand( "cm.start", () => adapt2.start() );
     let d2 = commands.registerCommand( "cm.stopcm", () => compiler.stop() );
+    // let d2 = commands.registerCommand( "cm.stopcm", () => adapt2.run() );
     let d3 = commands.registerCommand( "cm.cleancm", () => compiler.clean() );
     let d4 = commands.registerCommand( "cm.startcet", () => compiler.run( `run("cet.runtime","designer.cm");`) );
     let d5 = commands.registerCommand( "cm.quitdebug", () => compiler.quitDebug() );

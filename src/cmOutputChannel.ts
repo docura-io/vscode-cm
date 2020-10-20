@@ -53,6 +53,8 @@ export class cmOutputChannel {
         //     fs.appendFile(this.filePath, data, null);
         // }
 
+        // console.time( 'cmOutputChannel-write' );
+
         if ( force ) {
             if ( this.partial.length > 0 ) this.output.appendLine( this.partial );
             this.output.append(data);
@@ -64,17 +66,23 @@ export class cmOutputChannel {
             data = this.partial + data;
             this.partial = '';
         }
+
         var lineResults = this.lineParser( data );
 
         // if ( lineResults.newLines.length > 0 ) {
             this.output.append( lineResults.newLines );
+            console.log(lineResults.newLines);
+            // lineResults.newLines.forEach(l => {
+            //     this.output.append( l );
+            // }
         // }
         // this.output.append( data );
         // this.output.append(data.replace(/[\x01\x02]/g, "\r\n"));
         // if ( lineResults.hashLines.length > 0 ) {
         //     this.hashOutput.append( lineResults.hashLines );
         // }
-        
+        // console.timeEnd( 'cmOutputChannel-write' );
+        // console.log("done");
     }
 
     public goToDefinitionPromise() {
@@ -89,9 +97,13 @@ export class cmOutputChannel {
         return this.goToPromise
         .then( (loc) => {
             this.goToPromise = null;
+            this.goToResolver = null;
+            this.goToRejector = null;
             return loc;
         }, (error) => {
             this.goToPromise = null;
+            this.goToResolver = null;
+            this.goToRejector = null;
             throw error;
         } ); 
     }
@@ -99,8 +111,9 @@ export class cmOutputChannel {
     public lineParser( data ) {
         let rawData =  data.replace(/[\x01\x02]/g, "\r\n");
         let hasNewLine = data.indexOf('\r\n') > -1;
-        if ( !hasNewLine && rawData.indexOf( "cm>" ) == -1 ) {
-            // console.log("partial found");
+        let hasStx = data.indexOf( "" ) > -1;
+        if ( !hasNewLine && !hasStx && rawData.indexOf( "cm>" ) == -1 ) { //STX is useful for us to parse the lines
+            console.log("partial found");
             this.partial = rawData;
             return { newLines: '' }
         }
@@ -175,6 +188,8 @@ export class cmOutputChannel {
 
                         if ( this.goToPromise && this.goToResolver ) {
                             this.goToResolver( new vscode.Location( vscode.Uri.file( file ), position ) );
+                            this.goToResolver = null;
+                            this.goToRejector = null;
                         } else {
                             console.log( 'no promise for go to def' );
                             // vscode.window.showTextDocument( doc ).then( (res) => {
@@ -183,8 +198,8 @@ export class cmOutputChannel {
                             // });
                         }
                     });
-                    return;
-                } else if ( errorMatch ) {
+                    // return;
+                } else if ( errorMatch && this.goToPromise == null) {
                     if ( !errorMatch[4].match( /\simplements\s\w*$/ )) { // for some reason the implements call outputs this like an error
                         // this.setDiagnostics( errorMatch[1], parseInt( errorMatch[2] ), parseInt( errorMatch[3] ), errorMatch[4] );
                         var severity = vscode.DiagnosticSeverity.Error;
@@ -231,7 +246,7 @@ export class cmOutputChannel {
         }
 
         return {
-            newLines: newLines.join('\r\n'),
+            newLines: newLines.join('\r\n').replace('\r\n\r\n', '\r\n'),
             hashLines: hashLines.join('\r\n')
         };
     }
@@ -308,7 +323,8 @@ class FindReferencesParser extends SrcRefParser {
     private channel: cmOutputChannel;
 
     private readonly startR = /\(cm-push-def\s"[^"]*"\s\d+\)/g;
-    private readonly endR = /\(cm-next-error\)/g;
+    // private readonly startR = /\[Find\sAll\sInvoked\]/g;
+    private readonly endR = /'cm-next-error\)/g;
 
     constructor( c: cmOutputChannel ) {
         super();
@@ -341,6 +357,9 @@ class FindReferencesParser extends SrcRefParser {
         let gotoRes = this.channel.goToResolver;
         let first = refProvider.first();
         if ( gotoRes != null && first != null ) {
+            // we need to clear the cache so if we get the Find All Ref's result again for
+            // a go to def, we don't want to keep sending the same result
+            refProvider.clearCache();
             gotoRes( first );
         } else {
             refProvider.complete();

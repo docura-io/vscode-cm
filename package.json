@@ -2,7 +2,7 @@
   "name": "cm",
   "displayName": "CM",
   "description": "CM Language Support",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "icon": "resources/cmIcon.png",
   "publisher": "docuraio",
   "repository": {
@@ -265,8 +265,10 @@
   },
   "scripts": {
     "vscode:prepublish": "webpack --mode production",
-    "compile": "webpack --mode none",
-    "watch": "webpack --mode none --watch",
+    "compile": "npm run webpack",
+    "watch": "tsc -watch -p ./",
+    "webpack": "webpack --mode development",
+    "webpack-dev": "webpack --mode development --watch",
     "test-compile": "tsc -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
@@ -280,7 +282,9 @@
   },
   "dependencies": {
     "clang-format": "^1.0.34",
+    "line-reader": "^0.4.0",
     "node-cm": "git+https://github.com/docura-io/node-cm.git",
-    "semantic-release": "^15.13.3"
+    "semantic-release": "^15.13.3",
+    "vsce": "^1.77.0"
   }
 }
