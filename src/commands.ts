@@ -1,7 +1,5 @@
 'use strict';
 
-import { cmCompilerAdapter } from './cmCompilerAdapter';
-import { cmCompilerAdapter2 } from './cmCompilerAdapter2';
 import { cmConfig } from './cmConfig';
 
 const fs = require('fs');
@@ -10,8 +8,9 @@ var scriptPackage = "";
 var scriptFuncs = [];
 
 import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace, TextEditorRevealType } from 'vscode';
+import { ICMCompilerAdapter } from './cmCompilerAdapter';
 
-export function registerCommands( compiler: cmCompilerAdapter ) {
+export function registerCommands( compiler: ICMCompilerAdapter ) {
     // let adapt2 = new cmCompilerAdapter2();
     let d1 = commands.registerCommand( "cm.start", () => compiler.start() );
     // let d1 = commands.registerCommand( "cm.start", () => adapt2.start() );
@@ -81,14 +80,6 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
             compiler.run( args );
         }
     } )
-    
-    let d15 = commands.registerCommand( "cm.startwriteoutputfile", () => {
-        compiler.startWritingOutputFile();
-    });
-    
-    let d16 = commands.registerCommand( "cm.stopwriteoutputfile", () => {
-        compiler.stopWritingOutputFile();
-    });
    
     let scripts = commands.registerCommand( "cm.userScript", () => {
         window.showQuickPick( getUserScripts() )
@@ -138,7 +129,7 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
         } );
     } );
 
-    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, d15, d16, scripts, d20, d21, d22 );
+    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, scripts, d20, d21, d22 );
 }
     
     let d99 = commands.registerCommand( "cm.Test", () => {

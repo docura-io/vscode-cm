@@ -7,17 +7,44 @@ import { workspace } from 'vscode';
 
 var compilerContainer = require("node-cm/index.js");
 
-export class cmCompilerAdapter {
+export interface ICMCompilerAdapter {
+    readonly isStarted: boolean;
+
+    start() : Thenable<boolean>;
+    stop() : void;
+    reset() : Thenable<boolean>;
+    clean() : void;
+    compileFile( file : string );
+
+    compileWorkspace() : void;
+    compileVSWorkspace() : void;
+
+    run( cmCode: string ) : void;
+    runCurrentFile( file: string ) : void;
+    runIfStarted( cmCode: string ) : void;
+    runStatement( statement: CodeStatement ): Thenable<boolean>;
+
+    quitDebug() : void;
+    loadAllKnown( file: string ) : void;
+
+    goto( file: string, offset: number ) : Thenable<vscode.Location>;
+
+}
+
+export class cmCompilerAdapterV1 implements ICMCompilerAdapter {
     
     private channel: cmOutputChannel;
-    private filePath: string;
     private compiler;
-    private isStarted: boolean = false;
+    public isStarted: boolean = false;
     private diagnostics: vscode.DiagnosticCollection;
     
-    constructor( diagnostics: vscode.DiagnosticCollection, filePath: string ) {
-        this.filePath = filePath;
-        this.channel = new cmOutputChannel( diagnostics, filePath );
+    constructor( diagnostics: vscode.DiagnosticCollection ) {
+        if ( cmConfig.usePseudoTerminal() ) {
+            // this.channel = new cmMainOutputHanlder( diagnostics );
+        } else {
+            this.channel = new cmOutputChannel( diagnostics );
+        }
+        
         this.diagnostics = diagnostics;
         
         this.compiler = new compilerContainer( {
@@ -31,7 +58,8 @@ export class cmCompilerAdapter {
                 this.channel.write( `[INFO: CM_Process_Error -> ${data}]` );
             },
             //debug: true,
-            "cmArch": cmConfig.arch()
+            "cmArch": cmConfig.arch(),
+            nocoloring: true
         });
     }
 
@@ -48,16 +76,12 @@ export class cmCompilerAdapter {
                 this.channel.write( `[INFO: CM_Process_Error -> ${data}]` );
             },
             //debug: true,
-            "cmArch": cmConfig.arch()
+            "cmArch": cmConfig.arch(),
+            nocoloring: true
         });
         this.clearOutputIfNeeded();
         this.isStarted = false;
         return this.start();
-    }
-    
-    public startWritingOutputFile() : void {
-        this.channel.write( `[Contents of output channel will now be written to: ${this.filePath}]\n` );
-        this.channel.writeOutputToFile = true;
     }
     
     public stopWritingOutputFile() : void {
@@ -69,7 +93,7 @@ export class cmCompilerAdapter {
         if ( this.isStarted ) return;
         
         return new Promise((resolve, reject) => {
-            this.compiler.start()
+            this.compiler.start({nocolor: true })
             .then( (success) => {
                 this.isStarted = success;
                 resolve(success);  

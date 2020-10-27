@@ -8,13 +8,14 @@ import SignatureHelpProvider from './cmSignatureHelper'
 import { ClangDocumentFormattingEditProvider } from './cmFormat';
 import { CMHoverProvider } from './cmHover';
 import { CmTreeDataProvider } from './cmExplorer';
-// import { CMWorkspaceSymbolProvider } from './cmWorkspaceSymbolProvider';
+import { CMWorkspaceSymbolProvider } from './cmWorkspaceSymbolProvider';
 import { CmCodeActionProvider } from './cmCodeActions';
 import { CMFileSymbolProvider } from './cmFileSymbolProvider';
 import { CM_MODE } from './cmMode';
 import { showReloadConfirm } from './helpers/reload';
 
-import { cmCompilerAdapter } from './cmCompilerAdapter';
+import { cmCompilerAdapterV1, ICMCompilerAdapter } from './cmCompilerAdapter';
+import { cmCompilerAdapterV2 } from './cmCompilerAdapterV2'
 import { cmConfig } from './cmConfig';
 import { cmUtils } from './cmUtils';
 
@@ -25,9 +26,9 @@ import fs = require('fs');
 import { setup as gSetup, refProvider } from './cmGlobals';
 
 let diagnosticCollection: DiagnosticCollection;
-let compilerAdapter: cmCompilerAdapter;
+let compilerAdapter: ICMCompilerAdapter;
 
-export function getCompiler(): cmCompilerAdapter {
+export function getCompiler(): ICMCompilerAdapter {
     return compilerAdapter;
 }
 
@@ -35,6 +36,12 @@ function setupConfigListener( ctx: ExtensionContext ) {
     workspace.onDidChangeConfiguration( (e) => {
         if ( e.affectsConfiguration( "cm.newSyntax" ) ) {
             updatePackageConfig( ctx.asAbsolutePath("package.json") );
+        }
+        if ( e.affectsConfiguration( "cm.useTerminal" ) ) {
+            showReloadConfirm( "VSCode must reload to enable/disable the use of the Pseudo Terminal" )
+            .then( (v) => {
+                if ( v ) commands.executeCommand( "workbench.action.reloadWindow" );
+            });
         }
     } );
 }
@@ -54,7 +61,7 @@ function updatePackageConfig( filePath: string  ) {
             config.contributes.grammars[0].path = "./syntaxes/" + ( cmConfig.useNewSyntax() ? "cm.tmLanguage.json" : "CM.plist");
             fs.writeFileSync( filePath, JSON.stringify(config, null, 2) );
             
-            showReloadConfirm( "You CM Language syntax setting was changed you must reload VSCode for the change to take effect" )
+            showReloadConfirm( "Your CM Language syntax setting was changed you must reload VSCode for the change to take effect" )
             .then( (v) => {
                 if ( v ) commands.executeCommand( "workbench.action.reloadWindow" );
             });
@@ -76,7 +83,11 @@ export function activate(context: ExtensionContext) {
     
     diagnosticCollection = languages.createDiagnosticCollection( "cm" );
     // setup compiler Adapter
-    compilerAdapter = new cmCompilerAdapter( diagnosticCollection, cmConfig.cmOutputFilePath() );
+    if ( cmConfig.usePseudoTerminal() ) {
+        compilerAdapter = new cmCompilerAdapterV2( diagnosticCollection );
+    } else {
+        compilerAdapter = new cmCompilerAdapterV1( diagnosticCollection );
+    }
     gSetup();
     
     // setup watcher
@@ -97,7 +108,7 @@ export function activate(context: ExtensionContext) {
     }
 
     disposables.push( languages.registerDocumentSymbolProvider(CM_MODE, new CMFileSymbolProvider() ));
-    // disposables.push ( languages.registerWorkspaceSymbolProvider( new CMWorkspaceSymbolProvider() ));
+    disposables.push ( languages.registerWorkspaceSymbolProvider( new CMWorkspaceSymbolProvider() ));
     
     // disposables.push( languages.registerCodeActionsProvider( CM_MODE, new CmCodeActionProvider() ));
     disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));

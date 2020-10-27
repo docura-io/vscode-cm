@@ -14,7 +14,7 @@
     "theme": "light"
   },
   "engines": {
-    "vscode": "^1.25.0"
+    "vscode": "^1.50.0"
   },
   "categories": [
     "Other"
@@ -40,7 +40,7 @@
     "grammars": [
       {
         "language": "cm",
-        "path": "./syntaxes/CM.plist",
+        "path": "./syntaxes/cm.tmLanguage.json",
         "scopeName": "source.cm"
       }
     ],
@@ -173,6 +173,11 @@
           "type": "boolean",
           "default": false,
           "description": "If you want to try the new syntax based on C#"
+        },
+        "cm.useTerminal": {
+          "type": "boolean",
+          "default": false,
+          "description": "Try the new Pseudo Terminal"
         },
         "cm.debugMode": {
           "type": "boolean",

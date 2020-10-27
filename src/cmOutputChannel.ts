@@ -1,24 +1,19 @@
 'use strict';
 
 import vscode = require('vscode');
+import { cmOutputHandlerBase } from './cmOutputHandler';
+import { FindReferencesParser } from './parsers/SrcRefParsers';
 
-import { refProvider } from './cmGlobals';
-
-import fs = require('fs');
-
-export class cmOutputChannel {
+export class cmOutputChannel extends cmOutputHandlerBase {
     
     private output: vscode.OutputChannel;
-    private hashOutput: vscode.OutputChannel;
+
     private isResolving = false;
     private goToPromise: Thenable<vscode.Location>;
     public goToResolver: (value?: {} | vscode.Location | PromiseLike<{}>) => void;
     private goToRejector: (value?: {} | PromiseLike<{}>) => void;
     
-    private diagnostics: vscode.DiagnosticCollection;
-    
     public writeOutputToFile: boolean;
-    private filePath: string;
 
     private watchResolve: (value?: {} | PromiseLike<{}>) => void;
     private watchReject: (value?: {} | PromiseLike<{}>) => void;
@@ -26,21 +21,17 @@ export class cmOutputChannel {
     private watchFail: RegExp;
 
     private partial = '';
-
-    private parsers: LineParser[];
-    private activeParsers: LineParser[];
     
-    constructor( diags: vscode.DiagnosticCollection, filePath: string ) { 
-        this.filePath = filePath;
+    constructor( diags: vscode.DiagnosticCollection ) { 
+        super(diags);
         this.output = vscode.window.createOutputChannel( 'CM' );
-        this.hashOutput = vscode.window.createOutputChannel( 'CM - #' );
-        this.diagnostics = diags;
-        this.parsers = [];
-        this.parsers.push( new FindReferencesParser(this) );
-
-        this.activeParsers = [];
     }
     
+    public setupParsers() : void {
+        super.setupParsers();
+        this.parsers.push( new FindReferencesParser(this) );
+    }
+
     public clear() {
         this.output.clear();
     }
@@ -69,13 +60,16 @@ export class cmOutputChannel {
 
         var lineResults = this.lineParser( data );
 
-        // if ( lineResults.newLines.length > 0 ) {
+        if ( lineResults.newLines.length > 0 ) {
+            
             this.output.append( lineResults.newLines );
-            console.log(lineResults.newLines);
+            // this.terminal.write( lineResults.newLines );
+
+            // console.log(lineResults.newLines);
             // lineResults.newLines.forEach(l => {
             //     this.output.append( l );
             // }
-        // }
+        }
         // this.output.append( data );
         // this.output.append(data.replace(/[\x01\x02]/g, "\r\n"));
         // if ( lineResults.hashLines.length > 0 ) {
@@ -109,7 +103,7 @@ export class cmOutputChannel {
     }
 
     public lineParser( data ) {
-        let rawData =  data.replace(/[\x01\x02]/g, "\r\n");
+        let rawData =  data; // data.replace(/[\x01\x02]/g, "\r\n");
         let hasNewLine = data.indexOf('\r\n') > -1;
         let hasStx = data.indexOf( "" ) > -1;
         if ( !hasNewLine && !hasStx && rawData.indexOf( "cm>" ) == -1 ) { //STX is useful for us to parse the lines
@@ -198,7 +192,7 @@ export class cmOutputChannel {
                             // });
                         }
                     });
-                    // return;
+                    return;
                 } else if ( errorMatch && this.goToPromise == null) {
                     if ( !errorMatch[4].match( /\simplements\s\w*$/ )) { // for some reason the implements call outputs this like an error
                         // this.setDiagnostics( errorMatch[1], parseInt( errorMatch[2] ), parseInt( errorMatch[3] ), errorMatch[4] );
@@ -285,89 +279,5 @@ export class cmOutputChannel {
                 var diag = new vscode.Diagnostic( textLine.range, desc, level );
                 this.diagnostics.set( vscode.Uri.file( file ), [diag] )        
             });
-    }
-}
-
-interface LineParser {
-    isActive: boolean;
-    exclusive: boolean;
-    started: number;
-    parse(line: string): string; // if active, parse it
-    complete();
-}
-
-const srcMatch = /([cC]:.*\.cm)\((\d+),\s(\d+)\)(.*)/g;
-
-class SrcRefParser implements LineParser {
-    isActive = false;    
-    exclusive = false;
-    started = null;
-
-    public parse( line: string ): string {
-        let lineM = srcMatch.exec( line );
-        if ( lineM ) {
-            // probably add to the find all referenc cache
-            this.didMatch( lineM[1], +lineM[2], +lineM[3], lineM[4] );
-            return lineM[1]+"("+lineM[2]+","+lineM[3]+"): "+lineM[4];
-        }
-        return line;
-    }
-
-    public complete() {}
-
-    public didMatch( file: string, line: number, column: number, rest: string ) {}
-}
-
-class FindReferencesParser extends SrcRefParser {
-    exclusive = true;
-    private channel: cmOutputChannel;
-
-    private readonly startR = /\(cm-push-def\s"[^"]*"\s\d+\)/g;
-    // private readonly startR = /\[Find\sAll\sInvoked\]/g;
-    private readonly endR = /'cm-next-error\)/g;
-
-    constructor( c: cmOutputChannel ) {
-        super();
-        this.channel = c;
-    }
-    
-    public parse( line: string ): string {
-        if ( !this.isActive ) {
-            // see if it should activate
-            let match = this.startR.exec(line);
-            if ( match ) {
-                this.isActive = true;
-                this.started = Date.now();
-                return "Found References:";
-            }
-            return line;
-        } else {
-            let end = this.endR.exec(line);
-            if ( end ) {
-                this.isActive = false;
-                this.complete();
-                return null;
-            }
-            // parse the line
-            return super.parse(line);
-        }
-    }
-
-    public complete() {
-        let gotoRes = this.channel.goToResolver;
-        let first = refProvider.first();
-        if ( gotoRes != null && first != null ) {
-            // we need to clear the cache so if we get the Find All Ref's result again for
-            // a go to def, we don't want to keep sending the same result
-            refProvider.clearCache();
-            gotoRes( first );
-        } else {
-            refProvider.complete();
-        }
-    }
-
-    public didMatch( file: string, line: number, column: number, rest: string ) {
-        // eventually add to somethign like find all ref cache
-        refProvider.addReference( file, line, column );
     }
 }

@@ -92,6 +92,14 @@ export class cmConfig {
         }
         return useNewSyntax;
     }
+
+    static usePseudoTerminal(): Boolean {
+        let usePseudo = this.getConfig()["useTerminal"];
+        if ( typeof usePseudo !== "boolean" ) {
+            usePseudo = false;
+        }
+        return usePseudo;
+    }
     
     static emacsClientExe() {
         return this.getConfig()["emacsclientexe"];
