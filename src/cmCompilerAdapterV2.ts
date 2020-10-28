@@ -4,11 +4,14 @@ import { cmConfig } from './cmConfig'
 import { ICMOutputer, cmMainOutputHanlder } from './cmOutputHandler'
 import { DiagnosticCollection, Location, window, workspace } from 'vscode'
 import { CodeStatement, ICMCompilerAdapter } from './cmCompilerAdapter';
+import { GoToParser } from './parsers/GoToParser';
+import { CodeStatementParser } from './parsers/CodeStatementParser';
+import { FindReferencesParserV2 } from './parsers/FindRerferencesParserV2';
 
 let compilerContainer = require("node-cm/index.js")
 
 export class cmCompilerAdapterV2 implements ICMCompilerAdapter {
-    public outputHandler : ICMOutputer;
+    public outputHandler : cmMainOutputHanlder;
     private compiler;
     public isStarted : boolean = false;
 
@@ -48,7 +51,7 @@ export class cmCompilerAdapterV2 implements ICMCompilerAdapter {
 
     public stop() {
         this.clearOutputIfNeeded();
-        this.outputHandler.write( "[INFO CM Killed]\n" );
+        this.outputHandler.write( "\r\n[INFO CM Killed]\r\n" );
         this.compiler.kill();
         this.isStarted = false;
     }
@@ -65,13 +68,13 @@ export class cmCompilerAdapterV2 implements ICMCompilerAdapter {
 
     public clean() {
         this.outputHandler.clear();
-        this.outputHandler.write( "Starting Clean...\n" );
+        this.outputHandler.write( "Starting Clean...\r\n" );
         var results = this.compiler.clean();
-        this.outputHandler.write( "[INFO make clean-cm:]\n" );
-        this.outputHandler.write( "---------------------\n" );
+        this.outputHandler.write( "[INFO make clean-cm:]\r\n" );
+        this.outputHandler.write( "---------------------\r\n" );
         this.outputHandler.write( results );
-        this.outputHandler.write( "---------------------\n" );
-        this.outputHandler.write( "[INFO CM Clean]\n" );
+        this.outputHandler.write( "---------------------\r\n" );
+        this.outputHandler.write( "[INFO CM Clean]\r\n" );
         this.isStarted = false;
     }
 
@@ -129,8 +132,11 @@ export class cmCompilerAdapterV2 implements ICMCompilerAdapter {
     }
 
     public runStatement( statement: CodeStatement ): Thenable<boolean> {
-        console.log("Not Implemented Yet" );
-        return null;
+        const parser = this.outputHandler.activeParser( CodeStatementParser );
+        if ( parser ) {
+            this.compiler.write( statement.code );
+            return parser.setup( statement.successEx, statement.failureEx );
+        }
     }
 
     public quitDebug() {
@@ -145,9 +151,25 @@ export class cmCompilerAdapterV2 implements ICMCompilerAdapter {
         });
     }
 
+
+
     public goto( file: string, offset: number ): Thenable<Location> {
-        console.log( "Not Implemented Yet" );
+        const parser = this.outputHandler.activeParser( GoToParser );
+        if ( parser ) {
+            file = file.replace( /\\/g, '/' ); // make sure we have the right slashses        
+            this.compiler.write( `cm.runtime.refers("${file}", ${offset});` );
+            return parser.setup();
+        }
+
         return null;
+    }
+
+    public findAll( file: string, offset: number ) {
+        const parser = this.outputHandler.activeParser( FindReferencesParserV2 );
+        if ( parser ) {
+            file = file.replace( /\\/g, '/' ); // make sure we have the right slashses        
+            this.compiler.write( `cm.runtime.refers("${file}", ${offset});` );
+        }
     }
 
 

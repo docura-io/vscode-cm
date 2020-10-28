@@ -1,9 +1,16 @@
 'use strict';
 
-export interface LineParser {
+export class LineParser {
     isActive: boolean;
     exclusive: boolean;
-    started: number;
-    parse(line: string): string; // if active, parse it
-    complete();
-}
+
+    activate()  {
+        this.isActive = true;
+    }
+
+    parse(line: string): string {
+        return line;
+    }
+    
+    complete() { }
+} 

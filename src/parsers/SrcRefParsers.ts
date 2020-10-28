@@ -7,11 +7,7 @@ import { LineParser } from './LineParser';
 
 const srcMatch = /([cC]:.*\.cm)\((\d+),\s(\d+)\)(.*)/g;
 
-export class SrcRefParser implements LineParser {
-    isActive = false;    
-    exclusive = false;
-    started = null;
-
+export class SrcRefParser extends LineParser {
     public parse( line: string ): string {
         let lineM = srcMatch.exec( line );
         if ( lineM ) {
@@ -46,7 +42,7 @@ export class FindReferencesParser extends SrcRefParser {
             let match = this.startR.exec(line);
             if ( match ) {
                 this.isActive = true;
-                this.started = Date.now();
+                // this.started = Date.now();
                 return "Found References:";
             }
             return line;

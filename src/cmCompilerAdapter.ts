@@ -28,6 +28,7 @@ export interface ICMCompilerAdapter {
     loadAllKnown( file: string ) : void;
 
     goto( file: string, offset: number ) : Thenable<vscode.Location>;
+    findAll( file: string, offset: number );
 
 }
 
@@ -213,15 +214,22 @@ export class cmCompilerAdapterV1 implements ICMCompilerAdapter {
         this.compiler.quitDebug();
     }
     
+    public findAll( file: string, offset: number ) {
+        this.refers(file,offset);
+    }
+
     public goto( file: string, offset: number ): Thenable<vscode.Location> {
         return this.startIfNotStarted()
         .then( (success) => {
             var promise = this.channel.goToDefinitionPromise();
-            file = file.replace( /\\/g, '/' ); // make sure we have the right slashses        
-            this.compiler.write( `cm.runtime.refers("${file}", ${offset});` );
+            this.refers( file, offset );
             return promise;    
         });
+    }
 
+    private refers( file: string, offset: number ) {
+        file = file.replace( /\\/g, '/' ); // make sure we have the right slashses
+        this.compiler.write( `cm.runtime.refers("${file}", ${offset});` );
     }
     
     private startIfNotStarted() : Thenable<boolean> {

@@ -1,10 +1,12 @@
 'use strict';
 
-import { DiagnosticCollection, Location, SnippetString } from 'vscode';
+import { DiagnosticCollection, Location, SnippetString, ThemeColor } from 'vscode';
 
 import { cmTerminal } from './cmTerminal';
+import { CodeStatementParser } from './parsers/CodeStatementParser';
+import { FindReferencesParserV2 } from './parsers/FindRerferencesParserV2';
+import { GoToParser } from './parsers/GoToParser';
 import { LineParser } from './parsers/LineParser';
-import { FindReferencesParser } from './parsers/SrcRefParsers';
 
 export interface ICMOutputer {
     diagnostics: DiagnosticCollection;
@@ -59,10 +61,29 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
 
     protected terminal: cmTerminal;
 
+    protected partial: string;
+
     constructor( diags: DiagnosticCollection ) {
         super(diags);
         this.terminal = new cmTerminal();
         this.terminal.start();
+    }
+
+    public setupParsers() : void {
+        super.setupParsers();
+        this.parsers.push( new GoToParser() );
+        this.parsers.push( new CodeStatementParser() );
+        this.parsers.push( new FindReferencesParserV2() );
+    }
+
+    public activeParser<T extends LineParser>( TCtor: new (...args: any[]) => T ) : T {
+        for ( const parser of this.parsers ) {
+            if ( parser instanceof TCtor ) {
+                parser.activate();
+                return parser as T;
+            }
+        }
+        return null;
     }
 
     public clear() {
@@ -70,20 +91,53 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
     }
 
     public write( data: string ) {
+        
+        // Do Font Faces before dealing with partials...?
+        data = this.handleFontFaces( data );
+        
         //TODO: Do I need the partial line parser stuff...?
 
-        data = this.handleFontFaces( data );
+        // we can't parse incomplete data/commands.
+        if ( this.partial && this.partial.length > 0 ) {
+            data = this.partial + data;
+            this.partial = null;
+        }
+
+        if ( data && data.length > 0 && !data.endsWith( '\r\n') && !data.endsWith("" ) ) {
+            const lastIndex = data.lastIndexOf( '\r\n' ) + 2;
+            const newData = data.substring( 0, lastIndex );
+            const remaining = data.substr( lastIndex );
+
+            data = newData;
+            this.partial = remaining;
+            console.log(`Got Partial: ${this.partial}`);
+        }
+
         data = this.parse( data );
 
         this.terminal.write( data );
     }
 
     public parse( data: string ) : string {
+
+        let lines = data.split('\r\n');
+
+        for( let line of lines ) {
+            for( let p of this.parsers ) {
+                if ( p.isActive ) {
+                    p.parse( line );
+                }
+            }
+        }
         return data;
     }
 }
 
 const colors : FontFaceInfo[] = [
+
+    // "rose" red highlight is hard to read RGB(255,215,215)
+    // dark blue hard to read? RGB(0,0,135)
+
     // other stuff
     { "name" : "macro-key", "asciiColor" : "\u001b[38;5;13m" },
     { "name" : "keyword-bold", "asciiColor" :"\u001b[1m\u001b[38;5;27m" },
@@ -112,6 +166,9 @@ const colors : FontFaceInfo[] = [
     // (cm-reset-compilation-faces)
     // { "name" : "green", "asciiColor" :"" },
     // { "name" : "green", "asciiColor" :"" },
+
+    //TODO: new guys
+    // type
 ]
 
 class FontFaceInfo {

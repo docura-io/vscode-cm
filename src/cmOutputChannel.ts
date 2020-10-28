@@ -133,19 +133,19 @@ export class cmOutputChannel extends cmOutputHandlerBase {
             for (let aParse of this.parsers) {
                 element = aParse.parse( element );
                 if ( aParse.isActive && aParse.exclusive ) {
-                    let diff =  invokeDate - aParse.started;
-                    if ( diff < 10000 ) {
+                    // let diff =  invokeDate - aParse.started;
+                    // if ( diff < 10000 ) {
                         blocked = true;
-                        break;
-                    } else {
+                    //     break;
+                    // } else {
                         // its been more then 10 seconds...your time is done
-                        aParse.isActive = false;
+                        // aParse.isActive = false;
                         
                         // temp fix
-                        if ( this.goToRejector ) this.goToRejector();
+                        // if ( this.goToRejector ) this.goToRejector();
 
-                        aParse.complete();
-                    }
+                        // aParse.complete();
+                    // }
                 }
             }
 
