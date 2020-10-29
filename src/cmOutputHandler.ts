@@ -4,6 +4,7 @@ import { DiagnosticCollection, Location, SnippetString, ThemeColor } from 'vscod
 
 import { cmTerminal } from './cmTerminal';
 import { CodeStatementParser } from './parsers/CodeStatementParser';
+import { DiagnosticsParser } from './parsers/DiagnosticsParser';
 import { FindReferencesParserV2 } from './parsers/FindRerferencesParserV2';
 import { GoToParser } from './parsers/GoToParser';
 import { LineParser } from './parsers/LineParser';
@@ -74,6 +75,8 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
         this.parsers.push( new GoToParser() );
         this.parsers.push( new CodeStatementParser() );
         this.parsers.push( new FindReferencesParserV2() );
+
+        this.parsers.push( new DiagnosticsParser( this.diagnostics ) );
     }
 
     public activeParser<T extends LineParser>( TCtor: new (...args: any[]) => T ) : T {
@@ -122,14 +125,17 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
 
         let lines = data.split('\r\n');
 
+        let rtnData = '';
+
         for( let line of lines ) {
+            if ( line && line.length == 0 ) continue;
             for( let p of this.parsers ) {
                 if ( p.isActive ) {
-                    p.parse( line );
+                    rtnData += p.parse( line );
                 }
             }
         }
-        return data;
+        return rtnData;
     }
 }
 
@@ -137,6 +143,8 @@ const colors : FontFaceInfo[] = [
 
     // "rose" red highlight is hard to read RGB(255,215,215)
     // dark blue hard to read? RGB(0,0,135)
+
+    // 24-bit color : \x1b[38;2;196;30;59m    E.G. : rgb(196, 30, 59)
 
     // other stuff
     { "name" : "macro-key", "asciiColor" : "\u001b[38;5;13m" },
