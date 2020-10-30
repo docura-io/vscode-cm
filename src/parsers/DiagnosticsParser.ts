@@ -3,7 +3,7 @@
 import { Diagnostic, DiagnosticCollection, DiagnosticSeverity, TextLine, Uri, workspace } from "vscode";
 import { LineParser } from "./LineParser";
 
-const errorRegex = /([cC]:.*\.cm)\((\d+)\,\s{1}(\d+)\):(.*)/gm; 
+const errorRegex = /([cC]:[^]*\.cm)\((\d+)\,\s{1}(\d+)\):(.*)/gm; 
 
 export class DiagnosticsParser extends LineParser {
 

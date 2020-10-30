@@ -124,16 +124,25 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
     public parse( data: string ) : string {
 
         let lines = data.split('\r\n');
-
         let rtnData = '';
+        const last = lines.length - 1;
+        let count = 0;
 
         for( let line of lines ) {
-            if ( line && line.length == 0 ) continue;
+            if ( line && line.length == 0 ) {
+                rtnData += line;
+                continue
+            };
             for( let p of this.parsers ) {
                 if ( p.isActive ) {
-                    rtnData += p.parse( line );
+                    line = p.parse( line );
                 }
             }
+            rtnData += line;
+            if ( count != last ) {
+                rtnData += "\r\n";
+            }
+            count++;
         }
         return rtnData;
     }
