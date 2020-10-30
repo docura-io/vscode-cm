@@ -78,6 +78,11 @@ export class cmCompilerAdapterV2 implements ICMCompilerAdapter {
         this.isStarted = false;
     }
 
+    
+    show() : void {
+        this.outputHandler.show();
+    }
+
     public compileFile( file : string ) {
         this.clearOutputIfNeeded();
         this.outputHandler.diagnostics.clear();

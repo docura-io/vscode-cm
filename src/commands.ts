@@ -129,6 +129,10 @@ export function registerCommands( compiler: ICMCompilerAdapter ) {
         } );
     } );
 
+    let d26 = commands.registerCommand( "cm.showOutput", () => {
+        compiler.show();
+    });
+
     return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, scripts, d20, d21, d22 );
 }
     

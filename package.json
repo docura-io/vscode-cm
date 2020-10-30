@@ -158,6 +158,12 @@
         "title": "Overrides",
         "description": "Go to the method the current method overrides",
         "category": "CM"
+      },
+      {
+        "command": "cm.showOutput",
+        "title": "Show Output",
+        "description": "Show/Reveal CM Output Channel / CM Terminal",
+        "category": "CM"
       }
     ],
     "configuration": {

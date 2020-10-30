@@ -16,6 +16,8 @@ export interface ICMCompilerAdapter {
     clean() : void;
     compileFile( file : string );
 
+    show() : void;
+
     compileWorkspace() : void;
     compileVSWorkspace() : void;
 
@@ -62,6 +64,10 @@ export class cmCompilerAdapterV1 implements ICMCompilerAdapter {
             "cmArch": cmConfig.arch(),
             nocoloring: true
         });
+    }
+
+    show() : void {
+        this.channel.show();
     }
 
     public reset() {

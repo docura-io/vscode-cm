@@ -35,6 +35,10 @@ export class cmOutputChannel extends cmOutputHandlerBase {
     public clear() {
         this.output.clear();
     }
+
+    show() : void {
+        this.output.show( false );
+    }
     
     public write( data: string, force: boolean=false ) {
         //This doesn't wait for the callback response because we really don't need to wait for it

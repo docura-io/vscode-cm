@@ -51,9 +51,15 @@ export class cmTerminal {
         }
 
         this.terminal = window.createTerminal( {name: "CM", pty: this.pTerminal} );
-        this.terminal.show(true);
+        this.focus(true);
 
         return true;
+    }
+
+    public focus( preserveFocus: boolean ) {
+        if ( this.terminal ) {
+            this.terminal.show( true );
+        }
     }
 
     public run() {
@@ -72,7 +78,7 @@ export class cmTerminal {
     public write(data: string) {
         if ( this.terminal ) {
             console.log
-            this.terminal.sendText( data );
+            this.terminal.sendText( data, false );
         }
     }
 }

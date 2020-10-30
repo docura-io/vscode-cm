@@ -1,6 +1,6 @@
 'use strict';
 
-import { DiagnosticCollection, Location, SnippetString, ThemeColor } from 'vscode';
+import { DiagnosticCollection } from 'vscode';
 
 import { cmTerminal } from './cmTerminal';
 import { CodeStatementParser } from './parsers/CodeStatementParser';
@@ -8,6 +8,7 @@ import { DiagnosticsParser } from './parsers/DiagnosticsParser';
 import { FindReferencesParserV2 } from './parsers/FindRerferencesParserV2';
 import { GoToParser } from './parsers/GoToParser';
 import { LineParser } from './parsers/LineParser';
+import { NoiseRemoverParser } from './parsers/NoiseRemoverParser';
 
 export interface ICMOutputer {
     diagnostics: DiagnosticCollection;
@@ -18,6 +19,8 @@ export interface ICMOutputer {
     clear() : void;
     write( data: string ) : void;
     setupParsers() : void;
+
+    show() : void;
 }
 
 export abstract class cmOutputHandlerBase implements ICMOutputer {
@@ -41,6 +44,7 @@ export abstract class cmOutputHandlerBase implements ICMOutputer {
     }
 
     abstract write( data: string ) : void;
+    abstract show() : void;
 
     protected handleFontFaces(data: string) : string {
         data = data.replace( /\((?:cm-pop-face|cm-|cm-reset-compilation-faces)\)/g, "\u001b[0m" );
@@ -77,6 +81,8 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
         this.parsers.push( new FindReferencesParserV2() );
 
         this.parsers.push( new DiagnosticsParser( this.diagnostics ) );
+        // should be last
+        this.parsers.push( new NoiseRemoverParser() );
     }
 
     public activeParser<T extends LineParser>( TCtor: new (...args: any[]) => T ) : T {
@@ -91,34 +97,47 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
 
     public clear() {
         // vscode.commands.executeCommand( '' )
+        this.terminal.clear();
+    }
+
+    public show() : void {
+        this.terminal.focus(true);
     }
 
     public write( data: string ) {
-        
         // Do Font Faces before dealing with partials...?
         data = this.handleFontFaces( data );
-        
+
         //TODO: Do I need the partial line parser stuff...?
 
-        // we can't parse incomplete data/commands.
-        if ( this.partial && this.partial.length > 0 ) {
-            data = this.partial + data;
-            this.partial = null;
+        if ( false ) {
+            // we can't parse incomplete data/commands.
+            if ( this.partial && this.partial.length > 0 ) {
+                data = this.partial + data;
+                this.partial = null;
+            }
+
+            if ( data && data.length > 0 && !data.endsWith( '\r\n') && !data.endsWith("" ) ) {
+                const newLineIndex = data.lastIndexOf( '\r\n' );
+                if ( newLineIndex > -1 ) {
+                    const lastIndex =  newLineIndex+ 2;
+                    const newData = data.substring( 0, lastIndex );
+                    const remaining = data.substr( lastIndex );
+
+                    data = newData;
+                    this.partial = remaining;
+                } else {
+                    this.partial = data;
+                    data = null;
+                }
+                // console.log(`Got Partial: ${this.partial}`);
+            }
         }
 
-        if ( data && data.length > 0 && !data.endsWith( '\r\n') && !data.endsWith("" ) ) {
-            const lastIndex = data.lastIndexOf( '\r\n' ) + 2;
-            const newData = data.substring( 0, lastIndex );
-            const remaining = data.substr( lastIndex );
-
-            data = newData;
-            this.partial = remaining;
-            console.log(`Got Partial: ${this.partial}`);
+        if ( data ) {
+            data = this.parse( data );
+            this.terminal.write( data );
         }
-
-        data = this.parse( data );
-
-        this.terminal.write( data );
     }
 
     public parse( data: string ) : string {
@@ -136,9 +155,15 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
             for( let p of this.parsers ) {
                 if ( p.isActive ) {
                     line = p.parse( line );
+                    if ( line == null ) {
+                        break;
+                    } 
                 }
             }
-            rtnData += line;
+            // parsers can set the line to null to exclude it from output
+            if ( line != null ) {
+                rtnData += line;
+            }
             if ( count != last ) {
                 rtnData += "\r\n";
             }

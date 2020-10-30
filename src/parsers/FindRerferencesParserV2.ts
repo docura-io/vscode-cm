@@ -3,9 +3,9 @@
 import { refProvider } from '../cmGlobals';
 import { SrcRefParser } from "./SrcRefParsers";
 
-
 export class FindReferencesParserV2 extends SrcRefParser {
     exclusive = true;
+    isActive = false;
 
     private foundStart = false;
 
