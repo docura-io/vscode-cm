@@ -281,6 +281,6 @@
   "dependencies": {
     "clang-format": "^1.0.34",
     "node-cm": "git+https://github.com/docura-io/node-cm.git",
-    "semantic-release": "^15.13.3"
+    "semantic-release": "^17.2.3"
   }
 }
