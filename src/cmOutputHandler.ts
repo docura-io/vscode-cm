@@ -2,6 +2,7 @@
 
 import { DiagnosticCollection } from 'vscode';
 
+import { cmConfig } from './cmConfig';
 import { cmTerminal } from './cmTerminal';
 import { CodeStatementParser } from './parsers/CodeStatementParser';
 import { DiagnosticsParser } from './parsers/DiagnosticsParser';
@@ -9,6 +10,8 @@ import { FindReferencesParserV2 } from './parsers/FindRerferencesParserV2';
 import { GoToParser } from './parsers/GoToParser';
 import { LineParser } from './parsers/LineParser';
 import { NoiseRemoverParser } from './parsers/NoiseRemoverParser';
+
+let colors : FontFaceInfo[];
 
 export interface ICMOutputer {
     diagnostics: DiagnosticCollection;
@@ -21,6 +24,17 @@ export interface ICMOutputer {
     setupParsers() : void;
 
     show() : void;
+}
+
+export interface IColorData {
+    name: string
+    bold: boolean
+    italic: boolean
+    underline: boolean,
+    background: boolean,
+    r: number
+    g: number
+    b: number
 }
 
 export abstract class cmOutputHandlerBase implements ICMOutputer {
@@ -70,6 +84,7 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
 
     constructor( diags: DiagnosticCollection ) {
         super(diags);
+        updateColors( cmConfig.terminalColors() );
         this.terminal = new cmTerminal();
         this.terminal.start();
     }
@@ -173,7 +188,43 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
     }
 }
 
-const colors : FontFaceInfo[] = [
+export function updateColors( colorData: IColorData[] ) {
+    colors = [];
+
+    let names: string[] = [];
+
+    for( let element of colorData ) {
+        const name = element.name;
+        const color = `${element.r};${element.g};${element.b}`;
+        let type = "38";
+        if ( element.background ) {
+            type = "48";
+        }
+        let prefix = "";
+        if ( element.bold ) {
+            prefix = "1;";
+        }
+        if ( element.italic ) {
+            prefix += "3;"
+        }
+        // not working for some reason
+        if ( element.underline ) {
+            prefix += "4;"
+        }
+        // default it
+        if ( prefix == "" ) prefix = "0;"
+        names.push(name);
+        colors.push( { name: name, asciiColor: `\x1b[${prefix}${type};2;${color}m` } );
+    }
+
+    for( let element of defaultColors ) {
+        if ( names.indexOf(element.name) == -1 ) {
+            colors.push(element);
+        }
+    }
+}
+
+const defaultColors : FontFaceInfo[] = [
 
     // "rose" red highlight is hard to read RGB(255,215,215)
     // dark blue hard to read? RGB(0,0,135)

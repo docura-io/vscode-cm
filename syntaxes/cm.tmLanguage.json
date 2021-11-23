@@ -1973,7 +1973,7 @@
 		},
 
 		"local-variable-init-syntax": {
-			"begin": "(?<!\\.)\\b(init)\\b(\\?)?\\s*([_[:alpha:]][_[:alnum:]]*)\\s*(?=\\()",
+			"begin": "(?<!\\.)\\b(init)\\b(\\?)?(?=\\s)",
 			"beginCaptures": {
 				"1": {
 					"name": "keyword.control.conditional.if.cs"
@@ -1988,7 +1988,7 @@
 			"end": "(?=;)",
 			"patterns": [
 				{
-					"include": "#argument-list"
+					"include": "#expression"
 				}
 			]
 		},

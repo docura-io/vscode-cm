@@ -2,7 +2,7 @@
   "name": "cm",
   "displayName": "CM",
   "description": "CM Language Support",
-  "version": "1.5.1",
+  "version": "1.5.4",
   "icon": "resources/cmIcon.png",
   "publisher": "docuraio",
   "repository": {
@@ -209,6 +209,10 @@
           "type": "boolean",
           "default": false,
           "description": "Runs CM 8.0+ autocomplete"
+        },
+        "cm.terminalColors": {
+          "type": "array",
+          "description": "terminal color overrides"
         }
       }
     },

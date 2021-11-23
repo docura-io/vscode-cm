@@ -4,12 +4,10 @@ import { commands, DiagnosticCollection, Disposable, extensions, Extension, Exte
 
 import { CMDefinitionProvider } from './cmDeclaration';
 import { CM80CompletionItemProvider } from './cmSuggest80';
-import SignatureHelpProvider from './cmSignatureHelper'
 import { ClangDocumentFormattingEditProvider } from './cmFormat';
 import { CMHoverProvider } from './cmHover';
 import { CmTreeDataProvider } from './cmExplorer';
 import { CMWorkspaceSymbolProvider } from './cmWorkspaceSymbolProvider';
-import { CmCodeActionProvider } from './cmCodeActions';
 import { CMFileSymbolProvider } from './cmFileSymbolProvider';
 import { CM_MODE } from './cmMode';
 import { showReloadConfirm } from './helpers/reload';
@@ -20,10 +18,11 @@ import { cmConfig } from './cmConfig';
 import { cmUtils } from './cmUtils';
 
 import { registerCommands, foldCopyright } from './commands';
-import { watch } from 'fs';
 import fs = require('fs');
 
 import { setup as gSetup, refProvider } from './cmGlobals';
+import { updateColors } from './cmOutputHandler';
+import { cmTerminalLinkProvider } from './cmTerminalLinkProvider';
 
 let diagnosticCollection: DiagnosticCollection;
 let compilerAdapter: ICMCompilerAdapter;
@@ -42,6 +41,9 @@ function setupConfigListener( ctx: ExtensionContext ) {
             .then( (v) => {
                 if ( v ) commands.executeCommand( "workbench.action.reloadWindow" );
             });
+        }
+        if ( e.affectsConfiguration( "cm.terminalColors" ) ) {
+            updateColors( cmConfig.terminalColors() );
         }
     } );
 }
@@ -80,7 +82,6 @@ export function activate(context: ExtensionContext) {
 
     // console.log(cmConfig.currentWorkspace());
 
-    
     diagnosticCollection = languages.createDiagnosticCollection( "cm" );
     // setup compiler Adapter
     if ( cmConfig.usePseudoTerminal() ) {
@@ -91,8 +92,8 @@ export function activate(context: ExtensionContext) {
     gSetup();
     
     // setup watcher
-    var cmWatcher = createCmWatcher();
-    var rsWatcher = createRsWatcher();
+    createCmWatcher();
+    createRsWatcher();
 
     window.onDidChangeActiveTextEditor( (editor) => {        
         foldCopyright( editor );
@@ -102,6 +103,7 @@ export function activate(context: ExtensionContext) {
     createRsSaveWatcher();
     
     // subscriptions
+    disposables.push( window.registerTerminalLinkProvider( new cmTerminalLinkProvider() ) );
     disposables.push(languages.registerDefinitionProvider(CM_MODE, new CMDefinitionProvider()));
     if ( cmConfig.cmAutoComplete80Enabled() ) {
         disposables.push(languages.registerCompletionItemProvider(CM_MODE, new CM80CompletionItemProvider(), '.' ) );

@@ -1,9 +1,9 @@
 'use strict';
 
 import vscode = require('vscode');
-import { getCompiler } from './extension';
 import fs = require('fs');
 import path = require('path');
+import { IColorData } from './cmOutputHandler';
 
 export class cmConfig {
     
@@ -12,6 +12,19 @@ export class cmConfig {
     
     static isDebug(): boolean {
         return this.getConfig()["debugMode"];
+    }
+
+    static terminalColors() : IColorData[] {
+        let data: IColorData[] = [];
+        let rawData = this.getConfig()["terminalColors"];
+
+        for( let c of rawData ) {
+            if ( isColorData( c ) ) {
+                data.push( c );
+            }
+        }
+
+        return data;
     }
 
     static currentWorkspace(): Thenable<string> {
@@ -113,4 +126,12 @@ export class cmConfig {
         return vscode.workspace.getConfiguration(this.LangName);
     }
     
+}
+
+function isColorData( arg: any ) : arg is IColorData {
+    return arg && 
+            arg.name && typeof(arg.name) == 'string' && 
+            arg.hasOwnProperty("r") && typeof(arg.r) == 'number' && 
+            arg.hasOwnProperty("b") && typeof(arg.g) == 'number' && 
+            arg.hasOwnProperty("g") && typeof(arg.b) == 'number';
 }
