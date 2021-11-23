@@ -2,12 +2,11 @@
 
 import { CancellationToken, CompletionItem, CompletionItemProvider, CompletionList, Position, Range, SnippetString, TextDocument, CompletionItemKind, MarkdownString } from 'vscode';
 import { getCompiler } from './extension';
-import { CodeStatement } from './cmCompilerAdapter';
 import { cmConfig } from './cmConfig';
 
 import fs = require('fs');
 
-export class CM80CompletionItemProvider implements CompletionItemProvider {
+export class CMCompletionItemProvider implements CompletionItemProvider {
 
     private compiler = getCompiler();
 

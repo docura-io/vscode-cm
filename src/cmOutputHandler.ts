@@ -1,50 +1,180 @@
 'use strict';
 
-import { DiagnosticCollection } from 'vscode';
+import { prependListener } from 'process';
+import { DiagnosticCollection, Location, Position, workspace } from 'vscode';
+import { cmConfig } from './cmConfig';
 
 import { cmTerminal } from './cmTerminal';
-import { CodeStatementParser } from './parsers/CodeStatementParser';
-import { DiagnosticsParser } from './parsers/DiagnosticsParser';
-import { FindReferencesParserV2 } from './parsers/FindRerferencesParserV2';
-import { GoToParser } from './parsers/GoToParser';
-import { LineParser } from './parsers/LineParser';
-import { NoiseRemoverParser } from './parsers/NoiseRemoverParser';
+import { CodeStatementCommand } from './commands/CodeStatementCommand';
+import { FindReferencesCommand } from './commands/FindReferencesCommand';
+import { GoToCommand } from './commands/GoToCommand';
+import { CommandBase } from './commands/ICommand';
+
+let colors : FontFaceInfo[];
 
 export interface ICMOutputer {
     diagnostics: DiagnosticCollection;
 
-    parsers : LineParser[];
-    activeParsers : LineParser[];
-
     clear() : void;
     write( data: string ) : void;
-    setupParsers() : void;
 
     show() : void;
 }
 
-export abstract class cmOutputHandlerBase implements ICMOutputer {
-    public diagnostics: DiagnosticCollection;
+export interface IColorData {
+    name: string
+    bold: boolean
+    italic: boolean
+    underline: boolean,
+    background: boolean,
+    r: number
+    g: number
+    b: number
+}
 
-    public parsers: LineParser[];
-    public activeParsers: LineParser[];
+export class cmOutputHandlerBase implements ICMOutputer {
+    public diagnostics: DiagnosticCollection;
+    protected terminal: cmTerminal;
+    // notes:
+    // perhaps "cm-next-error" denotes the end of the data for the command?
+    private currentHeader = "";
+    private currentText = "";
+    private extras : any;
+
+    private isFullyStarted = false;
+
+    private commands : CommandBase[] = [];
 
     constructor( diags: DiagnosticCollection ) {
         this.diagnostics = diags;
-        this.setupParsers();
+        updateColors( cmConfig.terminalColors() );
+        this.setupCommands();
+        this.terminal = new cmTerminal();
+        this.terminal.start();
     }
 
-    public setupParsers(): void {
-        this.parsers = [];
-        this.activeParsers = [];
+    public setupCommands() : void {
+        this.commands.push( new GoToCommand() );
+        this.commands.push( new FindReferencesCommand() );
+        this.commands.push( new CodeStatementCommand() );
     }
 
     public clear() : void {
-        console.log("Implement in child class!");
+        this.terminal.clear();
     }
 
-    abstract write( data: string ) : void;
-    abstract show() : void;
+    public pushExtras( x: any ) : void {
+        this.extras = { ...this.extras, ...x };
+    }
+
+    public write( data: string ) : void {
+        data = this.handleFontFaces( data );
+
+        if ( data ) {
+            data = this.parse( data );
+            // data = data.replace("", "[SOH]").replace("","[STX]");
+            this.terminal.write( data );
+        }
+    }
+
+    public show() : void {
+        this.terminal.focus(true);
+    }
+
+    private parse( data: string ) : string {
+
+        const partialRegex = /^[^\x01]+/;
+        const regex = /\x01([^\x02]*)\x02?([^\x01]*)/g;
+        const colorRegEx = /[\u001b|\x1b][^m]+m/g;
+
+        let rtn = "";
+        
+        let partialMatch = partialRegex.exec( data );
+        if ( partialMatch ) {
+            this.currentText += partialMatch[0];
+            // make sure we display it!
+            // rtn += this.currentHeader;
+            rtn += partialMatch[0];
+        }
+        
+        if ( data.indexOf( "\x01" ) > -1 ) {
+            // there is a SOH character, so we should be good to process the current command...
+            this.doCommand();
+        }
+
+        let result;
+        while(result = regex.exec(data)) {
+            if ( /\(.*\)/.test(result[1]) ) {
+                this.currentHeader = result[1];
+            }
+
+            if ( true ) {
+                let colors;
+                while( colors = colorRegEx.exec(result[1]) ) {
+                    rtn += colors[0];
+                }
+            } else {
+                rtn += result[1];
+            }
+            
+            let text = ( result.length > 1 ) ? result[2] : "";
+
+            rtn += text;
+            this.currentText = text;
+            
+            if ( data.indexOf( "\x01", result.index + 1 ) > -1 ) {
+                // there is more stuff, so we should be good to run this beast
+                this.doCommand();
+            }
+
+            if ( !this.isFullyStarted && text.indexOf("cm>") > -1 ) {
+                this.isFullyStarted = true;
+                this.currentHeader = "";
+                this.currentText = "";
+                console.log("CM Compiler Ready!");
+            }
+        }
+        if ( this.currentHeader.length > 0 || this.currentText.length > 0 ) {
+            // console.log("Current Cmd: " + this.currentHeader);
+            // console.log("Current Text: " + this.currentText);
+        }
+
+        if ( rtn.length > 0 ) {
+            return rtn;
+        }
+
+
+        return null;
+    }
+
+    private doCommand() {
+        if ( !this.isFullyStarted ) return;
+        // should it do anything???
+        if ( this.currentHeader.indexOf( "(cm-") > -1 ) {
+            var data = {
+                command: this.currentHeader,
+                data: this.currentText,
+                extras: this.extras
+            };
+
+            if ( data.command.indexOf( 'cm-next-error' ) > -1 ) {
+                // clean up
+                // this.extras?.goToRejector();
+                // this.extras?.findRefRejector();
+
+                this.extras = {};
+            } else {
+                for( let cmd of this.commands ) {
+                    if ( cmd.execute( data ) ) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        this.currentHeader = "";
+        this.currentText = "";
+    }
 
     protected handleFontFaces(data: string) : string {
         data = data.replace( /\((?:cm-pop-face|cm-|cm-reset-compilation-faces)\)/g, "\u001b[0m" );
@@ -62,118 +192,43 @@ export abstract class cmOutputHandlerBase implements ICMOutputer {
     }
 }
 
-export class cmMainOutputHanlder extends cmOutputHandlerBase {
+export function updateColors( colorData: IColorData[] ) {
+    colors = [];
 
-    protected terminal: cmTerminal;
+    let names: string[] = [];
 
-    protected partial: string;
-
-    constructor( diags: DiagnosticCollection ) {
-        super(diags);
-        this.terminal = new cmTerminal();
-        this.terminal.start();
-    }
-
-    public setupParsers() : void {
-        super.setupParsers();
-        this.parsers.push( new GoToParser() );
-        this.parsers.push( new CodeStatementParser() );
-        this.parsers.push( new FindReferencesParserV2() );
-
-        this.parsers.push( new DiagnosticsParser( this.diagnostics ) );
-        // should be last
-        this.parsers.push( new NoiseRemoverParser() );
-    }
-
-    public activeParser<T extends LineParser>( TCtor: new (...args: any[]) => T ) : T {
-        for ( const parser of this.parsers ) {
-            if ( parser instanceof TCtor ) {
-                parser.activate();
-                return parser as T;
-            }
+    for( let element of colorData ) {
+        const name = element.name;
+        const color = `${element.r};${element.g};${element.b}`;
+        let type = "38";
+        if ( element.background ) {
+            type = "48";
         }
-        return null;
-    }
-
-    public clear() {
-        // vscode.commands.executeCommand( '' )
-        this.terminal.clear();
-    }
-
-    public show() : void {
-        this.terminal.focus(true);
-    }
-
-    public write( data: string ) {
-        // Do Font Faces before dealing with partials...?
-        data = this.handleFontFaces( data );
-
-        //TODO: Do I need the partial line parser stuff...?
-
-        if ( false ) {
-            // we can't parse incomplete data/commands.
-            if ( this.partial && this.partial.length > 0 ) {
-                data = this.partial + data;
-                this.partial = null;
-            }
-
-            if ( data && data.length > 0 && !data.endsWith( '\r\n') && !data.endsWith("" ) ) {
-                const newLineIndex = data.lastIndexOf( '\r\n' );
-                if ( newLineIndex > -1 ) {
-                    const lastIndex =  newLineIndex+ 2;
-                    const newData = data.substring( 0, lastIndex );
-                    const remaining = data.substr( lastIndex );
-
-                    data = newData;
-                    this.partial = remaining;
-                } else {
-                    this.partial = data;
-                    data = null;
-                }
-                // console.log(`Got Partial: ${this.partial}`);
-            }
+        let prefix = "";
+        if ( element.bold ) {
+            prefix = "1;";
         }
-
-        if ( data ) {
-            data = this.parse( data );
-            this.terminal.write( data );
+        if ( element.italic ) {
+            prefix += "3;"
         }
+        // not working for some reason
+        if ( element.underline ) {
+            prefix += "4;"
+        }
+        // default it
+        if ( prefix == "" ) prefix = "0;"
+        names.push(name);
+        colors.push( { name: name, asciiColor: `\x1b[${prefix}${type};2;${color}m` } );
     }
 
-    public parse( data: string ) : string {
-
-        let lines = data.split('\r\n');
-        let rtnData = '';
-        const last = lines.length - 1;
-        let count = 0;
-
-        for( let line of lines ) {
-            if ( line && line.length == 0 ) {
-                rtnData += line;
-                continue
-            };
-            for( let p of this.parsers ) {
-                if ( p.isActive ) {
-                    line = p.parse( line );
-                    if ( line == null ) {
-                        break;
-                    } 
-                }
-            }
-            // parsers can set the line to null to exclude it from output
-            if ( line != null ) {
-                rtnData += line;
-            }
-            if ( count != last ) {
-                rtnData += "\r\n";
-            }
-            count++;
+    for( let element of defaultColors ) {
+        if ( names.indexOf(element.name) == -1 ) {
+            colors.push(element);
         }
-        return rtnData;
     }
 }
 
-const colors : FontFaceInfo[] = [
+const defaultColors : FontFaceInfo[] = [
 
     // "rose" red highlight is hard to read RGB(255,215,215)
     // dark blue hard to read? RGB(0,0,135)

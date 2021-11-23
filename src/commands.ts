@@ -7,7 +7,7 @@ var didLoadScripts = false;
 var scriptPackage = "";
 var scriptFuncs = [];
 
-import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace, TextEditorRevealType } from 'vscode';
+import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace, TextEditorRevealType, Location } from 'vscode';
 import { ICMCompilerAdapter } from './cmCompilerAdapter';
 
 export function registerCommands( compiler: ICMCompilerAdapter ) {
@@ -133,6 +133,65 @@ export function registerCommands( compiler: ICMCompilerAdapter ) {
         compiler.show();
     });
 
+    let d27 = commands.registerCommand( "cm.goToLocationsTest", async () => {
+        // https://code.visualstudio.com/api/references/commands
+        // editor.action.goToLocations
+            /*
+                uri - The text document in which to start
+                position - The position at which to start
+                locations - An array of locations.
+                multiple - Define what to do when having multiple results, either peek, gotoAndPeek, or `goto
+                noResultsMessage - Human readable message that shows when locations is empty.
+            */
+            
+        // editor.action.peekLocations
+            /*
+                uri - The text document in which to start
+                position - The position at which to start
+                locations - An array of locations.
+                multiple - Define what to do when having multiple results, either peek, gotoAndPeek, or `goto
+            */
+        // let success = await commands.executeCommand('vscode.openFolder', uri);
+        
+        let success = await commands.executeCommand( 
+            "editor.action.goToLocations", 
+            window.activeTextEditor.document.uri,
+            window.activeTextEditor.selection.start,
+            [
+                new Location( Uri.file( "C:\\CetDev\\versiongit\\personal\\profile\\lambt\\panels\\package.cm" ), new Position( 0, 0 ) ),
+                // new Location( Uri.file( "C:\\CetDev\\versiongit\\personal\\profile\\lambt\\panels\\SimplePanelModel.cm" ), new Position( 0, 0 ) ),
+                // new Location( Uri.file( "C:\\CetDev\\versiongit\\personal\\profile\\lambt\\panels\\TAGS" ), new Position( 0, 0 ) )
+            ], // results (vscode.Location[])
+            'gotoAndPeek', // peek / gotoAndPeek / goto
+            'Sorry boss got nothing'
+        );
+
+        // let success = await commands.executeCommand( 
+        //     "editor.action.goToLocations", 
+        //     window.activeTextEditor.document.uri,
+        //     window.activeTextEditor.selection.start,
+        //     [
+        //         new Location( Uri.file( "C:\\CetDev\\versiongit\\personal\\profile\\lambt\\panels\\package.cm" ), new Position( 0, 0 ) ),
+        //         new Location( Uri.file( "C:\\CetDev\\versiongit\\personal\\profile\\lambt\\panels\\SimplePanelModel.cm" ), new Position( 0, 0 ) ),
+        //         new Location( Uri.file( "C:\\CetDev\\versiongit\\personal\\profile\\lambt\\panels\\TAGS" ), new Position( 0, 0 ) )
+        //     ], // results (vscode.Location[])
+        //     'peek', // peek / gotoAndPeek / goto
+        //     'Sorry boss got nothing'
+        // );
+
+        // let success = await commands.executeCommand( 
+        //     "editor.action.peekLocations", 
+        //     window.activeTextEditor.document.uri,
+        //     window.activeTextEditor.selection.start,
+        //     [
+        //         new Location( Uri.file( "C:\\CetDev\\versiongit\\personal\\profile\\lambt\\panels\\package.cm" ), new Position( 0, 0 ) ),
+        //         new Location( Uri.file( "C:\\CetDev\\versiongit\\personal\\profile\\lambt\\panels\\SimplePanelModel.cm" ), new Position( 0, 0 ) ),
+        //         new Location( Uri.file( "C:\\CetDev\\versiongit\\personal\\profile\\lambt\\panels\\TAGS" ), new Position( 0, 0 ) )
+        //     ], // results (vscode.Location[])
+        //     'peek' // peek / gotoAndPeek / goto
+        // );
+    });
+
     return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, scripts, d20, d21, d22 );
 }
     
@@ -204,6 +263,6 @@ function getFilePathInUserProfile( file: string ): Uri {
         window.showErrorMessage( "Unable to retrieve username");
         return;
     }
-    let profilePath = cmConfig.cmGitMode() ? "personal" : "home";
+    let profilePath = "personal";
     return Uri.file( `${cmConfig.cmRoot()}\\${profilePath}\\profile\\${userName.toLowerCase()}\\${file}` );
 }

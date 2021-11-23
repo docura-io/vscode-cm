@@ -4,6 +4,7 @@ import vscode = require('vscode');
 import { getCompiler } from './extension';
 import fs = require('fs');
 import path = require('path');
+import { IColorData } from './cmOutputHandler';
 
 export class cmConfig {
     
@@ -12,6 +13,19 @@ export class cmConfig {
     
     static isDebug(): boolean {
         return this.getConfig()["debugMode"];
+    }
+
+    static terminalColors() : IColorData[] {
+        let data: IColorData[] = [];
+        let rawData = this.getConfig()["terminalColors"];
+
+        for( let c of rawData ) {
+            if ( isColorData( c ) ) {
+                data.push( c );
+            }
+        }
+
+        return data;
     }
 
     static currentWorkspace(): Thenable<string> {
@@ -32,14 +46,6 @@ export class cmConfig {
         }
     }
 
-    static cmAutoComplete80Enabled(): boolean {
-        let isEnabled = this.getConfig()["autoComplete80Enabled"]; 
-        if ( typeof isEnabled !== "boolean" ) {
-            isEnabled = false;
-        }
-        return isEnabled;
-    }
-
     static clearOutputOnBuild(): boolean {
         let isEnabled = this.getConfig()["clearOutputBuild"]; 
         if ( typeof isEnabled !== "boolean" ) {
@@ -47,11 +53,7 @@ export class cmConfig {
         }
         return isEnabled;
     }
-    
-    static cmOutputFilePath(): string {
-        return this.getConfig()["outputFilePath"];
-    }
-    
+
     static cmRoot(): string {
         if ( !this.root ) {
             // this needs to be a bit smarter, but for now we use the first folder
@@ -64,17 +66,9 @@ export class cmConfig {
         }
         return this.root;
     }
-    
-    static cmGitMode(): boolean {
-        let force = this.getConfig()["gitMode"];
-        if ( typeof force !== 'undefined' ) return force;
-        // attempt to autodetect
-        let root = this.cmRoot();
-        return fs.existsSync( path.join(root, 'base' ) );
-    }
 
     static cmPath(): string {
-        return this.cmRoot() + (this.cmGitMode() ? "\\base" : "\\home");
+        return this.cmRoot() + "\\base";
     }
 
     static arch(): string {
@@ -93,24 +87,15 @@ export class cmConfig {
         return useNewSyntax;
     }
 
-    static usePseudoTerminal(): Boolean {
-        let usePseudo = this.getConfig()["useTerminal"];
-        if ( typeof usePseudo !== "boolean" ) {
-            usePseudo = false;
-        }
-        return usePseudo;
-    }
-    
-    static emacsClientExe() {
-        return this.getConfig()["emacsclientexe"];
-    }
-    
-    static emacsServerFile() {
-        return this.getConfig()["emacsserverfile"];
-    }
-    
     private static getConfig() {
         return vscode.workspace.getConfiguration(this.LangName);
     }
-    
+}
+
+function isColorData( arg: any ) : arg is IColorData {
+    return arg && 
+            arg.name && typeof(arg.name) == 'string' && 
+            arg.hasOwnProperty("r") && typeof(arg.r) == 'number' && 
+            arg.hasOwnProperty("b") && typeof(arg.g) == 'number' && 
+            arg.hasOwnProperty("g") && typeof(arg.b) == 'number';
 }

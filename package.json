@@ -2,7 +2,7 @@
   "name": "cm",
   "displayName": "CM",
   "description": "CM Language Support",
-  "version": "1.5.1",
+  "version": "1.5.4",
   "icon": "resources/cmIcon.png",
   "publisher": "docuraio",
   "repository": {
@@ -23,7 +23,7 @@
     "onLanguage:cm",
     "workspaceContains:**/*.cm"
   ],
-  "main": "./dist/extension",
+  "main": "./out/extension",
   "contributes": {
     "languages": [
       {
@@ -45,6 +45,12 @@
       }
     ],
     "commands": [
+      {
+        "command": "cm.goToLocationsTest",
+        "title": "CM Test Execute",
+        "description": "Testing Command",
+        "category": "CM"
+      },
       {
         "command": "cm.start",
         "title": "Start CM",
@@ -209,6 +215,10 @@
           "type": "boolean",
           "default": false,
           "description": "Runs CM 8.0+ autocomplete"
+        },
+        "cm.terminalColors": {
+          "type": "array",
+          "description": "terminal color overrides"
         }
       }
     },
@@ -275,27 +285,27 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "webpack --mode production",
-    "compile": "npm run webpack",
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
-    "webpack": "webpack --mode development",
-    "webpack-dev": "webpack --mode development --watch",
-    "test-compile": "tsc -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install"
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/node": "^8.10.25",
-    "ts-loader": "^5.4.3",
-    "typescript": "^2.6.1",
-    "vscode": "^1.1.33",
-    "webpack": "^4.30.0",
-    "webpack-cli": "^3.3.1"
+    "@types/vscode": "^1.46.0",
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.0",
+    "@types/node": "^12.11.7",
+    "eslint": "^7.9.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
+    "glob": "^7.1.6",
+    "mocha": "^8.1.3",
+    "typescript": "^4.0.2",
+    "vscode-test": "^1.4.0"
   },
   "dependencies": {
-    "clang-format": "^1.0.34",
-    "line-reader": "^0.4.0",
-    "node-cm": "git+https://github.com/docura-io/node-cm.git",
-    "semantic-release": "^15.13.3",
-    "vsce": "^1.77.0"
+    "node-cm": "git+https://github.com/docura-io/node-cm.git"
   }
 }

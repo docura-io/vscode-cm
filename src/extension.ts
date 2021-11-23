@@ -1,29 +1,27 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { commands, DiagnosticCollection, Disposable, extensions, Extension, ExtensionContext, FileSystemWatcher, languages, window, workspace, RelativePattern, WorkspaceFolder, TextDocument, Uri } from 'vscode';
+import { commands, DiagnosticCollection, Disposable, ExtensionContext, FileSystemWatcher, languages, window, workspace, RelativePattern, WorkspaceFolder, Uri } from 'vscode';
 
 import { CMDefinitionProvider } from './cmDeclaration';
-import { CM80CompletionItemProvider } from './cmSuggest80';
-import SignatureHelpProvider from './cmSignatureHelper'
+import { CMCompletionItemProvider } from './cmSuggest80';
 import { ClangDocumentFormattingEditProvider } from './cmFormat';
 import { CMHoverProvider } from './cmHover';
 import { CmTreeDataProvider } from './cmExplorer';
-import { CMWorkspaceSymbolProvider } from './cmWorkspaceSymbolProvider';
-import { CmCodeActionProvider } from './cmCodeActions';
 import { CMFileSymbolProvider } from './cmFileSymbolProvider';
 import { CM_MODE } from './cmMode';
 import { showReloadConfirm } from './helpers/reload';
 
-import { cmCompilerAdapterV1, ICMCompilerAdapter } from './cmCompilerAdapter';
-import { cmCompilerAdapterV2 } from './cmCompilerAdapterV2'
+import { ICMCompilerAdapter, cmCompilerAdapter } from './cmCompilerAdapter';
 import { cmConfig } from './cmConfig';
 import { cmUtils } from './cmUtils';
 
 import { registerCommands, foldCopyright } from './commands';
-import { watch } from 'fs';
 import fs = require('fs');
 
 import { setup as gSetup, refProvider } from './cmGlobals';
+import { updateColors } from './cmOutputHandler';
+import { cmTerminalLinkProvider } from './cmTerminalLinkProvider';
+import { CMFoldingProvider } from './cmFoldingProvider';
 
 let diagnosticCollection: DiagnosticCollection;
 let compilerAdapter: ICMCompilerAdapter;
@@ -37,11 +35,14 @@ function setupConfigListener( ctx: ExtensionContext ) {
         if ( e.affectsConfiguration( "cm.newSyntax" ) ) {
             updatePackageConfig( ctx.asAbsolutePath("package.json") );
         }
-        if ( e.affectsConfiguration( "cm.useTerminal" ) ) {
-            showReloadConfirm( "VSCode must reload to enable/disable the use of the Pseudo Terminal" )
-            .then( (v) => {
-                if ( v ) commands.executeCommand( "workbench.action.reloadWindow" );
-            });
+        // if ( e.affectsConfiguration( "cm.useTerminal" ) ) {
+        //     showReloadConfirm( "VSCode must reload to enable/disable the use of the Pseudo Terminal" )
+        //     .then( (v) => {
+        //         if ( v ) commands.executeCommand( "workbench.action.reloadWindow" );
+        //     });
+        // }
+        if ( e.affectsConfiguration( "cm.terminalColors" ) ) {
+            updateColors( cmConfig.terminalColors() );
         }
     } );
 }
@@ -83,36 +84,29 @@ export function activate(context: ExtensionContext) {
     
     diagnosticCollection = languages.createDiagnosticCollection( "cm" );
     // setup compiler Adapter
-    if ( cmConfig.usePseudoTerminal() ) {
-        compilerAdapter = new cmCompilerAdapterV2( diagnosticCollection );
-    } else {
-        compilerAdapter = new cmCompilerAdapterV1( diagnosticCollection );
-    }
+    compilerAdapter = new cmCompilerAdapter( diagnosticCollection );
+    
     gSetup();
-    
+
     // setup watcher
-    var cmWatcher = createCmWatcher();
-    var rsWatcher = createRsWatcher();
-
-    window.onDidChangeActiveTextEditor( (editor) => {        
-        foldCopyright( editor );
-    } );
-
-    // createFileOpenWatcher();
+    createCmWatcher();
+    createRsWatcher();
     createRsSaveWatcher();
-    
+
+    // window.onDidChangeActiveTextEditor( (editor) => {
+    //     foldCopyright( editor );
+    // } );
+
     // subscriptions
+    disposables.push( window.registerTerminalLinkProvider( new cmTerminalLinkProvider() ) );
     disposables.push(languages.registerDefinitionProvider(CM_MODE, new CMDefinitionProvider()));
-    if ( cmConfig.cmAutoComplete80Enabled() ) {
-        disposables.push(languages.registerCompletionItemProvider(CM_MODE, new CM80CompletionItemProvider(), '.' ) );
-    }
+    disposables.push(languages.registerCompletionItemProvider(CM_MODE, new CMCompletionItemProvider(), '.' ) );
+    disposables.push( languages.registerFoldingRangeProvider( CM_MODE, new CMFoldingProvider() ) );
 
     disposables.push( languages.registerDocumentSymbolProvider(CM_MODE, new CMFileSymbolProvider() ));
-    disposables.push ( languages.registerWorkspaceSymbolProvider( new CMWorkspaceSymbolProvider() ));
     
-    // disposables.push( languages.registerCodeActionsProvider( CM_MODE, new CmCodeActionProvider() ));
-    disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
-    disposables.push(languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
+    disposables.push( languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
+    disposables.push( languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
     disposables.push( window.registerTreeDataProvider( 'cmExplorer', new CmTreeDataProvider() ) );
     disposables.push( languages.registerReferenceProvider( CM_MODE, refProvider ) );
 
@@ -130,28 +124,28 @@ export function activate(context: ExtensionContext) {
 function createWatcher( func: (e: Uri)=>void, extension: string ): void {
     var dict: any[] = [];
     
-        function addWatcher(wf: WorkspaceFolder) {
-            var watcher = workspace.createFileSystemWatcher( new RelativePattern(wf, `**/*.${extension}` ) );  
-            dict.push({key: wf.uri.fsPath, value: watcher});
-            watcher.onDidCreate( (e) => {
-                func( e );
-                // cmUtils.addCopyright( e );
-            } );
-        }
-    
-        workspace.workspaceFolders.forEach( wf => {
-           addWatcher( wf );
-        });
-    
-        workspace.onDidChangeWorkspaceFolders( e => {
-            e.added.forEach( a => {
-                addWatcher(a);
-            });
-            e.removed.forEach( a => {
-                let watcher: FileSystemWatcher = dict.find( o => o.key == a.uri.fsPath );
-                watcher = null;
-            })
+    function addWatcher(wf: WorkspaceFolder) {
+        var watcher = workspace.createFileSystemWatcher( new RelativePattern(wf, `**/*.${extension}` ) );  
+        dict.push({key: wf.uri.fsPath, value: watcher});
+        watcher.onDidCreate( (e) => {
+            func( e );
+            // cmUtils.addCopyright( e );
         } );
+    }
+
+    workspace.workspaceFolders.forEach( wf => {
+        addWatcher( wf );
+    });
+
+    workspace.onDidChangeWorkspaceFolders( e => {
+        e.added.forEach( a => {
+            addWatcher(a);
+        });
+        e.removed.forEach( a => {
+            let watcher: FileSystemWatcher = dict.find( o => o.key == a.uri.fsPath );
+            watcher = null;
+        })
+    } );
 }
 
 function createCmWatcher(): void {

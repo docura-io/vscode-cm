@@ -17,51 +17,10 @@ import { cmConfig } from './cmConfig'
 import { getCompiler } from './extension';
 
 export class CMReferenceProvider implements ReferenceProvider {
-
-    private cache: Location[];
-    private pRes;
-    private pRej;
-
     private compiler = getCompiler();
 
     provideReferences(document: TextDocument, position: Position, context: ReferenceContext, token: CancellationToken): ProviderResult<Location[]> {
-        this.abort();
-        return new Promise( (res, rej ) => {
-            this.pRes = res;
-            this.pRej = rej;
-
-            // actually invoke thie thing
-            return this.findReferences(document, position);
-        });
-    }
-
-    complete() {
-        if ( this.pRes ) this.pRes( this.cache );
-        this.pRes = null;
-        this.pRej = null;
-    }
-
-    abort() {
-        if ( this.pRej ) this.pRej();
-        this.clearCache();
-        this.pRes = null;
-        this.pRej = null;
-    }
-
-    first() : Location {
-        return ( this.cache.length > 0 ? this.cache[0] : null);
-    }
-
-    addReference( file: string, line: number, column: number ) {
-        let uri = Uri.file(file);
-        let startPos = new Position( line-1, 0 );
-        let endPos = new Position( line-1, column );
-        if( !this.cache ) this.cache = [];
-        this.cache.push( new Location( uri, new Range(startPos, endPos ) ) );
-    }
-
-    clearCache() {
-        this.cache = [];
+        return this.findReferences(document, position);
     }
 
     private findReferences( document: TextDocument, position: Position ) {

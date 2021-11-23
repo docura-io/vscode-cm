@@ -58,7 +58,7 @@ export class cmTerminal {
 
     public focus( preserveFocus: boolean ) {
         if ( this.terminal ) {
-            this.terminal.show( true );
+            this.terminal.show( preserveFocus );
         }
     }
 
