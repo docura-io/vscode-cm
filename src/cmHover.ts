@@ -18,7 +18,7 @@ export class CMHoverProvider implements HoverProvider {
                 let hover = new Hover( {language: 'cm', value: `${results[0].type} ${word}` } );
                 resolve( hover ); 
             } else {
-                resolve();
+                resolve( null );
             }
         });
     }
