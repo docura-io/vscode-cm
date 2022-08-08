@@ -12,6 +12,9 @@ import { CommandBase } from './commands/ICommand';
 
 let colors : FontFaceInfo[];
 
+const cBegin = "";
+const cEnd = ""
+
 export interface ICMOutputer {
     diagnostics: DiagnosticCollection;
 
@@ -40,6 +43,8 @@ export class cmOutputHandlerBase implements ICMOutputer {
     private currentHeader = "";
     private currentText = "";
     private extras : any;
+
+    private inSOH = false;
 
     private isFullyStarted = false;
 
@@ -71,7 +76,8 @@ export class cmOutputHandlerBase implements ICMOutputer {
         data = this.handleFontFaces( data );
 
         if ( data ) {
-            data = this.parse( data );
+            // data = this.parse( data );
+            data = this.parse2( data );
             // data = data.replace("", "[SOH]").replace("","[STX]");
             this.terminal.write( data );
         }
@@ -81,10 +87,46 @@ export class cmOutputHandlerBase implements ICMOutputer {
         this.terminal.focus(true);
     }
 
+    private parse2( data: string ) : string {
+
+        const chars = [...data];
+
+        let result = "";
+
+        chars.forEach( (c,i) => {
+
+            if ( this.inSOH ) {
+                if ( c == cEnd ) {
+                    this.inSOH = false;
+                } else {
+                    this.currentHeader += c;
+                }
+            } else if ( c == cBegin ) {
+                this.doCommand();
+                // console.log("Would doCommand...");
+                this.inSOH = true;
+            } else {
+                this.currentText += c;
+                result += c;
+
+                if ( !this.isFullyStarted && this.currentText.indexOf("cm>") > -1 ) {
+                    this.isFullyStarted = true;
+                    this.currentHeader = "";
+                    this.currentText = "";
+                    console.log("CM Compiler Ready!");
+                }
+            }
+        });
+
+        return result.length > 0 ? result : null;
+    }
+
     private parse( data: string ) : string {
 
-        const partialRegex = /^[^\x01]+/;
-        const regex = /\x01([^\x02]*)\x02?([^\x01]*)/g;
+        // x01 == SOH
+        // x02 == STX
+        const partialRegex = /^[^\x01]+/; 
+        const regex = /\x01([^\x02]*)\x02?([^\x01]*)/g; 
         const colorRegEx = /[\u001b|\x1b][^m]+m/g;
 
         let rtn = "";
