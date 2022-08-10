@@ -4,12 +4,9 @@ import { commands, DiagnosticCollection, Disposable, extensions, Extension, Exte
 
 import { CMDefinitionProvider } from './cmDeclaration';
 import { CM80CompletionItemProvider } from './cmSuggest80';
-import SignatureHelpProvider from './cmSignatureHelper'
 import { ClangDocumentFormattingEditProvider } from './cmFormat';
 import { CMHoverProvider } from './cmHover';
 import { CmTreeDataProvider } from './cmExplorer';
-// import { CMWorkspaceSymbolProvider } from './cmWorkspaceSymbolProvider';
-import { CmCodeActionProvider } from './cmCodeActions';
 import { CMFileSymbolProvider } from './cmFileSymbolProvider';
 import { CM_MODE } from './cmMode';
 import { showReloadConfirm } from './helpers/reload';
@@ -19,7 +16,6 @@ import { cmConfig } from './cmConfig';
 import { cmUtils } from './cmUtils';
 
 import { registerCommands, foldCopyright } from './commands';
-import { watch } from 'fs';
 import fs = require('fs');
 
 import { setup as gSetup, refProvider } from './cmGlobals';
@@ -78,10 +74,6 @@ export function activate(context: ExtensionContext) {
     // setup compiler Adapter
     compilerAdapter = new cmCompilerAdapter( diagnosticCollection, cmConfig.cmOutputFilePath() );
     gSetup();
-    
-    // setup watcher
-    var cmWatcher = createCmWatcher();
-    var rsWatcher = createRsWatcher();
 
     window.onDidChangeActiveTextEditor( (editor) => {        
         foldCopyright( editor );
@@ -97,18 +89,11 @@ export function activate(context: ExtensionContext) {
     }
 
     disposables.push( languages.registerDocumentSymbolProvider(CM_MODE, new CMFileSymbolProvider() ));
-    // disposables.push ( languages.registerWorkspaceSymbolProvider( new CMWorkspaceSymbolProvider() ));
     
-    // disposables.push( languages.registerCodeActionsProvider( CM_MODE, new CmCodeActionProvider() ));
     disposables.push(languages.registerDocumentFormattingEditProvider(CM_MODE, new ClangDocumentFormattingEditProvider() ));
     disposables.push(languages.registerHoverProvider( CM_MODE, new CMHoverProvider() ) );
     disposables.push( window.registerTreeDataProvider( 'cmExplorer', new CmTreeDataProvider() ) );
     disposables.push( languages.registerReferenceProvider( CM_MODE, refProvider ) );
-
-    if ( cmConfig.isDebug() ) {
-        // put experimental features here
-        // disposables.push( languages.registerSignatureHelpProvider( CM_MODE, new SignatureHelpProvider(), '(', ',' ) );
-    }
     
     disposables.push(diagnosticCollection);
     disposables.push( registerCommands( compilerAdapter ) );

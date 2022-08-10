@@ -9,7 +9,7 @@ export class CMHoverProvider implements HoverProvider {
         return new Promise( (resolve, reject) => {
             
             let wordRange = document.getWordRangeAtPosition( position );
-            let word = document.getText( wordRange )
+            let word = document.getText( wordRange );
             
             var finder = new VariableFinder();
             var results = finder.findDefinitionInText( document.getText(), word );
@@ -18,7 +18,7 @@ export class CMHoverProvider implements HoverProvider {
                 let hover = new Hover( {language: 'cm', value: `${results[0].type} ${word}` } );
                 resolve( hover ); 
             } else {
-                resolve();
+                resolve( null );
             }
         });
     }

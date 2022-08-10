@@ -4,7 +4,7 @@
     Multi Comment
 */
 
-package custom.yours;
+package c:\git\vscode-cm.src.test;
 package custom. /* whatever */ yours;
 
 use cm.core;

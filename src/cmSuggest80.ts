@@ -148,7 +148,7 @@ export class CM80CompletionItemProvider implements CompletionItemProvider {
                 
                 item.insertText = new SnippetString( snip );
                 var docs = new MarkdownString();
-                docs.appendCodeblock( item.label.replace(/\s->\s.*/g, ""), "cm" );
+                docs.appendCodeblock( item.label.toString().replace(/\s->\s.*/g, ""), "cm" );
                 docs.appendCodeblock( "return " + ( rtnType ? rtnType[1] : "void" ), "cm" );
                 // docs.appendText("returns " + ( rtnType ? rtnType[1] : "void" ) );
                 docs.appendText( "From");

@@ -9,10 +9,6 @@ export class cmConfig {
     
     static LangName = "cm";
     static root: string = null;
-    
-    static isDebug(): boolean {
-        return this.getConfig()["debugMode"];
-    }
 
     static currentWorkspace(): Thenable<string> {
         if ( vscode.workspace.workspaceFolders ) {
@@ -64,17 +60,9 @@ export class cmConfig {
         }
         return this.root;
     }
-    
-    static cmGitMode(): boolean {
-        let force = this.getConfig()["gitMode"];
-        if ( typeof force !== 'undefined' ) return force;
-        // attempt to autodetect
-        let root = this.cmRoot();
-        return fs.existsSync( path.join(root, 'base' ) );
-    }
 
     static cmPath(): string {
-        return this.cmRoot() + (this.cmGitMode() ? "\\base" : "\\home");
+        return this.cmRoot() + "\\base";
     }
 
     static arch(): string {

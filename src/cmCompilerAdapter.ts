@@ -5,7 +5,7 @@ import { cmOutputChannel } from './cmOutputChannel';
 import vscode = require('vscode');
 import { workspace } from 'vscode';
 
-var compilerContainer = require("node-cm/index.js");
+var compilerContainer = require("./helpers/cmCompilerBridge");
 
 export class cmCompilerAdapter {
     
@@ -22,7 +22,6 @@ export class cmCompilerAdapter {
         
         this.compiler = new compilerContainer( {
             cmRoot: cmConfig.cmRoot(),
-            gitMode: cmConfig.cmGitMode(),
             onRead: (data) => {
                 this.channel.write( data );
             },
@@ -31,7 +30,7 @@ export class cmCompilerAdapter {
                 this.channel.write( `[INFO: CM_Process_Error -> ${data}]` );
             },
             //debug: true,
-            "cmArch": cmConfig.arch()
+            nocoloring: true
         });
     }
 
@@ -66,7 +65,7 @@ export class cmCompilerAdapter {
     }
     
     public start() : Thenable<boolean> {
-        if ( this.isStarted ) return;
+        if ( this.isStarted ) { return; }
         
         return new Promise((resolve, reject) => {
             this.compiler.start()
@@ -91,7 +90,7 @@ export class cmCompilerAdapter {
     }
     
     public stop() {
-        if ( !this.isStarted ) return;
+        if ( !this.isStarted ) { return; }
         this.clearOutputIfNeeded();
         this.channel.write( "[INFO CM Killed]\n", true );
         this.compiler.kill();

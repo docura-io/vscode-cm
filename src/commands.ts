@@ -6,7 +6,7 @@ import { cmConfig } from './cmConfig';
 const fs = require('fs');
 var didLoadScripts = false;
 var scriptPackage = "";
-var scriptFuncs = [];
+var scriptFuncs: string[] = [];
 
 import { commands, Disposable, Position, Range, Selection, TextDocument, TextEditor, Uri, window, workspace, TextEditorRevealType } from 'vscode';
 
@@ -205,6 +205,5 @@ function getFilePathInUserProfile( file: string ): Uri {
         window.showErrorMessage( "Unable to retrieve username");
         return;
     }
-    let profilePath = cmConfig.cmGitMode() ? "personal" : "home";
-    return Uri.file( `${cmConfig.cmRoot()}\\${profilePath}\\profile\\${userName.toLowerCase()}\\${file}` );
+    return Uri.file( `${cmConfig.cmRoot()}\\personal\\profile\\${userName.toLowerCase()}\\${file}` );
 }
