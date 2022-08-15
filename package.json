@@ -72,6 +72,11 @@
         "category": "CM"
       },
       {
+        "command": "cm.convertEmacsTabs",
+        "title": "Convert Emacs Tabs",
+        "description": "Converts Emacs Tabs to VS Code Tabs"
+      },
+      {
         "command": "cm.compilefile",
         "title": "Compile File",
         "description": "Compiles the current file.",
@@ -212,6 +217,11 @@
       {
         "command": "cm.compilefile",
         "key": "ctrl+alt+u",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "cm.convertEmacsTabs",
+        "key": "ctrl+alt+f",
         "when": "editorTextFocus"
       },
       {
