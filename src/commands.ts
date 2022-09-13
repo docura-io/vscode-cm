@@ -29,6 +29,17 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
             compiler.runCurrentFile( editor.document.fileName );
         } );
     } );
+
+    let  convertEmacsTabs = commands.registerCommand("cm.convertEmacsTabs", () => {
+        validateCMFileAndRun(true, (editor) => {
+            const vscode = require('vscode');
+            editor.options.insertSpaces = true;
+            editor.options.tabSize = 8;
+            vscode.commands.executeCommand(`editor.action.indentationToSpaces`);
+            editor.options.tabSize = 4;
+            editor.options.insertSpaces = true;
+        })
+    })
     
     let d8 = commands.registerCommand( "cm.compilefile", (args) => {
         if ( args && args.file ) {
@@ -134,7 +145,7 @@ export function registerCommands( compiler: cmCompilerAdapter ) {
         } );
     } );
 
-    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, d15, d16, scripts, d20, d21, d22 );
+    return Disposable.from( d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d14, d15, d16, scripts, d20, d21, d22, convertEmacsTabs );
 }
     
     let d99 = commands.registerCommand( "cm.Test", () => {
