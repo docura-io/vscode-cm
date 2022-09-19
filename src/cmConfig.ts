@@ -4,8 +4,13 @@ import vscode = require('vscode');
 import { getCompiler } from './extension';
 import fs = require('fs');
 import path = require('path');
+import { CmTextParser } from './cmTextParser';
+
+var cmEnterRules = require("./cmEnterRules");
 
 export class cmConfig {
+
+    private parser: CmTextParser;
     
     static LangName = "cm";
     static root: string = null;
@@ -92,5 +97,65 @@ export class cmConfig {
     private static getConfig() {
         return vscode.workspace.getConfiguration(this.LangName);
     }
+
     
+    /**
+     * Set Parser
+     * 
+     * set the text parser that is used for multi line comments. 
+     */
+    public setParser(newParser:CmTextParser) {
+        this.parser = newParser;
+    }
+
+
+    /**
+     * Configure Comment Blocks.
+     * 
+     * This is used to push on enter rules for comment blocks.
+     */
+    public configureCommentBlocks(context) {
+        
+        var disposable = this.setLanguageConfiguration(true, context);
+        if (context?.subscriptions) {
+            context.subscriptions.push(disposable);
+        }
+    }
+
+
+    /* 
+     * Check if the cursor location is located within a block comment. 
+     */
+    public isWithinMultiLineComment (event) {    
+            
+        if (event) {            
+            if (event.selections) {                                
+                if(this.parser.checkIfInComment(vscode.window.activeTextEditor, event.selections[0].active)) {                    
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+
+    /**
+     * Set Language Configuration.
+     * 
+     * This function returns the language configuration with the on enter rules that should
+     * be applied for it.
+     */
+    public setLanguageConfiguration (multiLine, event) {
+        var langConfig = {
+            onEnterRules: []
+        };
+        if (multiLine) {            
+            if (this.isWithinMultiLineComment(event)) {                
+                langConfig.onEnterRules = langConfig.onEnterRules.concat(cmEnterRules.Rules.multilineEnterRules);
+            }
+        }
+
+        langConfig.onEnterRules = langConfig.onEnterRules.concat(cmEnterRules.Rules.endCommentEnterRules);
+        return vscode.languages.setLanguageConfiguration("cm", langConfig);
+    }
 }

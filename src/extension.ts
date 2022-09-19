@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { commands, DiagnosticCollection, Disposable, extensions, Extension, ExtensionContext, FileSystemWatcher, languages, window, workspace, RelativePattern, WorkspaceFolder, TextDocument, Uri } from 'vscode';
+import { commands, DiagnosticCollection, Disposable, extensions, Extension, ExtensionContext, FileSystemWatcher, languages, window, workspace, RelativePattern, WorkspaceFolder, TextDocument, Uri, comments, CommentMode } from 'vscode';
 
 import { CMDefinitionProvider } from './cmDeclaration';
 import { CM80CompletionItemProvider } from './cmSuggest80';
@@ -19,9 +19,13 @@ import { registerCommands, foldCopyright } from './commands';
 import fs = require('fs');
 
 import { setup as gSetup, refProvider } from './cmGlobals';
+import { config } from 'process';
 
 let diagnosticCollection: DiagnosticCollection;
 let compilerAdapter: cmCompilerAdapter;
+var parser_1 = require("./cmTextParser");
+var configuration_1 = require("./cmConfig");
+var configuration = new configuration_1.cmConfig();
 
 export function getCompiler(): cmCompilerAdapter {
     return compilerAdapter;
@@ -78,6 +82,14 @@ export function activate(context: ExtensionContext) {
     window.onDidChangeActiveTextEditor( (editor) => {        
         foldCopyright( editor );
     } );
+
+    // when the location of the cursor changes, update the configuration (specifically auto adding asterisks in block comments)
+    window.onDidChangeTextEditorSelection(function (event) {
+        var configuration = new configuration_1.cmConfig();
+        var parser = new parser_1.CmTextParser(configuration);
+        configuration.setParser(parser);
+        configuration.configureCommentBlocks(event);
+    });
 
     // createFileOpenWatcher();
     createRsSaveWatcher();
