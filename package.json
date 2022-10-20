@@ -320,6 +320,7 @@
     "@vscode/test-electron": "^2.1.5"
   },
   "dependencies": {
+    "json5": "2.2.1",
     "clang-format": "^1.0.34"
   }
 }

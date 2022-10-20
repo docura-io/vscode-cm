@@ -9,6 +9,13 @@ export class CmTextParser {
     private tags;
     private blockCommentStart:string;
     private blockCommentEnd:string;
+    private highlightSingleLineComments:boolean;
+    private isPlainText:boolean;
+    private expression:string;
+    private supportedLanguage:boolean;
+    private ignoreFirstLine:boolean;
+    private config:cmConfig;
+    private delimiter:string;
 
     /**
      * Constructor
@@ -18,6 +25,11 @@ export class CmTextParser {
         this.tags = [];
         this.blockCommentStart = "\/\\\*\\*";
         this.blockCommentEnd = "\\*/";
+        this.highlightSingleLineComments = true;
+        this.isPlainText = false;
+        this.expression="";
+        this.config = config;
+        this.delimiter = "";
         this.setTags();
     }
 
@@ -36,6 +48,20 @@ export class CmTextParser {
             var item = itemsOne[_i];
             var options : DecorationRenderOptions = { color: item.color, backgroundColor: item.backgroundColor };
             
+            options.textDecoration = "";
+            if (item.strikethrough) {
+                options.textDecoration += "line-through";
+            }
+            if (item.underline) {
+                options.textDecoration += " underline";
+            }
+            if (item.bold) {
+                options.fontWeight = "bold";
+            }
+            if (item.italic) {
+                options.fontStyle = "italic";
+            }
+
             var escapedSequence = item.tag.replace(/([()[{*+.$^\\|?])/g, '\\$1');
             
             this.tags.push({
@@ -98,5 +124,106 @@ export class CmTextParser {
             }
         }
         return false;
+    };
+
+
+    public setDelimiter(languageCode) {
+        this.supportedLanguage = false;
+        this.ignoreFirstLine = false;
+        this.isPlainText = false;
+        var config = this.config.GetCommentConfiguration(languageCode);
+        if (config) {
+            var blockCommentStart = config.blockComment ? config.blockComment[0] : null;
+            var blockCommentEnd = config.blockComment ? config.blockComment[1] : null;
+            this.setCommentFormat(config.lineComment || blockCommentStart, blockCommentStart, blockCommentEnd);
+            this.supportedLanguage = true;
+        }
+    };
+
+
+    private setCommentFormat = function (singleLine, start, end) {
+        var _this = this;
+        if (start === void 0) { start = null; }
+        if (end === void 0) { end = null; }
+        this.delimiter = "";
+        this.blockCommentStart = "";
+        this.blockCommentEnd = "";
+        // If no single line comment delimiter is passed, single line comments are not supported
+        if (singleLine) {
+            if (typeof singleLine === 'string') {
+                this.delimiter = this.escapeRegExp(singleLine).replace(/\//ig, "\\/");
+            }
+            else if (singleLine.length > 0) {
+                // * if multiple delimiters are passed, the language has more than one single line comment format
+                var delimiters = singleLine
+                    .map(function (s) { return _this.escapeRegExp(s); })
+                    .join("|");
+                this.delimiter = delimiters;
+            }
+        }
+        else {
+            this.highlightSingleLineComments = false;
+        }
+        if (start && end) {
+            this.blockCommentStart = this.escapeRegExp(start);
+            this.blockCommentEnd = this.escapeRegExp(end);
+            this.highlightMultilineComments = this.contributions.multilineComments;
+        }
+    };
+
+
+    public SetRegex(languageCode) {
+        var contributions = workspace.getConfiguration('cm');
+        this.setDelimiter(languageCode);
+        // if the language isn't supported, we don't need to go any further
+        if (!this.supportedLanguage) {
+            return;
+        }
+        var characters = [];
+        for (var _i = 0, _a = this.tags; _i < _a.length; _i++) {
+            var commentTag = _a[_i];
+            characters.push(commentTag.escapedTag);
+        }
+        if (this.isPlainText && contributions.highlightPlainText) {
+            // start by tying the regex to the first character in a line
+            this.expression = "(^)+([ \\t]*[ \\t]*)";
+        }
+        else {
+            // start by finding the delimiter (//, --, #, ') with optional spaces or tabs
+            this.expression = "(" + this.delimiter + ")+( |\t)*";
+        }
+        // Apply all configurable comment start tags
+        this.expression += "(";
+        this.expression += characters.join("|");
+        this.expression += ")+(.*)";
+    };
+
+
+    public FindSingleLineComments(activeEditor) {
+        console.log("do i do this?");
+        
+        if (!this.highlightSingleLineComments) {
+            return;
+        }
+
+        var text = activeEditor.document.getText();
+        // if it's plain text, we have to do mutliline regex to catch the start of the line with ^
+        var regexFlags = (this.isPlainText) ? "igm" : "ig";
+        var regEx = new RegExp(this.expression, regexFlags);
+        var match;
+        while (match = regEx.exec(text)) {
+            var startPos = activeEditor.document.positionAt(match.index);
+            var endPos = activeEditor.document.positionAt(match.index + match[0].length);
+            var range = { range: new vscode.Range(startPos, endPos) };
+            // Required to ignore the first line of .py files (#61)
+            if (this.ignoreFirstLine && startPos.line === 0 && startPos.character === 0) {
+                continue;
+            }
+            // Find which custom delimiter was used in order to add it to the collection
+            var matchTag = this.tags.find(function (item) { return item.tag.toLowerCase() === match[3].toLowerCase(); });
+            if (matchTag) {
+                matchTag.ranges.push(range);
+            }
+        }
     };
 }

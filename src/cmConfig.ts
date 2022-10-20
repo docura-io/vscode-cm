@@ -7,10 +7,13 @@ import path = require('path');
 import { CmTextParser } from './cmTextParser';
 
 var cmEnterRules = require("./cmEnterRules");
+var json5 = require("json5");
 
 export class cmConfig {
 
     private parser: CmTextParser;
+    private commentConfig = new Map();
+    private languageConfigFiles = new Map();
     
     static LangName = "cm";
     static root: string = null;
@@ -121,6 +124,30 @@ export class cmConfig {
             context.subscriptions.push(disposable);
         }
     }
+
+    public GetCommentConfiguration(languageCode) {
+        // * check if the language config has already been loaded
+        if (this.commentConfig.has(languageCode)) {
+            return this.commentConfig.get(languageCode);
+        }
+        // * if no config exists for this language, back out and leave the language unsupported
+        if (!this.languageConfigFiles.has(languageCode)) {
+            return undefined;
+        }
+        try {
+            // Get the filepath from the map
+            var filePath = this.languageConfigFiles.get(languageCode);
+            var content = fs.readFileSync(filePath, { encoding: 'utf8' });
+            // use json5, because the config can contains comments
+            var config = json5.parse(content);
+            this.commentConfig.set(languageCode, config.comments);
+            return config.comments;
+        }
+        catch (error) {
+            this.commentConfig.set(languageCode, undefined);
+            return undefined;
+        }
+    };
 
 
     /* 
