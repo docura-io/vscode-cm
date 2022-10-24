@@ -41,6 +41,8 @@ export class CmTextParser {
      */
     public setTags() {
         
+        
+        
         var contributions = workspace.getConfiguration('cm');
         const vscode = require('vscode');
         var items = contributions.tags;
@@ -49,7 +51,7 @@ export class CmTextParser {
             var options : DecorationRenderOptions = { color: item.color, backgroundColor: item.backgroundColor };
             
             options.textDecoration = "";
-            if (item.strikethrough) {
+            if (item.strikethrough) {                
                 options.textDecoration += "line-through";
             }
             if (item.underline) {
@@ -70,6 +72,15 @@ export class CmTextParser {
                 ranges: [],
                 decoration: vscode.window.createTextEditorDecorationType(options)
             });                        
+        }
+    }
+
+    public ApplyDecorations(activeEditor) {
+        for (var _i = 0, _a = this.tags; _i < _a.length; _i++) {
+            var tag = _a[_i];
+            activeEditor.setDecorations(tag.decoration, tag.ranges);
+            // clear the ranges for the next pass
+            tag.ranges.length = 0;
         }
     }
 
@@ -97,7 +108,7 @@ export class CmTextParser {
         var regexString = "(^|[ \\t])(";
         regexString += this.blockCommentStart;
         // adding this so that the title comments are accepted. /******.... 
-        regexString += "\\*\*"
+        regexString += "\\*\*";
         regexString += "[\\s])+([\\s\\S]*?)(";
         regexString += this.blockCommentEnd;
         
@@ -137,7 +148,7 @@ export class CmTextParser {
             var blockCommentEnd = config.blockComment ? config.blockComment[1] : null;
             this.setCommentFormat(config.lineComment || blockCommentStart, blockCommentStart, blockCommentEnd);
             this.supportedLanguage = true;
-        }
+        }        
     };
 
 
@@ -150,10 +161,11 @@ export class CmTextParser {
         this.blockCommentEnd = "";
         // If no single line comment delimiter is passed, single line comments are not supported
         if (singleLine) {
-            if (typeof singleLine === 'string') {
-                this.delimiter = this.escapeRegExp(singleLine).replace(/\//ig, "\\/");
+            
+            if (typeof singleLine === 'string') {                
+                this.delimiter = this.escapeRegExp(singleLine).replace(/\//ig, "\\/");                
             }
-            else if (singleLine.length > 0) {
+            else if (singleLine.length > 0) {                
                 // * if multiple delimiters are passed, the language has more than one single line comment format
                 var delimiters = singleLine
                     .map(function (s) { return _this.escapeRegExp(s); })
@@ -164,19 +176,26 @@ export class CmTextParser {
         else {
             this.highlightSingleLineComments = false;
         }
+        
         if (start && end) {
             this.blockCommentStart = this.escapeRegExp(start);
             this.blockCommentEnd = this.escapeRegExp(end);
-            this.highlightMultilineComments = this.contributions.multilineComments;
         }
     };
 
 
-    public SetRegex(languageCode) {
-        var contributions = workspace.getConfiguration('cm');
+    public escapeRegExp(input) {
+        return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+    }
+
+
+    public SetRegex(languageCode) {        
+        var contributions = workspace.getConfiguration('cm');      
         this.setDelimiter(languageCode);
+        
         // if the language isn't supported, we don't need to go any further
         if (!this.supportedLanguage) {
+            
             return;
         }
         var characters = [];
@@ -184,6 +203,7 @@ export class CmTextParser {
             var commentTag = _a[_i];
             characters.push(commentTag.escapedTag);
         }
+        
         if (this.isPlainText && contributions.highlightPlainText) {
             // start by tying the regex to the first character in a line
             this.expression = "(^)+([ \\t]*[ \\t]*)";
@@ -195,12 +215,11 @@ export class CmTextParser {
         // Apply all configurable comment start tags
         this.expression += "(";
         this.expression += characters.join("|");
-        this.expression += ")+(.*)";
+        this.expression += ")+(.*)";        
     };
 
 
     public FindSingleLineComments(activeEditor) {
-        console.log("do i do this?");
         
         if (!this.highlightSingleLineComments) {
             return;
@@ -211,19 +230,27 @@ export class CmTextParser {
         var regexFlags = (this.isPlainText) ? "igm" : "ig";
         var regEx = new RegExp(this.expression, regexFlags);
         var match;
+        
         while (match = regEx.exec(text)) {
-            var startPos = activeEditor.document.positionAt(match.index);
-            var endPos = activeEditor.document.positionAt(match.index + match[0].length);
-            var range = { range: new vscode.Range(startPos, endPos) };
-            // Required to ignore the first line of .py files (#61)
-            if (this.ignoreFirstLine && startPos.line === 0 && startPos.character === 0) {
-                continue;
-            }
-            // Find which custom delimiter was used in order to add it to the collection
-            var matchTag = this.tags.find(function (item) { return item.tag.toLowerCase() === match[3].toLowerCase(); });
-            if (matchTag) {
-                matchTag.ranges.push(range);
-            }
+           
+          
+          var startPos = activeEditor.document.positionAt(match.index);
+          var endPos = activeEditor.document.positionAt(match.index + match[0].length);
+          var range = { range: new vscode.Range(startPos, endPos) };
+          // Required to ignore the first line of .py files (#61)
+          if (this.ignoreFirstLine && startPos.line === 0 && startPos.character === 0) {
+              continue;
+          }
+        
+          // Find which custom delimiter was used in order to add it to the collection
+          var matchTag = this.tags.find(function (item) { 
+            
+            return item.tag.toLowerCase() === match[3].toLowerCase(); });
+          
+          if (matchTag) {
+              matchTag.ranges.push(range);
+          }   
+          
         }
     };
 }

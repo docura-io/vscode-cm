@@ -27,6 +27,10 @@ var parser_1 = require("./cmTextParser");
 var configuration_1 = require("./cmConfig");
 var configuration = new configuration_1.cmConfig();
 
+
+var configuration = new configuration_1.cmConfig();
+var parser = new parser_1.CmTextParser(configuration);
+
 export function getCompiler(): cmCompilerAdapter {
     return compilerAdapter;
 }
@@ -79,16 +83,23 @@ export function activate(context: ExtensionContext) {
     compilerAdapter = new cmCompilerAdapter( diagnosticCollection, cmConfig.cmOutputFilePath() );
     gSetup();
 
-    window.onDidChangeActiveTextEditor( (editor) => {        
+    window.onDidChangeActiveTextEditor( (editor) => {    
+        var activeEditor = window.activeTextEditor;    
         foldCopyright( editor );
+        configuration.setParser(parser);
+        parser.SetRegex(activeEditor.document.languageId);
+        configuration.setSingleLineComments();
+        parser.ApplyDecorations(activeEditor);
     } );
 
     // when the location of the cursor changes, update the configuration (specifically auto adding asterisks in block comments)
     window.onDidChangeTextEditorSelection(function (event) {
-        var configuration = new configuration_1.cmConfig();
-        var parser = new parser_1.CmTextParser(configuration);
         configuration.setParser(parser);
         configuration.configureCommentBlocks(event);
+        var activeEditor = window.activeTextEditor;
+        parser.SetRegex(activeEditor.document.languageId);        
+        configuration.setSingleLineComments();     
+        parser.ApplyDecorations(activeEditor);   
     });
 
     // createFileOpenWatcher();

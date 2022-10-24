@@ -5,9 +5,9 @@ import { getCompiler } from './extension';
 import fs = require('fs');
 import path = require('path');
 import { CmTextParser } from './cmTextParser';
-
+import { json } from 'stream/consumers';
 var cmEnterRules = require("./cmEnterRules");
-var json5 = require("json5");
+import json5 from "json5/dist/index.mjs";
 
 export class cmConfig {
 
@@ -120,6 +120,7 @@ export class cmConfig {
     public configureCommentBlocks(context) {
         
         var disposable = this.setLanguageConfiguration(true, context);
+        
         if (context?.subscriptions) {
             context.subscriptions.push(disposable);
         }
@@ -128,16 +129,19 @@ export class cmConfig {
     public GetCommentConfiguration(languageCode) {
         // * check if the language config has already been loaded
         if (this.commentConfig.has(languageCode)) {
+            
             return this.commentConfig.get(languageCode);
         }
         // * if no config exists for this language, back out and leave the language unsupported
-        if (!this.languageConfigFiles.has(languageCode)) {
+        if (!this.languageConfigFiles.has(languageCode)) {            
             return undefined;
         }
         try {
             // Get the filepath from the map
             var filePath = this.languageConfigFiles.get(languageCode);
-            var content = fs.readFileSync(filePath, { encoding: 'utf8' });
+            
+            var content = fs.readFileSync(filePath, 'utf8');
+            
             // use json5, because the config can contains comments
             var config = json5.parse(content);
             this.commentConfig.set(languageCode, config.comments);
@@ -167,12 +171,23 @@ export class cmConfig {
 
 
     /**
+     * Set Single Line Comments.
+     * 
+     * Uses the text parser class to find and update the visuals for single line comments. 
+     */
+    public setSingleLineComments() {
+        this.parser.FindSingleLineComments(vscode.window.activeTextEditor);        
+    }
+
+
+    /**
      * Set Language Configuration.
      * 
      * This function returns the language configuration with the on enter rules that should
      * be applied for it.
      */
     public setLanguageConfiguration (multiLine, event) {
+        this.updateLanguagesDefinitions();
         var langConfig = {
             onEnterRules: []
         };
@@ -184,5 +199,25 @@ export class cmConfig {
 
         langConfig.onEnterRules = langConfig.onEnterRules.concat(cmEnterRules.Rules.endCommentEnterRules);
         return vscode.languages.setLanguageConfiguration("cm", langConfig);
+    }
+
+
+    public updateLanguagesDefinitions () {
+        this.commentConfig.clear();
+        for (var _i = 0, _a = vscode.extensions.all; _i < _a.length; _i++) {
+            var extension = _a[_i];
+            var packageJSON = extension.packageJSON;
+            if (packageJSON.contributes && packageJSON.contributes.languages) {
+                for (var _b = 0, _c = packageJSON.contributes.languages; _b < _c.length; _b++) {
+                    var language = _c[_b];
+                    if (language.configuration) {
+                        
+                        var configPath = path.join(extension.extensionPath, language.configuration);
+                        
+                        this.languageConfigFiles.set(language.id, configPath);
+                    }
+                }
+            }
+        }
     }
 }
