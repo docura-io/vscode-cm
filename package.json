@@ -195,6 +195,56 @@
           "type": "boolean",
           "default": false,
           "description": "Runs CM 8.0+ autocomplete"
+        },
+        "cm.tags": {
+            "type": "array",
+            "description": "Tags that are used to determine block comments",
+            "default": [
+                {
+                    "tag": "***",
+                    "color": "#FF2D00",
+                    "strikethrough": false,
+                    "underline": false,
+                    "backgroundColor": "transparent",
+                    "bold": false,
+                    "italic": false
+                },
+                {
+                    "tag": "*",
+                    "strikethrough": false,
+                    "underline": false,
+                    "backgroundColor": "transparent",
+                    "bold": false,
+                    "italic": false
+                },
+                {
+                    "tag": "/**",
+                    "strikethrough": false,
+                    "underline": false,
+                    "backgroundColor": "transparent",
+                    "bold": false,
+                    "italic": false
+                },
+                {
+                    "tag": "!",
+					"color": "#FF2D00",
+					"strikethrough": false,
+					"underline": false,
+					"backgroundColor": "transparent",
+					"bold": false,
+					"italic": false
+                },
+                {
+                    "tag": "***",
+                    "color": "#FF2D00",
+                    "strikethrough": false,
+                    "underline": false,
+                    "backgroundColor": "transparent",
+                    "bold": false,
+                    "italic": false
+                }
+
+            ]
         }
       }
     },
@@ -288,6 +338,7 @@
     "@vscode/test-electron": "^2.1.5"
   },
   "dependencies": {
+    "json5": "2.2.1",
     "clang-format": "^1.0.34"
   }
 }
