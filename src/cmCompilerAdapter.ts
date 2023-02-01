@@ -5,7 +5,7 @@ import { cmOutputHandlerBase } from './cmOutputHandler'
 import { DiagnosticCollection, Location, window, workspace } from 'vscode'
 import { stat } from 'fs';
 
-let compilerContainer = require("node-cm/index.js");
+let compilerContainer = require("./helpers/cmCompilerBridge");
 
 export interface ICMCompilerAdapter {
     readonly isStarted: boolean;

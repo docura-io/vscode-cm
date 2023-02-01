@@ -1,7 +1,9 @@
 'use strict';
 
+import { appendFile, appendFileSync, createWriteStream, unlinkSync, writeFileSync } from 'fs';
+import { writeFile } from 'fs/promises';
 import { prependListener } from 'process';
-import { DiagnosticCollection, Location, Position, workspace } from 'vscode';
+import { DiagnosticCollection, FileSystemProvider, Location, Position, workspace } from 'vscode';
 import { cmConfig } from './cmConfig';
 
 import { cmTerminal } from './cmTerminal';
@@ -14,6 +16,8 @@ let colors : FontFaceInfo[];
 
 const cBegin = "";
 const cEnd = ""
+
+const goToCmd = new GoToCommand();
 
 export interface ICMOutputer {
     diagnostics: DiagnosticCollection;
@@ -72,7 +76,65 @@ export class cmOutputHandlerBase implements ICMOutputer {
         this.extras = { ...this.extras, ...x };
     }
 
+    private parseSOH( data: string ) : string | null {
+        var res = this.handleFontFaces( data );
+
+        if ( goToCmd.execute( { command: res, data: "", extras: null } ) ) {
+            return "";
+        }
+
+        return res;
+    }
+
+    private parseSTX( data: string ) : string | null {
+        return data;
+    }
+
     public write( data: string ) : void {
+
+        if ( data ) {
+            let sohCount = 0;
+            let stxCount = 0;
+
+            let value = "";
+            let isSoh = false;
+
+            let newData = "";
+
+            for (var i = 0; i < data.length; i++) {
+                let c = data.charAt(i);
+                if ( c == cBegin ) {
+                    sohCount++;
+                    isSoh = true;
+                    newData += this.parseSTX( value );
+                    value = "";
+                } else if ( c == cEnd ) {
+                    stxCount++;
+                    isSoh = false;
+                    newData += this.parseSOH( value );
+                    value = "";
+                } else {
+                    value += c;
+                }
+            }
+
+            if ( value.length > 0 ) {
+                newData += value;
+            }
+
+            if ( sohCount != stxCount ) {
+                unlinkSync( "C:\\Users\\lambt\\Desktop\\log.txt" );
+                appendFileSync( "C:\\Users\\lambt\\Desktop\\log.txt", data + "~n~", null );
+                debugger;
+            } else {
+                console.log("they matched");
+            }
+
+            this.terminal.write( newData );
+        }
+    }
+
+    public write_old( data: string ) : void {
         data = this.handleFontFaces( data );
 
         if ( data ) {
