@@ -4,6 +4,7 @@ import { DiagnosticCollection } from 'vscode';
 
 import { cmConfig } from './cmConfig';
 import { cmTerminal } from './cmTerminal';
+import { AltClickParser } from './parsers/AltClickParser';
 import { CodeStatementParser } from './parsers/CodeStatementParser';
 import { DiagnosticsParser } from './parsers/DiagnosticsParser';
 import { FindReferencesParserV2 } from './parsers/FindRerferencesParserV2';
@@ -94,6 +95,7 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
         this.parsers.push( new GoToParser() );
         this.parsers.push( new CodeStatementParser() );
         this.parsers.push( new FindReferencesParserV2() );
+        this.parsers.push( new AltClickParser() );
 
         this.parsers.push( new DiagnosticsParser( this.diagnostics ) );
         // should be last
@@ -169,10 +171,14 @@ export class cmMainOutputHanlder extends cmOutputHandlerBase {
             };
             for( let p of this.parsers ) {
                 if ( p.isActive ) {
-                    line = p.parse( line );
-                    if ( line == null ) {
-                        break;
-                    } 
+                    try {
+                        line = p.parse( line );
+                        if ( line == null ) {
+                            break;
+                        } 
+                    } catch (error) {
+                        console.error( `Parser ${typeof p} failed. ${error}` );
+                    }
                 }
             }
             // parsers can set the line to null to exclude it from output
