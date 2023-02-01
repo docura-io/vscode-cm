@@ -2,7 +2,7 @@
   "name": "cm",
   "displayName": "CM",
   "description": "CM Language Support",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "icon": "resources/cmIcon.png",
   "publisher": "docuraio",
   "repository": {
